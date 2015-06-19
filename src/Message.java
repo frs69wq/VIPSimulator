@@ -1,5 +1,6 @@
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
+import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.TaskCancelledException;
@@ -112,7 +113,7 @@ public class Message extends Task {
 	public void emit (String mailbox) {
 		try{
 			this.send(mailbox);
-		} catch (TransferFailureException | HostFailureException| TimeoutException e) {
+		} catch (TransferFailureException | HostFailureException| TimeoutException | NativeException e) {
 			Msg.error("Something went wrong when emitting a '" + this.type.toString() +"' message to '" + mailbox + "'");
 			e.printStackTrace();
 		}		

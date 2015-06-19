@@ -1,6 +1,7 @@
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
+import org.simgrid.msg.NativeException;
 import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
 import org.simgrid.msg.Process;
@@ -11,7 +12,7 @@ public class Merge extends Process {
 		super(host,name,args);
 	}
 	
-	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
+	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
 		if (args.length < 1) {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
