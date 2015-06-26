@@ -1,15 +1,26 @@
+import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Gate extends Process {
-	String hostName;
-	String closeSEName;
-	double downloadTime = 0.;
-	double totalComputeTime = 0.;
-	double uploadTime = 0.;
+	private String hostName;
+	private String closeSEName;
+	private double downloadTime = 0.;
+	private double totalComputeTime = 0.;
+	private double uploadTime = 0.;
 	
+	private long simulateForNsec(long nSec) throws HostFailureException {
+	    double nbPart;
+	
+	    Process.sleep(nSec);
+	    nbPart = VIPSimulator.eventsPerSec* nSec;
+	    Msg.info("simulateForNsec: '"+ hostName + "' simulated "+ (long) nbPart + " particles");
+	    return (long) (nbPart);
+	
+	}
+
 	public Gate(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.hostName = host.getName();
@@ -19,10 +30,8 @@ public class Gate extends Process {
 	public void main(String[] args) throws MsgException {
 		boolean stop = false;
 		long nbParticles = 0;
+		long simulatedParticles = 0;
 		double computeTime;
-		
-		//TODO temporary hack (To be removed)
-		long simulatedParticles = 10000;
 		
 		Msg.info("Register GATE on '"+ hostName + "'");
 		GateMessage connect= new GateMessage(GateMessage.Type.GATE_CONNECT, getHost());
@@ -32,7 +41,7 @@ public class Gate extends Process {
 		while (!stop){
 			GateMessage message = GateMessage.process(hostName);
 		
-			switch(message.type){
+			switch(message.getType()){
 			case GATE_START:
 				Msg.info("Processing GATE");
 				
@@ -44,8 +53,10 @@ public class Gate extends Process {
 			case GATE_CONTINUE:	
 				// Compute for sosTime seconds
 				computeTime = Msg.getClock();
+				
 				//TODO Discuss what we can do here. Make the process just sleep for now
-				sleep(VIPSimulator.sosTime);
+				simulatedParticles = simulateForNsec(VIPSimulator.sosTime);
+				
 				computeTime = Msg.getClock() - computeTime;
 				totalComputeTime += computeTime;
 				
@@ -78,4 +89,5 @@ public class Gate extends Process {
 			}
 		}
 	}
+
 }
