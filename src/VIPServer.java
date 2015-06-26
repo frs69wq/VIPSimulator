@@ -8,18 +8,28 @@ import org.simgrid.msg.HostFailureException;
 
 public class VIPServer extends Process {
 	
+	// Worker node management for registration and termination 
+	private Vector<Host> gateWorkers = new Vector<Host>();
+	private int endedGateWorkers = 0;
 	
 	//TODO This input file should become a parameter, IMHO
-	public String inputFileName = "input.tgz";
+	private String inputFileName = "input.tgz";
 	// TODO Temporary hack 
 	// size of (gate.sh.tar.gz + dsarrut_opengate_version_7.0.tar.gz + file-14539084101429.zip)
-	public long inputFileSize = 377515376; 
-	public Vector<Host> gateSlaves = new Vector<Host>();
+	// 73043 + 376927945 + 514388 bytes
 	
-	int registeredGateJobs = 0;
-	int endedGateJobs = 0;
+	private long inputFileSize = 377515376; 
 	
-	long totalParticleNumber = 0;
+	private long totalParticleNumber = 0;
+	
+	public Vector<Host> getGateSlaves() {
+		return gateWorkers;
+	}
+
+	public void setGateSlaves(Vector<Host> gateSlaves) {
+		this.gateWorkers = gateSlaves;
+	}
+
 	public VIPServer(Host host, String name, String[]args) {
 		super(host,name,args);
 	} 
@@ -37,9 +47,10 @@ public class VIPServer extends Process {
 			
 			switch (message.getType()){
 			case GATE_CONNECT:
-				registeredGateJobs++;
-				Msg.info(registeredGateJobs +" worker(s) registered out of " + VIPSimulator.numberOfGateJobs);
-
+				getGateSlaves().add(message.getSource());
+				
+				Msg.debug(getGateSlaves().size() +" worker(s) registered out of " + VIPSimulator.numberOfGateJobs);
+				
 				GateMessage start = new GateMessage(GateMessage.Type.GATE_START, getHost());
 				start.emit(message.getMailbox());
 				break;
@@ -54,11 +65,11 @@ public class VIPServer extends Process {
 					GateMessage endGate = new GateMessage(GateMessage.Type.GATE_STOP);
 					Msg.info("Sending a '" + endGate.getType().toString() +"' message to '" + message.getMailbox() +"'");
 					endGate.emit(message.getMailbox());
-					endedGateJobs++;
+					endedGateWorkers++;
 				}
 				
-				if (endedGateJobs == VIPSimulator.numberOfGateJobs){
-					Msg.info("Exiting the interaction loop with " + endedGateJobs + " ended jobs");
+				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
+					Msg.info("Exiting the interaction loop with " + endedGateWorkers + " ended jobs");
 					stop=true;
 				}
 				
