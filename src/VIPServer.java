@@ -11,7 +11,9 @@ public class VIPServer extends Process {
 	
 	//TODO This input file should become a parameter, IMHO
 	public String inputFileName = "input.tgz";
-	public long inputFileSize = 50000000;
+	// TODO Temporary hack 
+	// size of (gate.sh.tar.gz + dsarrut_opengate_version_7.0.tar.gz + file-14539084101429.zip)
+	public long inputFileSize = 377515376; 
 	public Vector<Host> gateSlaves = new Vector<Host>();
 	
 	int registeredGateJobs = 0;
@@ -33,25 +35,25 @@ public class VIPServer extends Process {
 			// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 			GateMessage message = GateMessage.process("VIPServer");
 			
-			switch (message.type){
+			switch (message.getType()){
 			case GATE_CONNECT:
 				registeredGateJobs++;
 				Msg.info(registeredGateJobs +" worker(s) registered out of " + VIPSimulator.numberOfGateJobs);
 
 				GateMessage start = new GateMessage(GateMessage.Type.GATE_START, getHost());
-				start.emit(message.issuerHost.getName());
+				start.emit(message.getMailbox());
 				break;
 			case GATE_PROGRESS:
-				totalParticleNumber += message.particleNumber;
+				totalParticleNumber += message.getParticleNumber();
 				Msg.info (totalParticleNumber + " particles have been computed. "+ VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
 					GateMessage again = new GateMessage(GateMessage.Type.GATE_CONTINUE);
-					Msg.info("Sending a '" + again.type.toString() +"' message to '" + message.issuerHost.getName() +"'");
-					again.emit(message.issuerHost.getName());
+					Msg.info("Sending a '" + again.getType().toString() +"' message to '" + message.getMailbox() +"'");
+					again.emit(message.getMailbox());
 				} else {
 					GateMessage endGate = new GateMessage(GateMessage.Type.GATE_STOP);
-					Msg.info("Sending a '" + endGate.type.toString() +"' message to '" + message.issuerHost.getName() +"'");
-					endGate.emit(message.issuerHost.getName());
+					Msg.info("Sending a '" + endGate.getType().toString() +"' message to '" + message.getMailbox() +"'");
+					endGate.emit(message.getMailbox());
 					endedGateJobs++;
 				}
 				
