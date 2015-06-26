@@ -7,12 +7,20 @@ import org.simgrid.msg.Process;
 
 public class LFC extends Process {
 	
-	public String hostName;
-	public Vector<LFCFile> fileList;
+	private String hostName;
+	private Vector<LFCFile> fileList;
 	
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.hostName = this.getHost().getName();
+		this.setHostName(this.getHost().getName());
 		this.fileList = new Vector<>();
 	}
 	
@@ -86,8 +94,8 @@ public class LFC extends Process {
 		
 		while (it.hasNext() && SEName == null){
 			LFCFile current = it.next();
-			if (current.logicalFileName == logicalFileName){
-				SEName = current.SEName;
+			if (current.getLogicalFileName() == logicalFileName){
+				SEName = current.getSEName();
 			}
 		}
 		
@@ -103,8 +111,8 @@ public class LFC extends Process {
 		
 		while (it.hasNext() && logicalFileSize == 0){
 			LFCFile current = it.next();
-			if (current.logicalFileName == logicalFileName){
-				logicalFileSize = current.logicalFileSize;
+			if (current.getLogicalFileName() == logicalFileName){
+				logicalFileSize = current.getLogicalFileSize();
 			}
 		}
 		
@@ -118,7 +126,7 @@ public class LFC extends Process {
 		String fileList = "";
 		Iterator<LFCFile> it = this.fileList.iterator();
 		while (it.hasNext())
-			fileList.concat(it.next().logicalFileName + ",");
+			fileList.concat(it.next().getLogicalFileName() + ",");
 		//removing last comma
 		if (fileList.charAt(fileList.length()-1)==',')
 			fileList = fileList.substring(0, fileList.length()-1);
