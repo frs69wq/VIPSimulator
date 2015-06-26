@@ -24,14 +24,14 @@ public class LFC extends Process {
 		while (!stop){
 			Message message = Message.process(hostName);
 			
-			switch(message.type){
+			switch(message.getType()){
 			case CR_INPUT:
 				// Register the information sent in the message into the LFC by adding a new File
-				addFile(message.logicalFileName, message.logicalFileSize, message.SEName);
+				addFile(message.getLogicalFileName(), message.getLogicalFileSize(), message.getSEName());
 				Msg.info("LFC '"+ this.hostName + "' registered file '" + 
-						message.logicalFileName + "', of size " + 
-						message.logicalFileSize + ", stored on SE '" + 
-						message.SEName + "'");
+						message.getLogicalFileName() + "', of size " + 
+						message.getLogicalFileSize() + ", stored on SE '" + 
+						message.getSEName() + "'");
 				break;
 			case REGISTER_FILE:
 				handleRegisterFile(message);
@@ -50,15 +50,15 @@ public class LFC extends Process {
 	}
 
 	public void handleRegisterFile(Message message) {
-		addFile(message.logicalFileName, message.logicalFileSize, message.SEName);
+		addFile(message.getLogicalFileName(), message.getLogicalFileSize(), message.getSEName());
 		
 		Message registerAck = new Message(Message.Type.REGISTER_ACK);
-		registerAck.emit(message.issuerHost.getName());
-		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.issuerHost.getName() + "'");	
+		registerAck.emit(message.getIssuerHost().getName());
+		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.getIssuerHost().getName() + "'");	
 	}
 
 	public void handleAskFileInfo(Message message) {
-		String logicalFileName = message.logicalFileName;
+		String logicalFileName = message.getLogicalFileName();
 		
 		String SEName = getSEName(logicalFileName);
 		long logicalFileSize = getLogicalFileSize(logicalFileName);
@@ -70,8 +70,8 @@ public class LFC extends Process {
 		
 		Message replySEName = new Message(Message.Type.SEND_FILE_INFO, SEName, logicalFileSize);
 		
-		replySEName.emit(message.issuerHost.getName());
-		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.issuerHost.getName() + "'");
+		replySEName.emit(message.getIssuerHost().getName());
+		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.getIssuerHost().getName() + "'");
 
 	}
 

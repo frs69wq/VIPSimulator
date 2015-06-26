@@ -21,12 +21,48 @@ public class Message extends Task {
 		FINALIZE
 	};
 	
-	public Type type;
-	public Host issuerHost;
-	public String logicalFileName;
-	public long logicalFileSize;
-	public String SEName;
+	private Type type;
+	private Host issuerHost;
+	private String logicalFileName;
+	private long logicalFileSize;
+	private String SEName;
 	
+	public Type getType() {
+		return type;
+	}
+
+	public Host getIssuerHost() {
+		return issuerHost;
+	}
+
+	public void setIssuerHost(Host issuerHost) {
+		this.issuerHost = issuerHost;
+	}
+
+	public String getLogicalFileName() {
+		return logicalFileName;
+	}
+
+	public void setLogicalFileName(String logicalFileName) {
+		this.logicalFileName = logicalFileName;
+	}
+
+	public long getLogicalFileSize() {
+		return logicalFileSize;
+	}
+
+	public void setLogicalFileSize(long logicalFileSize) {
+		this.logicalFileSize = logicalFileSize;
+	}
+
+	public String getSEName() {
+		return SEName;
+	}
+
+	public void setSEName(String sEName) {
+		SEName = sEName;
+	}
+
 	/**
 	 * Constructor, builds a new UPLOAD/DOWNLOAD_REQUEST message
 	 */
@@ -54,10 +90,10 @@ public class Message extends Task {
 	public Message(Type type) {
 		super(type.toString(), 1, 100);
 		this.type = type;
-		this.issuerHost = null;
-		this.logicalFileName = null;
-		this.logicalFileSize= 0; 
-		this.SEName = null;
+		this.setIssuerHost(null);
+		this.setLogicalFileName(null);
+		this.setLogicalFileSize(0); 
+		this.setSEName(null);
 	}
 
 	/**
@@ -66,10 +102,10 @@ public class Message extends Task {
 	public Message(Type type, long logicalFileSize){
 		super(type.toString(), 0, logicalFileSize);
 		this.type = type;
-		this.issuerHost = null;
-		this.logicalFileName = null;
-		this.logicalFileSize= logicalFileSize;
-		this.SEName =null;
+		this.setIssuerHost(null);
+		this.setLogicalFileName(null);
+		this.setLogicalFileSize(logicalFileSize);
+		this.setSEName(null);
 	}
 
 	/**
@@ -81,10 +117,10 @@ public class Message extends Task {
 		//TODO provide different computing and communication values depending on the type of message
 		super (type.toString(), 1e6, 100);
 		this.type = type;
-		this.issuerHost = issuerHost;
-		this.logicalFileName = logicalFileName;
-		this.logicalFileSize= logicalFileSize; 
-		this.SEName = SEName;
+		this.setIssuerHost(issuerHost);
+		this.setLogicalFileName(logicalFileName);
+		this.setLogicalFileSize(logicalFileSize); 
+		this.setSEName(SEName);
 	}
 	
 	public void execute() throws  HostFailureException,TaskCancelledException{
@@ -112,9 +148,10 @@ public class Message extends Task {
 	
 	public void emit (String mailbox) {
 		try{
+			// TODO this might be made an asynchronous send
 			this.send(mailbox);
 		} catch (TransferFailureException | HostFailureException| TimeoutException | NativeException e) {
-			Msg.error("Something went wrong when emitting a '" + this.type.toString() +"' message to '" + mailbox + "'");
+			Msg.error("Something went wrong when emitting a '" + type.toString() +"' message to '" + mailbox + "'");
 			e.printStackTrace();
 		}		
 	}

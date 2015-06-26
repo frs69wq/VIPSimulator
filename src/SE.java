@@ -19,7 +19,7 @@ public class SE extends Process {
 		while (!stop){
 			Message message = Message.process(hostName);
 			
-			switch(message.type){
+			switch(message.getType()){
 			case DOWNLOAD_REQUEST:
 				handleDownloadRequest(message);
 				break;
@@ -37,16 +37,16 @@ public class SE extends Process {
 	}
 	
 	public void handleUploadRequest(Message message) {
-		//TODO this function should a file on disk at some point
+		//TODO this function should read a file on disk at some point
 		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
 		
-		uploadAck.emit(message.issuerHost.getName());
-		Msg.debug("SE '"+ hostName + "' sent ack back to '" + message.issuerHost.getName() + "'");
+		uploadAck.emit(message.getIssuerHost().getName());
+		Msg.debug("SE '"+ hostName + "' sent ack back to '" + message.getIssuerHost().getName() + "'");
 	}
 
 	public void handleDownloadRequest(Message message) {
-		Message sendFile= new Message(Message.Type.SEND_FILE, message.logicalFileSize);
-		sendFile.emit(message.issuerHost.getName());
-		Msg.debug("SE '"+ hostName + "' sent file '" + message.logicalFileName +"' of size " + message.logicalFileSize + " to '" + message.issuerHost.getName() + "'");
+		Message sendFile= new Message(Message.Type.SEND_FILE, message.getLogicalFileSize());
+		sendFile.emit(message.getIssuerHost().getName());
+		Msg.debug("SE '"+ hostName + "' sent file '" + message.getLogicalFileName() +"' of size " + message.getLogicalFileSize() + " to '" + message.getIssuerHost().getName() + "'");
 	}
 }

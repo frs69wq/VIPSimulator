@@ -16,10 +16,27 @@ public class GateMessage extends Task{
 		GATE_STOP
 	};
 	
-	public Type type;
-	public Host issuerHost;
-	public long particleNumber;
+	private Type type;
+	private Host issuerHost;
+	private long particleNumber;
 
+	// Getters and Setters
+	public Type getType() {
+		return type;
+	}
+
+	public long getParticleNumber() {
+		return particleNumber;
+	}
+
+	public void setParticleNumber(long particleNumber) {
+		this.particleNumber = particleNumber;
+	}
+
+	public String getMailbox(){
+		return issuerHost.getName();
+	}
+	
 	/**
 	 * Constructor, builds a new GATE_CONTINUE/GATE_STOP message
 	 */
@@ -40,7 +57,7 @@ public class GateMessage extends Task{
 		super(type.toString(), 1, 100);
 		this.type = type;
 		this.issuerHost = issuerHost;
-		this.particleNumber = particleNumber;
+		this.setParticleNumber(particleNumber);
 	}
 	
 	public void execute() throws  HostFailureException,TaskCancelledException{

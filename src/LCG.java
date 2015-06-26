@@ -23,8 +23,8 @@ public class LCG {
 		Msg.debug("Host '" + issuerHost + "' is waiting for upload-reply from SE '" + SEName +"'");
 		Message uploadAck = Message.process(issuerHost.getName());
 		
-		if (uploadAck.type != Message.Type.UPLOAD_ACK){
-			Msg.warn("WARNING: While waiting for an ack from SE, received a "+ uploadAck.type.toString() + " message");
+		if (uploadAck.getType() != Message.Type.UPLOAD_ACK){
+			Msg.warn("WARNING: While waiting for an ack from SE, received a "+ uploadAck.getType().toString() + " message");
 			//TODO should we retry the receive?
 		} else {	
 			Msg.info("SE '"+ SEName + "' replied with an ack");
@@ -37,8 +37,8 @@ public class LCG {
 		
 		Msg.debug("lcg-cr of '" + logicalFileName +"' on LFC '" + LFCName +"' completed");
 		Message registerAck = Message.process(issuerHost.getName());
-		if (registerAck.type != Message.Type.REGISTER_ACK){
-			Msg.warn("WARNING: While waiting for an ack from LFC, received a "+ registerAck.type.toString() + " message");
+		if (registerAck.getType() != Message.Type.REGISTER_ACK){
+			Msg.warn("WARNING: While waiting for an ack from LFC, received a "+ registerAck.getType().toString() + " message");
 			//TODO should we retry the receive?
 		} else {	
 			Msg.info("LFC '"+ LFCName + "' registered file '" + logicalFileName + "', stored on SE '" +	SEName + "'");
@@ -59,12 +59,12 @@ public class LCG {
 		Msg.info("Waiting for LFC '" + LFCName + "' to reply with SE name for file '" + logicalFileName +"'");
 		Message getFileInfo = Message.process(issuerHost.getName());
 		
-		if (getFileInfo.type != Message.Type.SEND_FILE_INFO){
-			Msg.warn("WARNING: While waiting for a reply from LFC, received a "+ getFileInfo.type.toString() + " message");
+		if (getFileInfo.getType() != Message.Type.SEND_FILE_INFO){
+			Msg.warn("WARNING: While waiting for a reply from LFC, received a "+ getFileInfo.getType().toString() + " message");
 			//TODO should we retry the receive?
 		} else {	
-			SEName = getFileInfo.SEName;
-			logicalFileSize = getFileInfo.logicalFileSize;
+			SEName = getFileInfo.getSEName();
+			logicalFileSize = getFileInfo.getLogicalFileSize();
 				
 			Msg.info("LFC '"+ LFCName + "' replied with SE name '" + SEName + "' for file '" + logicalFileName +"' of size " + logicalFileSize);
 		}
