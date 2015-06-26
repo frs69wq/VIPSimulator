@@ -8,7 +8,7 @@ public class DefaultSE extends SE{
 	}
 	
 	public void main(String[] args) {
-		VIPSimulator.defaultSE = hostName;
+		VIPSimulator.defaultSE = this.getHostName();
 		Msg.info("Default SE is \""+ VIPSimulator.defaultSE+ "\""); 
 		super.main(args);
 	}

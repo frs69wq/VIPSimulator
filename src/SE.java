@@ -4,11 +4,19 @@ import org.simgrid.msg.Process;
 
 public class SE extends Process {
 	
-	public String hostName;
+	private String hostName;
 	
+	public String getHostName() {
+		return hostName;
+	}
+
+	public void setHostName(String hostName) {
+		this.hostName = hostName;
+	}
+
 	public SE (Host host, String name, String[]args) {
 		super(host,name,args);
-		this.hostName = this.getHost().getName();
+		this.setHostName(this.getHost().getName());
 	}
 	
 	public void main(String[] args) {
