@@ -87,8 +87,9 @@ public class Gate extends Process {
 				Msg.info("Stopping Gate job and uploading results. " + nbParticles + " particles have been simulated by '" + hostName +"'");
 
 				//TODO Discuss what we can do here
-				String logicalFileName = Long.toString(nbParticles)+"-partial-"+ hostName + "-" + Double.toString(Msg.getClock()) + ".tgz";
 				//TODO what is the actual size of the generated file ?
+				//TODO use the actual size obtained from the logs for now
+				String logicalFileName = Long.toString(nbParticles)+"-partial-"+ hostName + "-" + Double.toString(Msg.getClock()) + ".tgz";
 				
 				uploadTime += Msg.getClock();
 				LCG.cr(getHost(), closeSEName, "local_file.tgz", uploadFileSize, logicalFileName, VIPSimulator.defaultLFC);
