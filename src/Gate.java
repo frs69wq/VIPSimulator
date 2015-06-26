@@ -33,6 +33,11 @@ public class Gate extends Process {
 		long simulatedParticles = 0;
 		double computeTime;
 		
+		//TODO get the output file size from logs and give it as argument of 
+		// the GATE process. If no value is given, we rely on the same default
+		// value as in the C version.
+		long uploadFileSize= (args.length > 0 ? Long.valueOf(args[0]).longValue() : 1000000);
+		   
 		Msg.info("Register GATE on '"+ hostName + "'");
 		GateMessage connect= new GateMessage(GateMessage.Type.GATE_CONNECT, getHost());
 		// Use of some simulation magic here, every worker knows the mailbox of the VIP server
@@ -86,7 +91,7 @@ public class Gate extends Process {
 				//TODO what is the actual size of the generated file ?
 				
 				uploadTime += Msg.getClock();
-				LCG.cr(getHost(), closeSEName, "local_file.tgz", 1000000, logicalFileName, VIPSimulator.defaultLFC);
+				LCG.cr(getHost(), closeSEName, "local_file.tgz", uploadFileSize, logicalFileName, VIPSimulator.defaultLFC);
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping Gate job and exiting");
 				
