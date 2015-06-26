@@ -31,8 +31,8 @@ public class Message extends Task {
 		return type;
 	}
 
-	public Host getIssuerHost() {
-		return issuerHost;
+	public String getMailbox(){
+		return issuerHost.getName();
 	}
 
 	public void setIssuerHost(Host issuerHost) {

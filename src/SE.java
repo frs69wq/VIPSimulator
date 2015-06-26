@@ -48,13 +48,21 @@ public class SE extends Process {
 		//TODO this function should read a file on disk at some point
 		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
 		
-		uploadAck.emit(message.getIssuerHost().getName());
-		Msg.debug("SE '"+ hostName + "' sent ack back to '" + message.getIssuerHost().getName() + "'");
+		uploadAck.emit(message.getMailbox());
+
+		Msg.debug("SE '"+ hostName + "' sent ack back to '" + 
+				message.getMailbox() + "'");
 	}
 
 	public void handleDownloadRequest(Message message) {
-		Message sendFile= new Message(Message.Type.SEND_FILE, message.getLogicalFileSize());
-		sendFile.emit(message.getIssuerHost().getName());
-		Msg.debug("SE '"+ hostName + "' sent file '" + message.getLogicalFileName() +"' of size " + message.getLogicalFileSize() + " to '" + message.getIssuerHost().getName() + "'");
+		Message sendFile= new Message(Message.Type.SEND_FILE, 
+					message.getLogicalFileSize());
+		
+		sendFile.emit(message.getMailbox());
+		
+		Msg.debug("SE '"+ hostName + "' sent file '" + 
+				message.getLogicalFileName() + "' of size " + 
+				message.getLogicalFileSize() + " to '" + 
+				message.getMailbox() + "'");
 	}
 }

@@ -61,8 +61,8 @@ public class LFC extends Process {
 		addFile(message.getLogicalFileName(), message.getLogicalFileSize(), message.getSEName());
 		
 		Message registerAck = new Message(Message.Type.REGISTER_ACK);
-		registerAck.emit(message.getIssuerHost().getName());
-		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.getIssuerHost().getName() + "'");	
+		registerAck.emit(message.getMailbox());
+		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.getMailbox() + "'");	
 	}
 
 	public void handleAskFileInfo(Message message) {
@@ -78,8 +78,8 @@ public class LFC extends Process {
 		
 		Message replySEName = new Message(Message.Type.SEND_FILE_INFO, SEName, logicalFileSize);
 		
-		replySEName.emit(message.getIssuerHost().getName());
-		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.getIssuerHost().getName() + "'");
+		replySEName.emit(message.getMailbox());
+		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.getMailbox() + "'");
 
 	}
 

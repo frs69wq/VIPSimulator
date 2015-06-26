@@ -1,10 +1,11 @@
+import java.util.Vector;
+
 
 public class LFCFile {
 	//TODO Should we add a type to distinguish REGULAR, INPUT, and MERGE files?
 	private String logicalFileName;
 	private long logicalFileSize;
-	//TODO To be replace by a vector of Strings if we want to handle replicas
-	private String SEName;
+	private Vector<String>SENames;
 
 	public String getLogicalFileName() {
 		return logicalFileName;
@@ -23,17 +24,19 @@ public class LFCFile {
 	}
 
 	public String getSEName() {
-		return SEName;
+		//TODO return the first SE for now. Might be interesting to implement some load balancing strategy
+		return SENames.get(0);
 	}
 
-	public void setSEName(String sEName) {
-		SEName = sEName;
+	public void setSEName(String SEName) {
+		SENames.add(SEName);
 	}
 
 	public LFCFile(String logicalFileName, long logicalFileSize, String sEName) {
 		super();
 		this.setLogicalFileName(logicalFileName);
 		this.setLogicalFileSize(logicalFileSize);
+		this.SENames = new Vector<String>();
 		setSEName(sEName);
 	}
 	
