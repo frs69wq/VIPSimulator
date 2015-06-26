@@ -17,7 +17,7 @@ public class LCG {
 		//TODO Should include this size in the constructor of the message
 		Message uploadRequest = new Message(Message.Type.UPLOAD_REQUEST, issuerHost, logicalFileName, localFileSize);
 		uploadRequest.emit(SEName);
-		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + logicalFileName +"'");
+		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + logicalFileName +"' of size " + localFileSize);
 		
 		//waiting for upload to finish
 		Msg.debug("Host '" + issuerHost + "' is waiting for upload-reply from SE '" + SEName +"'");
