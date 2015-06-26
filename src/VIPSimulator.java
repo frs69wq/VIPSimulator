@@ -7,11 +7,9 @@ import org.simgrid.msg.NativeException;
 public class VIPSimulator {
    public static long totalParticleNumber;
    public static int numberOfGateJobs;
-   public static int sosTime;
+   public static long sosTime;
    public static int numberOfMergeJobs;
    public static int cpuMergeTime;
-   public static int crCommSize;
-   public static int cpCommSize;
    public static double eventsPerSec;
    public static String logFile;
    
@@ -29,14 +27,12 @@ public class VIPSimulator {
 	   totalParticleNumber = args.length > 1 ?  Long.valueOf(args[2]).longValue() : 1000000;
 	   numberOfGateJobs = args.length > 1 ? Integer.valueOf(args[3]).intValue() : 5;
 	   // SOS time is given in seconds on command line, but sleeps take values in milliseconds.
-	   sosTime = 1000*(args.length > 1 ? Integer.valueOf(args[4]).intValue() : 300);
+	   sosTime = 1000*(args.length > 1 ? Long.valueOf(args[4]).longValue() : 300);
 	   numberOfMergeJobs = args.length > 1 ? Integer.valueOf(args[5]).intValue() : 1;
 	   cpuMergeTime = args.length > 1 ? Integer.valueOf(args[6]).intValue() : 10;
 
-	   crCommSize = args.length > 1 ? Integer.valueOf(args[7]).intValue() : 1000000;
-	   cpCommSize = args.length > 1 ? Integer.valueOf(args[8]).intValue() : 1000000;
-	   eventsPerSec = args.length > 1 ?  Double.valueOf(args[9]).doubleValue() : 200;
-	   logFile = args.length > 1 ? args[10] : "logs.txt";
+	   eventsPerSec = args.length > 1 ?  Double.valueOf(args[7]).doubleValue() : 200;
+	   logFile = args.length > 1 ? args[8] : "logs.txt";
 
 	   Msg.info("SCENARIO: platform is " + platf + ", deployment is " + deploy);
 	   Msg.info("PARAMS:   sostime is "+ sosTime + ", number of Gate tasks is "+ numberOfGateJobs + ", number of merge tasks is " +
