@@ -46,8 +46,18 @@ public class Gate extends Process {
 				Msg.info("Processing GATE");
 				
 				//downloading inputs
+				// TODO what is below is very specific to GATE
+				// Added to temporarily improve the realism of the simulation
+				// Have to be generalized at some point.
+				
 				downloadTime = Msg.getClock();
-				LCG.cp(getHost(), "input.tgz", "myinput.tgz", VIPSimulator.defaultLFC);
+				LCG.cp(getHost(), "gate.sh.tar.gz", "/scratch/gate.sh.tar.gz",
+						VIPSimulator.defaultLFC);
+				LCG.cp(getHost(), "opengate_version_7.0.tar.gz", 
+						"/scratch/opengate_version_7.0.tar.gz", 
+						VIPSimulator.defaultLFC);
+				LCG.cp(getHost(), "file-14539084101429.zip", "/scratch/file-14539084101429.zip", 
+						VIPSimulator.defaultLFC);
 				downloadTime = Msg.getClock() - downloadTime;
 			
 			case GATE_CONTINUE:	

@@ -13,12 +13,12 @@ public class VIPServer extends Process {
 	private int endedGateWorkers = 0;
 	
 	//TODO This input file should become a parameter, IMHO
-	private String inputFileName = "input.tgz";
+	//private String inputFileName = "input.tgz";
 	// TODO Temporary hack 
 	// size of (gate.sh.tar.gz + dsarrut_opengate_version_7.0.tar.gz + file-14539084101429.zip)
 	// 73043 + 376927945 + 514388 bytes
 	
-	private long inputFileSize = 377515376; 
+	//private long inputFileSize = 377515376; 
 	
 	private long totalParticleNumber = 0;
 	
@@ -37,8 +37,14 @@ public class VIPServer extends Process {
 	public void main(String[] args) throws HostFailureException {
 		Msg.info("A new simulation starts!");
 		boolean stop=false;
-
-		LCG.crInput(getHost(),inputFileName, inputFileSize, VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
+		// TODO what is below is very specific to GATE
+		// Added to temporarily improve the realism of the simulation
+		// Have to be generalized at some point.
+		// WARNING: From log inspection, it seems that workers do not all get 
+		// the input files from the default SE.
+		LCG.crInput(getHost(),"gate.sh.tar.gz", 73043, VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
+		LCG.crInput(getHost(),"opengate_version_7.0.tar.gz", 376927945, VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
+		LCG.crInput(getHost(),"file-14539084101429.zip", 514388, VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
 
 		// Wait for slaves to register
 		while(!stop){
