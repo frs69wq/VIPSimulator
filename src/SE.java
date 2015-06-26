@@ -6,6 +6,28 @@ public class SE extends Process {
 	
 	private String hostName;
 	
+	private void handleUploadRequest(Message message) {
+		//TODO this function should read a file on disk at some point
+		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
+		
+		uploadAck.emit(message.getMailbox());
+	
+		Msg.debug("SE '"+ hostName + "' sent ack back to '" + 
+				message.getMailbox() + "'");
+	}
+
+	private void handleDownloadRequest(Message message) {
+		Message sendFile= new Message(Message.Type.SEND_FILE, 
+					message.getLogicalFileSize());
+		
+		sendFile.emit(message.getMailbox());
+		
+		Msg.debug("SE '"+ hostName + "' sent file '" + 
+				message.getLogicalFileName() + "' of size " + 
+				message.getLogicalFileSize() + " to '" + 
+				message.getMailbox() + "'");
+	}
+
 	public String getHostName() {
 		return hostName;
 	}
@@ -42,27 +64,5 @@ public class SE extends Process {
 				break;
 			}
 		}
-	}
-	
-	public void handleUploadRequest(Message message) {
-		//TODO this function should read a file on disk at some point
-		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
-		
-		uploadAck.emit(message.getMailbox());
-
-		Msg.debug("SE '"+ hostName + "' sent ack back to '" + 
-				message.getMailbox() + "'");
-	}
-
-	public void handleDownloadRequest(Message message) {
-		Message sendFile= new Message(Message.Type.SEND_FILE, 
-					message.getLogicalFileSize());
-		
-		sendFile.emit(message.getMailbox());
-		
-		Msg.debug("SE '"+ hostName + "' sent file '" + 
-				message.getLogicalFileName() + "' of size " + 
-				message.getLogicalFileSize() + " to '" + 
-				message.getMailbox() + "'");
 	}
 }

@@ -10,6 +10,37 @@ public class LFC extends Process {
 	private String hostName;
 	private Vector<LFCFile> fileList;
 	
+	private void addFile(String logicalFileName, long logicalFileSize, String seName){
+		LFCFile newFile = new LFCFile(logicalFileName, logicalFileSize, seName);
+		this.fileList.add(newFile);
+	}
+
+	private void handleRegisterFile(Message message) {
+		addFile(message.getLogicalFileName(), message.getLogicalFileSize(), message.getSEName());
+		
+		Message registerAck = new Message(Message.Type.REGISTER_ACK);
+		registerAck.emit(message.getMailbox());
+		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.getMailbox() + "'");	
+	}
+
+	private void handleAskFileInfo(Message message) {
+		String logicalFileName = message.getLogicalFileName();
+		
+		String SEName = getSEName(logicalFileName);
+		long logicalFileSize = getLogicalFileSize(logicalFileName);
+		
+		if(SEName == null){	
+			Msg.error("File '" + logicalFileName + "' is stored on no SE. Exiting with status 1");
+		    System.exit(1);
+		}
+		
+		Message replySEName = new Message(Message.Type.SEND_FILE_INFO, SEName, logicalFileSize);
+		
+		replySEName.emit(message.getMailbox());
+		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.getMailbox() + "'");
+	
+	}
+
 	public String getHostName() {
 		return hostName;
 	}
@@ -57,37 +88,6 @@ public class LFC extends Process {
 		}
 	}
 
-	public void handleRegisterFile(Message message) {
-		addFile(message.getLogicalFileName(), message.getLogicalFileSize(), message.getSEName());
-		
-		Message registerAck = new Message(Message.Type.REGISTER_ACK);
-		registerAck.emit(message.getMailbox());
-		Msg.debug("LFC '"+ this.hostName + "' sent back an ack to '" + message.getMailbox() + "'");	
-	}
-
-	public void handleAskFileInfo(Message message) {
-		String logicalFileName = message.getLogicalFileName();
-		
-		String SEName = getSEName(logicalFileName);
-		long logicalFileSize = getLogicalFileSize(logicalFileName);
-		
-		if(SEName == null){	
-			Msg.error("File '" + logicalFileName + "' is stored on no SE. Exiting with status 1");
-		    System.exit(1);
-		}
-		
-		Message replySEName = new Message(Message.Type.SEND_FILE_INFO, SEName, logicalFileSize);
-		
-		replySEName.emit(message.getMailbox());
-		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName + "' back to '" + message.getMailbox() + "'");
-
-	}
-
-	public void addFile(String logicalFileName, long logicalFileSize, String seName){
-		LFCFile newFile = new LFCFile(logicalFileName, logicalFileSize, seName);
-		this.fileList.add(newFile);
-	}
-	
 	public String getSEName (String logicalFileName){
 		String SEName = null;
 		Iterator<LFCFile> it = this.fileList.iterator();
