@@ -97,7 +97,7 @@ public class Gate extends Process {
 				Msg.info("Stopping Gate job and exiting");
 				
 				Msg.info("Spent " + downloadTime + "s downloading, " + totalComputeTime + "s computing, and " + uploadTime + "s uploading.");
-				Msg.info("Goodbye!");
+				Msg.verb("Goodbye!");
 				stop = true;
 				break;
 			default:

@@ -79,7 +79,7 @@ public class LFC extends Process {
 				handleAskFileInfo(message);
 				break;
 			case FINALIZE:
-				Msg.info("Goodbye!");
+				Msg.verb("Goodbye!");
 				stop = true;
 				break;
 			default:

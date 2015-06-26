@@ -57,7 +57,7 @@ public class SE extends Process {
 				handleUploadRequest(message);
 				break;
 			case FINALIZE:
-				Msg.info("Goodbye!");
+				Msg.verb("Goodbye!");
 				stop = true;
 				break;
 			default:
