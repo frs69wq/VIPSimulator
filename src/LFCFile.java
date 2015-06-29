@@ -24,7 +24,8 @@ public class LFCFile {
 	}
 
 	public String getSEName() {
-		//TODO return the first SE for now. Might be interesting to implement some load balancing strategy
+		//TODO return the first SE for now. Might be interesting to implement 
+		// some load balancing strategy
 		return SENames.get(0);
 	}
 
@@ -32,12 +33,17 @@ public class LFCFile {
 		SENames.add(SEName);
 	}
 
-	public LFCFile(String logicalFileName, long logicalFileSize, String sEName) {
+	public Vector<String> getSEs() {
+		return SENames;
+	}
+
+	public LFCFile(String logicalFileName, long logicalFileSize, 
+			String SEName) {
 		super();
 		this.setLogicalFileName(logicalFileName);
 		this.setLogicalFileSize(logicalFileSize);
 		this.SENames = new Vector<String>();
-		setSEName(sEName);
+		setSEName(SEName);
 	}
-	
+
 }

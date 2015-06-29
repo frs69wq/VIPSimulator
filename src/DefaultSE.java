@@ -6,7 +6,7 @@ public class DefaultSE extends SE{
 	public DefaultSE(Host host, String name, String[] args) {
 		super(host, name, args);
 	}
-	
+
 	public void main(String[] args) {
 		VIPSimulator.defaultSE = this.getHostName();
 		Msg.info("Default SE is \""+ VIPSimulator.defaultSE+ "\""); 
