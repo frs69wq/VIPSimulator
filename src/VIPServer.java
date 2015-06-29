@@ -14,17 +14,17 @@ public class VIPServer extends Process {
 
 	private long totalParticleNumber = 0;
 	
-	public Vector<Host> getGateSlaves() {
+	public Vector<Host> getGateWorkers() {
 		return gateWorkers;
 	}
 
-	public void setGateSlaves(Vector<Host> gateSlaves) {
-		this.gateWorkers = gateSlaves;
+	public void setGateWorkers(Vector<Host> gateWorkers) {
+		this.gateWorkers = gateWorkers;
 	}
 
 	public VIPServer(Host host, String name, String[]args) {
 		super(host,name,args);
-	} 
+	}
 
 	public void main(String[] args) throws HostFailureException {
 		Msg.info("A new simulation starts!");
@@ -49,9 +49,9 @@ public class VIPServer extends Process {
 
 			switch (message.getType()){
 			case GATE_CONNECT:
-				getGateSlaves().add(message.getSource());
+				getGateWorkers().add(message.getSource());
 
-				Msg.debug(getGateSlaves().size() +
+				Msg.debug(getGateWorkers().size() +
 						" worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
