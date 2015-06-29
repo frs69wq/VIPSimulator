@@ -97,7 +97,7 @@ public class LFC extends Process {
 	public void main(String[] args) {
 		boolean stop = false;
 		Msg.debug("Register LFC on "+ this.hostName);
-		VIPSimulator.seList.add(this.getHost());
+		VIPSimulator.lfcList.add(this.getHost());
 
 		while (!stop){
 			Message message = Message.process(hostName);
