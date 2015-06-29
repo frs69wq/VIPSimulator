@@ -72,14 +72,14 @@ public class Message extends Task {
 	}
 
 	/**
-     * Constructor, builds a new ASK_FILE_INFO message
-     */
+	 * Constructor, builds a new ASK_FILE_INFO message
+	 */
 	public Message(Type type, Host issuerHost, String logicalFileName) {
 		this(type, issuerHost, logicalFileName, 0, null);
 	}
 
 	/**
-     * Constructor, builds a new SEND_FILE_INFO message
+	 * Constructor, builds a new SEND_FILE_INFO message
 	 */
 	public Message(Type type,  String SEName, long logicalFileSize) {
 		this(type, null, null, logicalFileSize, SEName);
@@ -98,8 +98,8 @@ public class Message extends Task {
 	}
 
 	/**
-     * Constructor, builds a new SEND_FILE message
-    */
+	 * Constructor, builds a new SEND_FILE message
+	 */
 	public Message(Type type, long logicalFileSize){
 		super(type.toString(), 0, logicalFileSize);
 		this.type = type;
