@@ -1,0 +1,592 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<platform version="3">
+ <AS id="AS_workflow-LQ4bVj_100jobs" routing="Cluster">
+	<router id="workflow-LQ4bVj_100jobs_router"/>
+
+<host id="vip.creatis.insa-lyon.fr" power="10Gf" core="4"/>
+<host id="lfc-biomed.in2p3.fr" power="10Gf" core="4"/>
+	<host id="wn-206-01-21-01-b.cr.cnaf.infn.it" power="4800.16Mf" core="6">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-206-01-21-01-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-206-01-21-01-b.cr.cnaf.infn.it" up="wn-206-01-21-01-b.cr.cnaf.infn.it_link" down="wn-206-01-21-01-b.cr.cnaf.infn.it_link"/>
+
+	<host id="node196.beowulf.cluster.uk" power="5000.53Mf" core="4">
+		 <prop id="closeSE" value="svr018.gla.scotgrid.ac.uk"/>
+	</host>
+	<link id="node196.beowulf.cluster.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="node196.beowulf.cluster.uk" up="node196.beowulf.cluster.uk_link" down="node196.beowulf.cluster.uk_link"/>
+
+	<host id="v35-10.gina.sara.nl" power="4400.37Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="v35-10.gina.sara.nl_link" bandwidth="10Gbps" latency="1ns"/>
+	<host_link id="v35-10.gina.sara.nl" up="v35-10.gina.sara.nl_link" down="v35-10.gina.sara.nl_link"/>
+
+	<host id="v35-12.gina.sara.nl" power="4399.81Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="v35-12.gina.sara.nl_link" bandwidth="10Gbps" latency="1ns"/>
+	<host_link id="v35-12.gina.sara.nl" up="v35-12.gina.sara.nl_link" down="v35-12.gina.sara.nl_link"/>
+
+	<host id="ar90-01.gina.sara.nl" power="5199.78Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="ar90-01.gina.sara.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="ar90-01.gina.sara.nl" up="ar90-01.gina.sara.nl_link" down="ar90-01.gina.sara.nl_link"/>
+
+	<host id="wn-206-04-29-01-a.cr.cnaf.infn.it" power="5200.28Mf" core="6">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-206-04-29-01-a.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-206-04-29-01-a.cr.cnaf.infn.it" up="wn-206-04-29-01-a.cr.cnaf.infn.it_link" down="wn-206-04-29-01-a.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-201-01-39-03-a.cr.cnaf.infn.it" power="5600.04Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-201-01-39-03-a.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-201-01-39-03-a.cr.cnaf.infn.it" up="wn-201-01-39-03-a.cr.cnaf.infn.it_link" down="wn-201-01-39-03-a.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-206-08-05-02-a.cr.cnaf.infn.it" power="5200.47Mf" core="6">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-206-08-05-02-a.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-206-08-05-02-a.cr.cnaf.infn.it" up="wn-206-08-05-02-a.cr.cnaf.infn.it_link" down="wn-206-08-05-02-a.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-smrt-131.farm.nikhef.nl" power="4533.41Mf" core="4">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-smrt-131.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-smrt-131.farm.nikhef.nl" up="wn-smrt-131.farm.nikhef.nl_link" down="wn-smrt-131.farm.nikhef.nl_link"/>
+
+	<host id="v35-05.gina.sara.nl" power="4400.30Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="v35-05.gina.sara.nl_link" bandwidth="10Gbps" latency="1ns"/>
+	<host_link id="v35-05.gina.sara.nl" up="v35-05.gina.sara.nl_link" down="v35-05.gina.sara.nl_link"/>
+
+	<host id="wn-200-01-33-04-a.cr.cnaf.infn.it" power="5600.14Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-200-01-33-04-a.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-200-01-33-04-a.cr.cnaf.infn.it" up="wn-200-01-33-04-a.cr.cnaf.infn.it_link" down="wn-200-01-33-04-a.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-205-08-31-01-b.cr.cnaf.infn.it" power="4533.79Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-205-08-31-01-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-205-08-31-01-b.cr.cnaf.infn.it" up="wn-205-08-31-01-b.cr.cnaf.infn.it_link" down="wn-205-08-31-01-b.cr.cnaf.infn.it_link"/>
+
+	<host id="ar90-28.gina.sara.nl" power="5199.96Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="ar90-28.gina.sara.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="ar90-28.gina.sara.nl" up="ar90-28.gina.sara.nl_link" down="ar90-28.gina.sara.nl_link"/>
+
+	<host id="clrwn75.in2p3.fr" power="4655.16Mf" core="4">
+		 <prop id="closeSE" value="clrlcgse01.in2p3.fr"/>
+	</host>
+	<link id="clrwn75.in2p3.fr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="clrwn75.in2p3.fr" up="clrwn75.in2p3.fr_link" down="clrwn75.in2p3.fr_link"/>
+
+	<host id="wn-car-058.farm.nikhef.nl" power="4787.95Mf" core="6">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-car-058.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-car-058.farm.nikhef.nl" up="wn-car-058.farm.nikhef.nl_link" down="wn-car-058.farm.nikhef.nl_link"/>
+
+	<host id="lufer115.ulakbim.gov.tr" power="4400.13Mf" core="12">
+		 <prop id="closeSE" value="torik1.ulakbim.gov.tr"/>
+	</host>
+	<link id="lufer115.ulakbim.gov.tr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="lufer115.ulakbim.gov.tr" up="lufer115.ulakbim.gov.tr_link" down="lufer115.ulakbim.gov.tr_link"/>
+
+	<host id="wn-car-059.farm.nikhef.nl" power="4787.97Mf" core="6">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-car-059.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-car-059.farm.nikhef.nl" up="wn-car-059.farm.nikhef.nl_link" down="wn-car-059.farm.nikhef.nl_link"/>
+
+	<host id="wn-200-03-29-01-a.cr.cnaf.infn.it" power="5599.54Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-200-03-29-01-a.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-200-03-29-01-a.cr.cnaf.infn.it" up="wn-200-03-29-01-a.cr.cnaf.infn.it_link" down="wn-200-03-29-01-a.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-smrt-125.farm.nikhef.nl" power="4533.81Mf" core="4">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-smrt-125.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-smrt-125.farm.nikhef.nl" up="wn-smrt-125.farm.nikhef.nl_link" down="wn-smrt-125.farm.nikhef.nl_link"/>
+
+	<host id="wn-204-13-02-02-b.cr.cnaf.infn.it" power="4533.32Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-204-13-02-02-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-204-13-02-02-b.cr.cnaf.infn.it" up="wn-204-13-02-02-b.cr.cnaf.infn.it_link" down="wn-204-13-02-02-b.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-smrt-089.farm.nikhef.nl" power="4533.67Mf" core="4">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-smrt-089.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-smrt-089.farm.nikhef.nl" up="wn-smrt-089.farm.nikhef.nl_link" down="wn-smrt-089.farm.nikhef.nl_link"/>
+
+	<host id="wn-206-01-11-01-b.cr.cnaf.infn.it" power="4799.98Mf" core="6">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-206-01-11-01-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-206-01-11-01-b.cr.cnaf.infn.it" up="wn-206-01-11-01-b.cr.cnaf.infn.it_link" down="wn-206-01-11-01-b.cr.cnaf.infn.it_link"/>
+
+	<host id="clrwn173.in2p3.fr" power="4655.16Mf" core="4">
+		 <prop id="closeSE" value="clrlcgse01.in2p3.fr"/>
+	</host>
+	<link id="clrwn173.in2p3.fr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="clrwn173.in2p3.fr" up="clrwn173.in2p3.fr_link" down="clrwn173.in2p3.fr_link"/>
+
+	<host id="wn-205-01-35-02-b.cr.cnaf.infn.it" power="4800.17Mf" core="6">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-205-01-35-02-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-205-01-35-02-b.cr.cnaf.infn.it" up="wn-205-01-35-02-b.cr.cnaf.infn.it_link" down="wn-205-01-35-02-b.cr.cnaf.infn.it_link"/>
+
+	<host id="wn-205-08-22-02-b.cr.cnaf.infn.it" power="4533.37Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-205-08-22-02-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-205-08-22-02-b.cr.cnaf.infn.it" up="wn-205-08-22-02-b.cr.cnaf.infn.it_link" down="wn-205-08-22-02-b.cr.cnaf.infn.it_link"/>
+
+	<host id="gaew1008.ciemat.es" power="5599.90Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1008.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1008.ciemat.es" up="gaew1008.ciemat.es_link" down="gaew1008.ciemat.es_link"/>
+
+	<host id="gaew0207.ciemat.es" power="5984.71Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0207.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0207.ciemat.es" up="gaew0207.ciemat.es_link" down="gaew0207.ciemat.es_link"/>
+
+	<host id="gaew0209.ciemat.es" power="5984.64Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0209.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0209.ciemat.es" up="gaew0209.ciemat.es_link" down="gaew0209.ciemat.es_link"/>
+
+	<host id="gaew1012.ciemat.es" power="5600.00Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1012.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1012.ciemat.es" up="gaew1012.ciemat.es_link" down="gaew1012.ciemat.es_link"/>
+
+	<host id="wn-205-13-08-01-b.cr.cnaf.infn.it" power="4533.49Mf" core="4">
+		 <prop id="closeSE" value="storm-se-01.ba.infn.it"/>
+	</host>
+	<link id="wn-205-13-08-01-b.cr.cnaf.infn.it_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-205-13-08-01-b.cr.cnaf.infn.it" up="wn-205-13-08-01-b.cr.cnaf.infn.it_link" down="wn-205-13-08-01-b.cr.cnaf.infn.it_link"/>
+
+	<host id="snf-80088.gr" power="4200.08Mf" core="1">
+		 <prop id="closeSE" value="se01.athena.hellasgrid.gr"/>
+	</host>
+	<link id="snf-80088.gr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="snf-80088.gr" up="snf-80088.gr_link" down="snf-80088.gr_link"/>
+
+	<host id="gaew0103.ciemat.es" power="4399.99Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0103.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0103.ciemat.es" up="gaew0103.ciemat.es_link" down="gaew0103.ciemat.es_link"/>
+
+	<host id="gaew0104.ciemat.es" power="4400.05Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0104.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0104.ciemat.es" up="gaew0104.ciemat.es_link" down="gaew0104.ciemat.es_link"/>
+
+	<host id="gaew0208.ciemat.es" power="5984.74Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0208.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0208.ciemat.es" up="gaew0208.ciemat.es_link" down="gaew0208.ciemat.es_link"/>
+
+	<host id="gaew0107.ciemat.es" power="4400.20Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0107.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0107.ciemat.es" up="gaew0107.ciemat.es_link" down="gaew0107.ciemat.es_link"/>
+
+	<host id="gaew0105.ciemat.es" power="4400.04Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0105.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0105.ciemat.es" up="gaew0105.ciemat.es_link" down="gaew0105.ciemat.es_link"/>
+
+	<host id="gaew0106.ciemat.es" power="4399.59Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0106.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0106.ciemat.es" up="gaew0106.ciemat.es_link" down="gaew0106.ciemat.es_link"/>
+
+	<host id="gaew0109.ciemat.es" power="4399.98Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0109.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0109.ciemat.es" up="gaew0109.ciemat.es_link" down="gaew0109.ciemat.es_link"/>
+
+	<host id="gaew0110.ciemat.es" power="4399.79Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0110.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0110.ciemat.es" up="gaew0110.ciemat.es_link" down="gaew0110.ciemat.es_link"/>
+
+	<host id="gaew0108.ciemat.es" power="4400.22Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0108.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0108.ciemat.es" up="gaew0108.ciemat.es_link" down="gaew0108.ciemat.es_link"/>
+
+	<host id="gaew0112.ciemat.es" power="4400.02Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0112.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0112.ciemat.es" up="gaew0112.ciemat.es_link" down="gaew0112.ciemat.es_link"/>
+
+	<host id="gaew0111.ciemat.es" power="4400.08Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0111.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0111.ciemat.es" up="gaew0111.ciemat.es_link" down="gaew0111.ciemat.es_link"/>
+
+	<host id="gaew0114.ciemat.es" power="4399.86Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0114.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0114.ciemat.es" up="gaew0114.ciemat.es_link" down="gaew0114.ciemat.es_link"/>
+
+	<host id="gaew0113.ciemat.es" power="4400.05Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0113.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0113.ciemat.es" up="gaew0113.ciemat.es_link" down="gaew0113.ciemat.es_link"/>
+
+	<host id="gaew1080.ciemat.es" power="4800.33Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1080.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1080.ciemat.es" up="gaew1080.ciemat.es_link" down="gaew1080.ciemat.es_link"/>
+
+	<host id="gaew0115.ciemat.es" power="4399.82Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0115.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0115.ciemat.es" up="gaew0115.ciemat.es_link" down="gaew0115.ciemat.es_link"/>
+
+	<host id="gaew1059.ciemat.es" power="4800.15Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1059.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1059.ciemat.es" up="gaew1059.ciemat.es_link" down="gaew1059.ciemat.es_link"/>
+
+	<host id="gaew0203.ciemat.es" power="5984.95Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0203.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0203.ciemat.es" up="gaew0203.ciemat.es_link" down="gaew0203.ciemat.es_link"/>
+
+	<host id="gaew0205.ciemat.es" power="5985.14Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0205.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0205.ciemat.es" up="gaew0205.ciemat.es_link" down="gaew0205.ciemat.es_link"/>
+
+	<host id="gaew0201.ciemat.es" power="5985.08Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0201.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0201.ciemat.es" up="gaew0201.ciemat.es_link" down="gaew0201.ciemat.es_link"/>
+
+	<host id="gaew0206.ciemat.es" power="5985.04Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0206.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0206.ciemat.es" up="gaew0206.ciemat.es_link" down="gaew0206.ciemat.es_link"/>
+
+	<host id="gaew0212.ciemat.es" power="5985.15Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0212.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0212.ciemat.es" up="gaew0212.ciemat.es_link" down="gaew0212.ciemat.es_link"/>
+
+	<host id="gaew0210.ciemat.es" power="5985.02Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0210.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0210.ciemat.es" up="gaew0210.ciemat.es_link" down="gaew0210.ciemat.es_link"/>
+
+	<host id="gaew0211.ciemat.es" power="5984.84Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0211.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0211.ciemat.es" up="gaew0211.ciemat.es_link" down="gaew0211.ciemat.es_link"/>
+
+	<host id="gaew0213.ciemat.es" power="5985.16Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0213.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0213.ciemat.es" up="gaew0213.ciemat.es_link" down="gaew0213.ciemat.es_link"/>
+
+	<host id="gaew0131.ciemat.es" power="4594.64Mf" core="12">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0131.ciemat.es_link" bandwidth="10000Mbps" latency="1ns"/>
+	<host_link id="gaew0131.ciemat.es" up="gaew0131.ciemat.es_link" down="gaew0131.ciemat.es_link"/>
+
+	<host id="gaew0214.ciemat.es" power="5985.07Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0214.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0214.ciemat.es" up="gaew0214.ciemat.es_link" down="gaew0214.ciemat.es_link"/>
+
+	<host id="gaew0215.ciemat.es" power="5984.35Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0215.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0215.ciemat.es" up="gaew0215.ciemat.es_link" down="gaew0215.ciemat.es_link"/>
+
+	<host id="gaew0204.ciemat.es" power="5985.02Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0204.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0204.ciemat.es" up="gaew0204.ciemat.es_link" down="gaew0204.ciemat.es_link"/>
+
+	<host id="gaew0216.ciemat.es" power="5984.98Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew0216.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew0216.ciemat.es" up="gaew0216.ciemat.es_link" down="gaew0216.ciemat.es_link"/>
+
+	<host id="gaew1002.ciemat.es" power="5600.44Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1002.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1002.ciemat.es" up="gaew1002.ciemat.es_link" down="gaew1002.ciemat.es_link"/>
+
+	<host id="gaew1007.ciemat.es" power="5600.24Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1007.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1007.ciemat.es" up="gaew1007.ciemat.es_link" down="gaew1007.ciemat.es_link"/>
+
+	<host id="gaew1009.ciemat.es" power="5600.72Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1009.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1009.ciemat.es" up="gaew1009.ciemat.es_link" down="gaew1009.ciemat.es_link"/>
+
+	<host id="gaew1010.ciemat.es" power="5600.74Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1010.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1010.ciemat.es" up="gaew1010.ciemat.es_link" down="gaew1010.ciemat.es_link"/>
+
+	<host id="gaew1014.ciemat.es" power="5600.16Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1014.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1014.ciemat.es" up="gaew1014.ciemat.es_link" down="gaew1014.ciemat.es_link"/>
+
+	<host id="gaew1011.ciemat.es" power="5600.10Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1011.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1011.ciemat.es" up="gaew1011.ciemat.es_link" down="gaew1011.ciemat.es_link"/>
+
+	<host id="snf-68676.gr" power="4200.08Mf" core="1">
+		 <prop id="closeSE" value="se01.athena.hellasgrid.gr"/>
+	</host>
+	<link id="snf-68676.gr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="snf-68676.gr" up="snf-68676.gr_link" down="snf-68676.gr_link"/>
+
+	<host id="gaew1013.ciemat.es" power="5600.19Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1013.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1013.ciemat.es" up="gaew1013.ciemat.es_link" down="gaew1013.ciemat.es_link"/>
+
+	<host id="gaew1017.ciemat.es" power="5600.17Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1017.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1017.ciemat.es" up="gaew1017.ciemat.es_link" down="gaew1017.ciemat.es_link"/>
+
+	<host id="gaew1015.ciemat.es" power="5600.20Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1015.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1015.ciemat.es" up="gaew1015.ciemat.es_link" down="gaew1015.ciemat.es_link"/>
+
+	<host id="gaew1016.ciemat.es" power="5600.24Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1016.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1016.ciemat.es" up="gaew1016.ciemat.es_link" down="gaew1016.ciemat.es_link"/>
+
+	<host id="gaew1026.ciemat.es" power="5600.13Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1026.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1026.ciemat.es" up="gaew1026.ciemat.es_link" down="gaew1026.ciemat.es_link"/>
+
+	<host id="gaew1018.ciemat.es" power="5600.31Mf" core="4">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1018.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1018.ciemat.es" up="gaew1018.ciemat.es_link" down="gaew1018.ciemat.es_link"/>
+
+	<host id="gaew1050.ciemat.es" power="5333.40Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1050.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1050.ciemat.es" up="gaew1050.ciemat.es_link" down="gaew1050.ciemat.es_link"/>
+
+	<host id="gaew1055.ciemat.es" power="5333.50Mf" core="6">
+		 <prop id="closeSE" value="srm.ciemat.es"/>
+	</host>
+	<link id="gaew1055.ciemat.es_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="gaew1055.ciemat.es" up="gaew1055.ciemat.es_link" down="gaew1055.ciemat.es_link"/>
+
+	<host id="snf-68680.gr" power="4200.08Mf" core="1">
+		 <prop id="closeSE" value="se01.athena.hellasgrid.gr"/>
+	</host>
+	<link id="snf-68680.gr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="snf-68680.gr" up="snf-68680.gr_link" down="snf-68680.gr_link"/>
+
+	<host id="snf-68704.gr" power="4200.08Mf" core="1">
+		 <prop id="closeSE" value="se01.athena.hellasgrid.gr"/>
+	</host>
+	<link id="snf-68704.gr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="snf-68704.gr" up="snf-68704.gr_link" down="snf-68704.gr_link"/>
+
+	<host id="snf-80086.gr" power="4200.08Mf" core="1">
+		 <prop id="closeSE" value="se01.athena.hellasgrid.gr"/>
+	</host>
+	<link id="snf-80086.gr_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="snf-80086.gr" up="snf-80086.gr_link" down="snf-80086.gr_link"/>
+
+	<host id="wn1908290.tier2.hep.manchester.ac.uk" power="5333.67Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1908290.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1908290.tier2.hep.manchester.ac.uk" up="wn1908290.tier2.hep.manchester.ac.uk_link" down="wn1908290.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="wn1910290.tier2.hep.manchester.ac.uk" power="5333.58Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1910290.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1910290.tier2.hep.manchester.ac.uk" up="wn1910290.tier2.hep.manchester.ac.uk_link" down="wn1910290.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="wn1909251.tier2.hep.manchester.ac.uk" power="5333.50Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1909251.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1909251.tier2.hep.manchester.ac.uk" up="wn1909251.tier2.hep.manchester.ac.uk_link" down="wn1909251.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="wn-knal-016.farm.nikhef.nl" power="4399.80Mf" core="8">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-knal-016.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-knal-016.farm.nikhef.nl" up="wn-knal-016.farm.nikhef.nl_link" down="wn-knal-016.farm.nikhef.nl_link"/>
+
+	<host id="wn-smrt-065.farm.nikhef.nl" power="4533.68Mf" core="4">
+		 <prop id="closeSE" value="tbn18.nikhef.nl"/>
+	</host>
+	<link id="wn-smrt-065.farm.nikhef.nl_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn-smrt-065.farm.nikhef.nl" up="wn-smrt-065.farm.nikhef.nl_link" down="wn-smrt-065.farm.nikhef.nl_link"/>
+
+	<host id="wn1908301.tier2.hep.manchester.ac.uk" power="5333.75Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1908301.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1908301.tier2.hep.manchester.ac.uk" up="wn1908301.tier2.hep.manchester.ac.uk_link" down="wn1908301.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="wn1910191.tier2.hep.manchester.ac.uk" power="5334.01Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1910191.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1910191.tier2.hep.manchester.ac.uk" up="wn1910191.tier2.hep.manchester.ac.uk_link" down="wn1910191.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="wn1909201.tier2.hep.manchester.ac.uk" power="5333.79Mf" core="6">
+		 <prop id="closeSE" value="bohr3226.tier2.hep.manchester.ac.uk"/>
+	</host>
+	<link id="wn1909201.tier2.hep.manchester.ac.uk_link" bandwidth="1000Mbps" latency="1ns"/>
+	<host_link id="wn1909201.tier2.hep.manchester.ac.uk" up="wn1909201.tier2.hep.manchester.ac.uk_link" down="wn1909201.tier2.hep.manchester.ac.uk_link"/>
+
+	<host id="svr018.gla.scotgrid.ac.uk" power="100Gf"/>
+	<link id="svr018.gla.scotgrid.ac.uk_UP" bandwidth="1310.35kBps" latency="1ns"/>
+	<link id="svr018.gla.scotgrid.ac.uk_DOWN" bandwidth="1310.35kBps" latency="1ns"/>
+	<host_link id="svr018.gla.scotgrid.ac.uk" up="svr018.gla.scotgrid.ac.uk_UP" down="svr018.gla.scotgrid.ac.uk_DOWN"/>
+
+	<host id="srm.ciemat.es" power="100Gf"/>
+	<link id="srm.ciemat.es_UP" bandwidth="3778.63kBps" latency="1ns"/>
+	<link id="srm.ciemat.es_DOWN" bandwidth="3778.63kBps" latency="1ns"/>
+	<host_link id="srm.ciemat.es" up="srm.ciemat.es_UP" down="srm.ciemat.es_DOWN"/>
+
+	<host id="torik1.ulakbim.gov.tr" power="100Gf"/>
+	<link id="torik1.ulakbim.gov.tr_UP" bandwidth="1352.52kBps" latency="1ns"/>
+	<link id="torik1.ulakbim.gov.tr_DOWN" bandwidth="1352.52kBps" latency="1ns"/>
+	<host_link id="torik1.ulakbim.gov.tr" up="torik1.ulakbim.gov.tr_UP" down="torik1.ulakbim.gov.tr_DOWN"/>
+
+	<host id="ccsrm02.in2p3.fr" power="100Gf"/>
+	<link id="ccsrm02.in2p3.fr_UP" bandwidth="124811kBps" latency="1ns"/>
+	<link id="ccsrm02.in2p3.fr_DOWN" bandwidth="124811kBps" latency="1ns"/>
+	<host_link id="ccsrm02.in2p3.fr" up="ccsrm02.in2p3.fr_UP" down="ccsrm02.in2p3.fr_DOWN"/>
+
+	<host id="dc2-grid-64.brunel.ac.uk" power="100Gf"/>
+	<link id="dc2-grid-64.brunel.ac.uk_UP" bandwidth="509.295kBps" latency="1ns"/>
+	<link id="dc2-grid-64.brunel.ac.uk_DOWN" bandwidth="509.295kBps" latency="1ns"/>
+	<host_link id="dc2-grid-64.brunel.ac.uk" up="dc2-grid-64.brunel.ac.uk_UP" down="dc2-grid-64.brunel.ac.uk_DOWN"/>
+
+	<host id="marsedpm.in2p3.fr" power="100Gf"/>
+	<link id="marsedpm.in2p3.fr_UP" bandwidth="46940kBps" latency="1ns"/>
+	<link id="marsedpm.in2p3.fr_DOWN" bandwidth="46940kBps" latency="1ns"/>
+	<host_link id="marsedpm.in2p3.fr" up="marsedpm.in2p3.fr_UP" down="marsedpm.in2p3.fr_DOWN"/>
+
+	<host id="sbgse1.in2p3.fr" power="100Gf"/>
+	<link id="sbgse1.in2p3.fr_UP" bandwidth="62508.8kBps" latency="1ns"/>
+	<link id="sbgse1.in2p3.fr_DOWN" bandwidth="62508.8kBps" latency="1ns"/>
+	<host_link id="sbgse1.in2p3.fr" up="sbgse1.in2p3.fr_UP" down="sbgse1.in2p3.fr_DOWN"/>
+
+	<host id="se01.athena.hellasgrid.gr" power="100Gf"/>
+	<link id="se01.athena.hellasgrid.gr_UP" bandwidth="2967.54kBps" latency="1ns"/>
+	<link id="se01.athena.hellasgrid.gr_DOWN" bandwidth="2967.54kBps" latency="1ns"/>
+	<host_link id="se01.athena.hellasgrid.gr" up="se01.athena.hellasgrid.gr_UP" down="se01.athena.hellasgrid.gr_DOWN"/>
+
+	<host id="tbn18.nikhef.nl" power="100Gf"/>
+	<link id="tbn18.nikhef.nl_UP" bandwidth="6656.54kBps" latency="1ns"/>
+	<link id="tbn18.nikhef.nl_DOWN" bandwidth="6656.54kBps" latency="1ns"/>
+	<host_link id="tbn18.nikhef.nl" up="tbn18.nikhef.nl_UP" down="tbn18.nikhef.nl_DOWN"/>
+
+	<host id="ophelia.zih.tu-dresden.de" power="100Gf"/>
+	<link id="ophelia.zih.tu-dresden.de_UP" bandwidth="504.302kBps" latency="1ns"/>
+	<link id="ophelia.zih.tu-dresden.de_DOWN" bandwidth="504.302kBps" latency="1ns"/>
+	<host_link id="ophelia.zih.tu-dresden.de" up="ophelia.zih.tu-dresden.de_UP" down="ophelia.zih.tu-dresden.de_DOWN"/>
+
+	<host id="clrlcgse01.in2p3.fr" power="100Gf"/>
+	<link id="clrlcgse01.in2p3.fr_UP" bandwidth="1285.39kBps" latency="1ns"/>
+	<link id="clrlcgse01.in2p3.fr_DOWN" bandwidth="1285.39kBps" latency="1ns"/>
+	<host_link id="clrlcgse01.in2p3.fr" up="clrlcgse01.in2p3.fr_UP" down="clrlcgse01.in2p3.fr_DOWN"/>
+
+	<host id="bohr3226.tier2.hep.manchester.ac.uk" power="100Gf"/>
+	<link id="bohr3226.tier2.hep.manchester.ac.uk_UP" bandwidth="3540.07kBps" latency="1ns"/>
+	<link id="bohr3226.tier2.hep.manchester.ac.uk_DOWN" bandwidth="3540.07kBps" latency="1ns"/>
+	<host_link id="bohr3226.tier2.hep.manchester.ac.uk" up="bohr3226.tier2.hep.manchester.ac.uk_UP" down="bohr3226.tier2.hep.manchester.ac.uk_DOWN"/>
+
+	<host id="storm-se-01.ba.infn.it" power="100Gf"/>
+	<link id="storm-se-01.ba.infn.it_UP" bandwidth="3236.18kBps" latency="1ns"/>
+	<link id="storm-se-01.ba.infn.it_DOWN" bandwidth="3236.18kBps" latency="1ns"/>
+	<host_link id="storm-se-01.ba.infn.it" up="storm-se-01.ba.infn.it_UP" down="storm-se-01.ba.infn.it_DOWN"/>
+
+	<backbone id="workflow-LQ4bVj_100jobs_backbone" bandwidth="100GBps" latency="1ns" />
+ </AS>
+</platform>
