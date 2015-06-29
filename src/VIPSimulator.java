@@ -24,7 +24,7 @@ public class VIPSimulator {
 
 		String platf  = args.length > 1 ? args[0] : "platform.xml";
 		String deploy =  args.length > 1 ? args[1] :
-		"Deployment_workflow-8tkxN4_2015-04-22.xml";
+				"Deployment_workflow-8tkxN4_2015-04-22.xml";
 		totalParticleNumber = args.length > 1 ? 
 				Long.valueOf(args[2]).longValue() : 1000000;
 		numberOfGateJobs = args.length > 1 ? 
