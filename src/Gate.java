@@ -72,12 +72,12 @@ public class Gate extends Process {
 				// Have to be generalized at some point.
 
 				downloadTime = Msg.getClock();
-				LCG.cp(getHost(), "gate.sh.tar.gz", "/scratch/gate.sh.tar.gz",
+				LCG.cp(getMailbox(), "gate.sh.tar.gz", "/scratch/gate.sh.tar.gz",
 						VIPSimulator.defaultLFC);
-				LCG.cp(getHost(), "opengate_version_7.0.tar.gz", 
+				LCG.cp(getMailbox(), "opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPSimulator.defaultLFC);
-				LCG.cp(getHost(), "file-14539084101429.zip", 
+				LCG.cp(getMailbox(), "file-14539084101429.zip", 
 						"/scratch/file-14539084101429.zip", 
 						VIPSimulator.defaultLFC);
 				downloadTime = Msg.getClock() - downloadTime;
@@ -89,7 +89,7 @@ public class Gate extends Process {
 				//TODO Discuss what we can do here. Make the process just sleep 
 				// for now
 				simulatedParticles = simulateForNsec(VIPSimulator.sosTime);
-				
+
 				computeTime = Msg.getClock() - computeTime;
 				totalComputeTime += computeTime;
 				
@@ -116,8 +116,8 @@ public class Gate extends Process {
 						"-partial-"+ mailbox + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
-				uploadTime += Msg.getClock();
-				LCG.cr(getHost(), closeSEName, "local_file.tgz", uploadFileSize,
+				uploadTime = Msg.getClock();
+				LCG.cr(getMailbox(), closeSEName, "local_file.tgz", uploadFileSize,
 						logicalFileName, VIPSimulator.defaultLFC);
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping Gate job and exiting");

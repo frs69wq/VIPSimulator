@@ -17,7 +17,7 @@ public class VIPSimulator {
 	public static Vector<Host> lfcList = new Vector<Host>();
 
 	public static String defaultSE = null;
-	public static Vector<Host> seList = new Vector<Host>();
+	public static Vector<String> seList = new Vector<String>();
 
 	public static void main(String[] args) throws NativeException {
 		Msg.init(args);
