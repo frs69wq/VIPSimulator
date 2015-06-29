@@ -33,6 +33,10 @@ public class LFCFile {
 		SENames.add(SEName);
 	}
 
+	public Vector<String> getSEs() {
+		return SENames;
+	}
+
 	public LFCFile(String logicalFileName, long logicalFileSize, 
 			String SEName) {
 		super();

@@ -12,8 +12,41 @@ public class LFC extends Process {
 
 	private void addFile(String logicalFileName, long logicalFileSize,
 			String seName){
-		LFCFile newFile = new LFCFile(logicalFileName, logicalFileSize, seName);
-		this.fileList.add(newFile);
+		LFCFile current = null;
+		String fileName = null;
+		Iterator<LFCFile> it = this.fileList.iterator();
+
+		// First check if this file is already known by the LFC
+		while (it.hasNext() && fileName == null){
+			current = it.next();
+			if (current.getLogicalFileName() == logicalFileName){
+				fileName = current.getLogicalFileName();
+			}
+		}
+
+		if (fileName == null) {
+			// This file is not registered yet, create and add it
+			LFCFile newFile = new LFCFile(logicalFileName, logicalFileSize, 
+					seName);
+			this.fileList.add(newFile);
+		} else {
+			// This file has already been registered. Check if it was already
+			// associated to this SE
+			boolean isKnown = false;
+			Iterator<String> it2 = current.getSEs().iterator();
+
+			while (it2.hasNext() && !isKnown){
+				String currentSE = it2.next();
+				if (currentSE == seName){
+					isKnown = true;
+				}
+			}
+
+			if (!isKnown){
+				// This is a replica, add a new SE for this file
+				current.getSEs().add(seName);
+			}
+		}
 	}
 
 	private void handleRegisterFile(Message message) {
