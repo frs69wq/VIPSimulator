@@ -72,7 +72,8 @@ public class Gate extends Process {
 				// Have to be generalized at some point.
 
 				downloadTime = Msg.getClock();
-				LCG.cp(getMailbox(), "gate.sh.tar.gz", "/scratch/gate.sh.tar.gz",
+				LCG.cp(getMailbox(), "gate.sh.tar.gz", 
+						"/scratch/gate.sh.tar.gz",
 						VIPSimulator.defaultLFC);
 				LCG.cp(getMailbox(), "opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 

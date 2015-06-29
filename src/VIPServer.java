@@ -97,6 +97,9 @@ public class VIPServer extends Process {
 		// down the LFCs and SEs
 		Process.sleep(VIPSimulator.sosTime);
 
+		Msg.info("Server waited for " + VIPSimulator.sosTime/1000 +" seconds." +
+				" It's time to shutdown the system.");
+
 		// Shutting down all the LFCs
 		Iterator<Host> it = VIPSimulator.lfcList.iterator();
 		while (it.hasNext()){
