@@ -3,28 +3,28 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 
 public class SE extends Process {
-	
+
 	private String hostName;
-	
+
 	private void handleUploadRequest(Message message) {
 		//TODO this function should read a file on disk at some point
 		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
-		
+
 		uploadAck.emit(message.getMailbox());
-	
-		Msg.debug("SE '"+ hostName + "' sent ack back to '" + 
+
+		Msg.debug("SE '"+ hostName + "' sent ack back to '" +
 				message.getMailbox() + "'");
 	}
 
 	private void handleDownloadRequest(Message message) {
-		Message sendFile= new Message(Message.Type.SEND_FILE, 
+		Message sendFile= new Message(Message.Type.SEND_FILE,
 					message.getLogicalFileSize());
-		
+
 		sendFile.emit(message.getMailbox());
-		
-		Msg.debug("SE '"+ hostName + "' sent file '" + 
-				message.getLogicalFileName() + "' of size " + 
-				message.getLogicalFileSize() + " to '" + 
+
+		Msg.debug("SE '"+ hostName + "' sent file '" +
+				message.getLogicalFileName() + "' of size " +
+				message.getLogicalFileSize() + " to '" +
 				message.getMailbox() + "'");
 	}
 
@@ -40,7 +40,7 @@ public class SE extends Process {
 		super(host,name,args);
 		this.setHostName(this.getHost().getName());
 	}
-	
+
 	public void main(String[] args) {
 		boolean stop = false;
 		Msg.debug("Register SE on "+ this.hostName);
@@ -48,7 +48,7 @@ public class SE extends Process {
 
 		while (!stop){
 			Message message = Message.process(hostName);
-			
+
 			switch(message.getType()){
 			case DOWNLOAD_REQUEST:
 				handleDownloadRequest(message);

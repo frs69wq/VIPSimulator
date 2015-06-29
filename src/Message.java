@@ -7,7 +7,7 @@ import org.simgrid.msg.TaskCancelledException;
 import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
 
-public class Message extends Task {    	
+public class Message extends Task {
 	public enum Type{
 		CR_INPUT,
 		ASK_FILE_INFO,
@@ -20,13 +20,13 @@ public class Message extends Task {
 		UPLOAD_ACK,
 		FINALIZE
 	};
-	
+
 	private Type type;
 	private Host issuerHost;
 	private String logicalFileName;
 	private long logicalFileSize;
 	private String SEName;
-	
+
 	public Type getType() {
 		return type;
 	}
@@ -66,7 +66,8 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new UPLOAD/DOWNLOAD_REQUEST message
 	 */
-	public Message(Type type, Host issuerHost, String logicalFileName, long logicalFileSize) {
+	public Message(Type type, Host issuerHost, String logicalFileName,
+			long logicalFileSize) {
 		this(type, issuerHost, logicalFileName, logicalFileSize, null);
 	}
 
@@ -76,14 +77,14 @@ public class Message extends Task {
 	public Message(Type type, Host issuerHost, String logicalFileName) {
 		this(type, issuerHost, logicalFileName, 0, null);
 	}
-	
+
 	/**
      * Constructor, builds a new SEND_FILE_INFO message
 	 */
 	public Message(Type type,  String SEName, long logicalFileSize) {
 		this(type, null, null, logicalFileSize, SEName);
 	}
-	
+
 	/**
 	 * Constructor, builds a new FINALIZE/UPLOAD_ACK/REGISTER_ACK message
 	 */
@@ -111,10 +112,13 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new CR_INPUT/REGISTER_FILE message
 	 */
-	public Message(Type type, Host issuerHost, String logicalFileName, long logicalFileSize, String SEName) {
-		// Assume that 1e6 flops are needed on receiving side to process a request 
+	public Message(Type type, Host issuerHost, String logicalFileName,
+			long logicalFileSize, String SEName) {
+		// Assume that 1e6 flops are needed on receiving side to process a 
+		// request 
 		// Assume that a request corresponds to 100 Bytes 
-		//TODO provide different computing and communication values depending on the type of message
+		//TODO provide different computing and communication values depending
+		// on the type of message
 		super (type.toString(), 1e6, 100);
 		this.type = type;
 		this.setIssuerHost(issuerHost);
@@ -122,18 +126,20 @@ public class Message extends Task {
 		this.setLogicalFileSize(logicalFileSize); 
 		this.setSEName(SEName);
 	}
-	
+
 	public void execute() throws  HostFailureException,TaskCancelledException{
 		super.execute();
 	}
-	
+
 	public static Message process (String mailbox) {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
-		} catch (TransferFailureException | HostFailureException| TimeoutException e) {
+		} catch (TransferFailureException | HostFailureException| 
+				TimeoutException e) {
 			e.printStackTrace();
 		}
+
 		Msg.debug("Received a '" + message.type.toString() + "' message");
 		// Simulate the cost of the local processing of the request.
 		// Depends on the value set when the Message was created
@@ -145,14 +151,16 @@ public class Message extends Task {
 		}
 		return message;
 	}
-	
+
 	public void emit (String mailbox) {
 		try{
 			// TODO this might be made an asynchronous send
 			this.send(mailbox);
-		} catch (TransferFailureException | HostFailureException| TimeoutException | NativeException e) {
-			Msg.error("Something went wrong when emitting a '" + type.toString() +"' message to '" + mailbox + "'");
+		} catch (TransferFailureException | HostFailureException| 
+				TimeoutException | NativeException e) {
+			Msg.error("Something went wrong when emitting a '" + 
+				type.toString() +"' message to '" + mailbox + "'");
 			e.printStackTrace();
-		}		
+		}
 	}
 }

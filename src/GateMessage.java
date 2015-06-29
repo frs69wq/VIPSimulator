@@ -15,7 +15,7 @@ public class GateMessage extends Task{
 		GATE_CONTINUE,
 		GATE_STOP
 	};
-	
+
 	private Type type;
 	private Host issuerHost;
 	private long particleNumber;
@@ -36,20 +36,21 @@ public class GateMessage extends Task{
 	public String getMailbox(){
 		return issuerHost.getName();
 	}
-	
+
 	/**
 	 * Constructor, builds a new GATE_CONTINUE/GATE_STOP message
 	 */
 	public GateMessage(Type type){
 		this(type, null, 0);
 	}
-	
+
 	/**
 	 * Constructor, builds a new GATE_START message
 	 */
 	public GateMessage(Type type, Host issuerHost) {
 		this(type, issuerHost, 0);
 	}
+
 	/**
 	 * Constructor, builds a new GATE_PROGRESS message
 	 */
@@ -59,7 +60,7 @@ public class GateMessage extends Task{
 		this.issuerHost = issuerHost;
 		this.setParticleNumber(particleNumber);
 	}
-	
+
 	public void execute() throws  HostFailureException,TaskCancelledException{
 		super.execute();
 	}
@@ -68,12 +69,13 @@ public class GateMessage extends Task{
 		GateMessage message = null;
 		try {
 			message = (GateMessage) Task.receive(mailbox);
-		} catch (TransferFailureException | HostFailureException| TimeoutException e) {
+		} catch (TransferFailureException | HostFailureException| 
+				TimeoutException e) {
 			e.printStackTrace();
 		}
-		
+
 		Msg.debug("Received a '" + message.type.toString() + "' message");
-		
+
 		// Simulate the cost of the local processing of the request.
 		// Depends on the value set when the GateMessage was created
 		try {
@@ -81,16 +83,18 @@ public class GateMessage extends Task{
 		} catch (HostFailureException | TaskCancelledException e) {
 			e.printStackTrace();
 		}
-		
+
 		return message;
 	}
-	
+
 	public void emit (String mailbox) {
 		try{
 			this.send(mailbox);
-		} catch (TransferFailureException | HostFailureException| TimeoutException | NativeException e) {
-			Msg.error("Something went wrong when emitting a '" + this.type.toString() +"' message to '" + mailbox + "'");
+		} catch (TransferFailureException | HostFailureException|
+				TimeoutException | NativeException e) {
+			Msg.error("Something went wrong when emitting a '" +
+				type.toString() +"' message to '" + mailbox + "'");
 			e.printStackTrace();
-		}		
+		}
 	}
 }
