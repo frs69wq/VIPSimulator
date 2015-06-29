@@ -1,5 +1,4 @@
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Host;
 import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.HostFailureException;
@@ -22,7 +21,7 @@ public class Message extends Task {
 	};
 
 	private Type type;
-	private Host issuerHost;
+	private String mailbox;
 	private String logicalFileName;
 	private long logicalFileSize;
 	private String SEName;
@@ -32,11 +31,7 @@ public class Message extends Task {
 	}
 
 	public String getMailbox(){
-		return issuerHost.getName();
-	}
-
-	public void setIssuerHost(Host issuerHost) {
-		this.issuerHost = issuerHost;
+		return mailbox;
 	}
 
 	public String getLogicalFileName() {
@@ -66,23 +61,35 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new UPLOAD/DOWNLOAD_REQUEST message
 	 */
-	public Message(Type type, Host issuerHost, String logicalFileName,
+	public Message(Type type, String mailbox, String logicalFileName,
 			long logicalFileSize) {
-		this(type, issuerHost, logicalFileName, logicalFileSize, null);
+		this(type, mailbox, logicalFileName, logicalFileSize, null);
 	}
 
 	/**
 	 * Constructor, builds a new ASK_FILE_INFO message
 	 */
-	public Message(Type type, Host issuerHost, String logicalFileName) {
-		this(type, issuerHost, logicalFileName, 0, null);
+	public Message(Type type, String mailbox, String logicalFileName) {
+		this(type, mailbox, logicalFileName, 0, null);
 	}
 
 	/**
 	 * Constructor, builds a new SEND_FILE_INFO message
 	 */
-	public Message(Type type,  String SEName, long logicalFileSize) {
+	public Message(Type type, String SEName, long logicalFileSize) {
 		this(type, null, null, logicalFileSize, SEName);
+	}
+
+	/**
+	 * Constructor, builds a new UPLOAD_REQUEST message
+	 */
+	public Message(Type type, long logicalFileSize, String mailbox ) {
+		super(type.toString(), 0, logicalFileSize);
+		this.type = type;
+		this.mailbox = mailbox;
+		this.setLogicalFileName(null);
+		this.setLogicalFileSize(logicalFileSize);
+		this.setSEName(null);
 	}
 
 	/**
@@ -91,7 +98,7 @@ public class Message extends Task {
 	public Message(Type type) {
 		super(type.toString(), 1, 100);
 		this.type = type;
-		this.setIssuerHost(null);
+		this.mailbox = null;
 		this.setLogicalFileName(null);
 		this.setLogicalFileSize(0); 
 		this.setSEName(null);
@@ -103,7 +110,7 @@ public class Message extends Task {
 	public Message(Type type, long logicalFileSize){
 		super(type.toString(), 0, logicalFileSize);
 		this.type = type;
-		this.setIssuerHost(null);
+		this.mailbox = null;
 		this.setLogicalFileName(null);
 		this.setLogicalFileSize(logicalFileSize);
 		this.setSEName(null);
@@ -112,7 +119,7 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new CR_INPUT/REGISTER_FILE message
 	 */
-	public Message(Type type, Host issuerHost, String logicalFileName,
+	public Message(Type type, String mailbox, String logicalFileName,
 			long logicalFileSize, String SEName) {
 		// Assume that 1e6 flops are needed on receiving side to process a 
 		// request 
@@ -121,7 +128,7 @@ public class Message extends Task {
 		// on the type of message
 		super (type.toString(), 1e6, 100);
 		this.type = type;
-		this.setIssuerHost(issuerHost);
+		this.mailbox = mailbox;
 		this.setLogicalFileName(logicalFileName);
 		this.setLogicalFileSize(logicalFileSize); 
 		this.setSEName(SEName);
