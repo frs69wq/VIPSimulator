@@ -5,18 +5,27 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Gate extends Process {
-	private String hostName;
+	private String mailbox;
 	private String closeSEName;
 	private double downloadTime = 0.;
 	private double totalComputeTime = 0.;
 	private double uploadTime = 0.;
+
+	private void setMailbox(){
+		this.mailbox = Integer.toString(this.getPID()) + "@" +
+				getHost().getName();
+	}
+
+	public String getMailbox(){
+		return this.mailbox;
+	}
 
 	private long simulateForNsec(long nSec) throws HostFailureException {
 		double nbPart;
 
 		Process.sleep(nSec);
 		nbPart = VIPSimulator.eventsPerSec* nSec;
-		Msg.info("simulateForNsec: '"+ hostName + "' simulated "+ 
+		Msg.info("simulateForNsec: '"+ mailbox + "' simulated "+ 
 				(long) nbPart + " particles");
 
 		return (long) (nbPart);
@@ -25,7 +34,6 @@ public class Gate extends Process {
 
 	public Gate(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.hostName = host.getName();
 		this.closeSEName = host.getProperty("closeSE");
 	}
 
@@ -34,22 +42,25 @@ public class Gate extends Process {
 		long nbParticles = 0;
 		long simulatedParticles = 0;
 		double computeTime;
-		
+		// Build the mailbox name from the PID and the host name. This might be 
+		// useful to distinguish different Gate processes running on a same host
+		setMailbox();
+
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
 		// value as in the C version.
 		long uploadFileSize= (args.length > 0 ? 
 				Long.valueOf(args[0]).longValue() : 1000000);
 
-		Msg.info("Register GATE on '"+ hostName + "'");
+		Msg.info("Register GATE on '"+ mailbox + "'");
 		GateMessage connect= new GateMessage(GateMessage.Type.GATE_CONNECT, 
-				getHost());
+				getMailbox());
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
 		connect.emit("VIPServer");
 		
 		while (!stop){
-			GateMessage message = GateMessage.process(hostName);
+			GateMessage message = GateMessage.process(mailbox);
 
 			switch(message.getType()){
 			case GATE_START:
@@ -86,7 +97,7 @@ public class Gate extends Process {
 				Msg.info("Sending computed number of particles to 'VIPServer'");
 				GateMessage progress = 
 						new GateMessage(GateMessage.Type.GATE_PROGRESS, 
-								getHost(), simulatedParticles);
+								getMailbox(), simulatedParticles);
 
 				// Use of some simulation magic here, every worker knows the
 				// mailbox of the VIP server
@@ -96,13 +107,13 @@ public class Gate extends Process {
 			case GATE_STOP:
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
-						hostName +"'");
+						mailbox +"'");
 
 				//TODO Discuss what we can do here
 				//TODO what is the actual size of the generated file ?
 				//TODO use the actual size obtained from the logs for now
 				String logicalFileName = Long.toString(nbParticles) +
-						"-partial-"+ hostName + "-" +
+						"-partial-"+ mailbox + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime += Msg.getClock();

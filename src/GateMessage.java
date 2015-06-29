@@ -17,7 +17,7 @@ public class GateMessage extends Task{
 	};
 
 	private Type type;
-	private Host issuerHost;
+	private String mailbox;
 	private long particleNumber;
 
 	// Getters and Setters
@@ -34,7 +34,7 @@ public class GateMessage extends Task{
 	}
 
 	public String getMailbox(){
-		return issuerHost.getName();
+		return mailbox;
 	}
 
 	/**
@@ -47,17 +47,17 @@ public class GateMessage extends Task{
 	/**
 	 * Constructor, builds a new GATE_START message
 	 */
-	public GateMessage(Type type, Host issuerHost) {
-		this(type, issuerHost, 0);
+	public GateMessage(Type type, String mailbox) {
+		this(type, mailbox, 0);
 	}
 
 	/**
 	 * Constructor, builds a new GATE_PROGRESS message
 	 */
-	public GateMessage(Type type, Host issuerHost, long particleNumber) {
+	public GateMessage(Type type, String mailbox, long particleNumber) {
 		super(type.toString(), 1, 100);
 		this.type = type;
-		this.issuerHost = issuerHost;
+		this.mailbox = mailbox;
 		this.setParticleNumber(particleNumber);
 	}
 

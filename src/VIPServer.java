@@ -9,16 +9,16 @@ import org.simgrid.msg.HostFailureException;
 public class VIPServer extends Process {
 
 	// Worker node management for registration and termination 
-	private Vector<Host> gateWorkers = new Vector<Host>();
+	private Vector<String> gateWorkers = new Vector<String>();
 	private int endedGateWorkers = 0;
 
 	private long totalParticleNumber = 0;
 	
-	public Vector<Host> getGateWorkers() {
+	public Vector<String> getGateWorkers() {
 		return gateWorkers;
 	}
 
-	public void setGateWorkers(Vector<Host> gateWorkers) {
+	public void setGateWorkers(Vector<String> gateWorkers) {
 		this.gateWorkers = gateWorkers;
 	}
 
@@ -49,14 +49,14 @@ public class VIPServer extends Process {
 
 			switch (message.getType()){
 			case GATE_CONNECT:
-				getGateWorkers().add(message.getSource());
+				getGateWorkers().add(message.getMailbox());
 
 				Msg.debug(getGateWorkers().size() +
 						" worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
 				GateMessage start = new GateMessage(GateMessage.Type.GATE_START,
-						getHost());
+						"VIPServer");
 				start.emit(message.getMailbox());
 				break;
 			case GATE_PROGRESS:
