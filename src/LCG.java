@@ -75,8 +75,8 @@ public class LCG {
 		Message askFileInfo = new Message(Message.Type.ASK_FILE_INFO,
 				issuerHost, logicalFileName);
 		askFileInfo.emit(LFCName);
-		Msg.info("Asked SE name to LFC " + LFCName + " for file " +
-				logicalFileName);
+		Msg.info("Asked SE name to LFC '" + LFCName + "' for file '" +
+				logicalFileName + "'");
 
 		Msg.info("Waiting for LFC '" + LFCName +
 				"' to reply with SE name for file '" + logicalFileName +"'");
@@ -95,8 +95,8 @@ public class LCG {
 					logicalFileSize);
 		}
 
-		Msg.info("Downloading file " + logicalFileName + " from SE " + SEName +
-				" using LFC " + LFCName);
+		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
+				SEName + "' using LFC '" + LFCName +"'");
 		Message downloadRequest = new Message(Message.Type.DOWNLOAD_REQUEST, 
 				issuerHost, logicalFileName, logicalFileSize);
 
@@ -104,8 +104,9 @@ public class LCG {
 		Msg.info("Sent download request to SE '" + SEName + "' for file '" +
 				logicalFileName +"' of size " + logicalFileSize);
 
-		Msg.debug("Receiving file" + logicalFileName + " from SE " + SEName);
+		Msg.debug("Receiving file '" + logicalFileName + "' from SE '" + 
+				SEName + "'");
 		Message.process(issuerHost.getName());
-		Msg.info("SE '"+ SEName + "' sent file named " + logicalFileName);
+		Msg.info("SE '"+ SEName + "' sent file named '" + logicalFileName +"'");
 	};
 }
