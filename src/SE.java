@@ -20,7 +20,7 @@ public class SE extends Process {
 		Message sendFile= new Message(Message.Type.SEND_FILE,
 					message.getLogicalFileSize());
 
-		sendFile.emit(message.getMailbox());
+		sendFile.asynchronousEmit(message.getMailbox());
 
 		Msg.debug("SE '"+ hostName + "' sent file '" +
 				message.getLogicalFileName() + "' of size " +

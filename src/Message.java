@@ -170,4 +170,8 @@ public class Message extends Task {
 			e.printStackTrace();
 		}
 	}
+
+	public void asynchronousEmit (String mailbox) {
+			this.isend(mailbox);
+	}
 }

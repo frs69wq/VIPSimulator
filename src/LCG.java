@@ -22,7 +22,9 @@ public class LCG {
 
 		Message uploadRequest = new Message(Message.Type.UPLOAD_REQUEST, 
 				localFileSize, mailbox);
-		uploadRequest.emit(SEName);
+
+		uploadRequest.asynchronousEmit(SEName);
+
 		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + 
 				logicalFileName +"' of size " + localFileSize);
 
