@@ -1,3 +1,7 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.Iterator;
 
@@ -10,7 +14,7 @@ public class LFC extends Process {
 	private String hostName;
 	private Vector<LFCFile> fileList;
 
-	private void addFile(String logicalFileName, long logicalFileSize,
+	private void registerFile(String logicalFileName, long logicalFileSize,
 			String seName){
 		LFCFile current = null;
 		String fileName = null;
@@ -19,17 +23,20 @@ public class LFC extends Process {
 		// First check if this file is already known by the LFC
 		while (it.hasNext() && fileName == null){
 			current = it.next();
-			if (current.getLogicalFileName() == logicalFileName){
+			Msg.debug(current.getLogicalFileName()+ " vs. " + logicalFileName);
+			if (current.getLogicalFileName().equals(logicalFileName)){
 				fileName = current.getLogicalFileName();
 			}
 		}
 
 		if (fileName == null) {
 			// This file is not registered yet, create and add it
+			Msg.debug ("'" + logicalFileName + "' is not registered yet");
 			LFCFile newFile = new LFCFile(logicalFileName, logicalFileSize, 
 					seName);
 			this.fileList.add(newFile);
 		} else {
+			Msg.debug ("'" + fileName + "' is already registered");
 			// This file has already been registered. Check if it was already
 			// associated to this SE
 			boolean isKnown = false;
@@ -37,12 +44,14 @@ public class LFC extends Process {
 
 			while (it2.hasNext() && !isKnown){
 				String currentSE = it2.next();
-				if (currentSE == seName){
+				if (currentSE.equals(seName)){
 					isKnown = true;
 				}
 			}
 
 			if (!isKnown){
+				Msg.debug("New replica for '" + fileName + "' on '" + seName + 
+						"'");
 				// This is a replica, add a new SE for this file
 				current.getSEs().add(seName);
 			}
@@ -50,7 +59,7 @@ public class LFC extends Process {
 	}
 
 	private void handleRegisterFile(Message message) {
-		addFile(message.getLogicalFileName(), message.getLogicalFileSize(), 
+		registerFile(message.getLogicalFileName(), message.getLogicalFileSize(), 
 				message.getSEName());
 
 		Message registerAck = new Message(Message.Type.REGISTER_ACK);
@@ -80,6 +89,33 @@ public class LFC extends Process {
 
 	}
 
+	private void populateLFC(String catalog){
+		BufferedReader br = null;
+		String line = "";
+
+		Msg.info("Population of LFC '"+ this.hostName + "'");
+		try {
+			br = new BufferedReader(new FileReader(catalog));
+			while ((line = br.readLine()) != null) {
+				String[] fileInfo = line.split(",");
+				String[] seNames = fileInfo[2].split(":");
+				LFCFile file = new LFCFile(fileInfo[0], 
+						Long.valueOf(fileInfo[1]).longValue(), seNames);
+				Msg.info("Importing file '" + file.toString());
+				this.fileList.add(file);
+			}
+		} catch (FileNotFoundException fnf) {
+			fnf.printStackTrace();
+		} catch (IOException r) {
+			r.printStackTrace();
+		}
+		try {
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public String getHostName() {
 		return hostName;
 	}
@@ -98,6 +134,11 @@ public class LFC extends Process {
 		boolean stop = false;
 		Msg.debug("Register LFC on "+ this.hostName);
 		VIPSimulator.lfcList.add(this.getHost());
+		String catalog = (args.length > 0 ? args[0] : null);
+
+		if (catalog != null){
+			populateLFC(catalog);
+		}
 
 		while (!stop){
 			Message message = Message.process(hostName);
@@ -106,7 +147,7 @@ public class LFC extends Process {
 			case CR_INPUT:
 				// Register the information sent in the message into the LFC by
 				// adding a new File
-				addFile(message.getLogicalFileName(),
+				registerFile(message.getLogicalFileName(),
 						message.getLogicalFileSize(), message.getSEName());
 
 				Msg.info("LFC '"+ this.hostName + "' registered file '" + 
@@ -136,7 +177,7 @@ public class LFC extends Process {
 
 		while (it.hasNext() && SEName == null){
 			LFCFile current = it.next();
-			if (current.getLogicalFileName() == logicalFileName){
+			if (current.getLogicalFileName().equals(logicalFileName)){
 				SEName = current.getSEName();
 			}
 		}
@@ -154,7 +195,7 @@ public class LFC extends Process {
 
 		while (it.hasNext() && logicalFileSize == 0){
 			LFCFile current = it.next();
-			if (current.getLogicalFileName() == logicalFileName){
+			if (current.getLogicalFileName().equals(logicalFileName)){
 				logicalFileSize = current.getLogicalFileSize();
 			}
 		}
@@ -167,16 +208,16 @@ public class LFC extends Process {
 	}
 
 	public String getLogicalFileList () {
-		String fileList = "";
+		String list = "";
 		Iterator<LFCFile> it = this.fileList.iterator();
 
 		while (it.hasNext())
-			fileList.concat(it.next().getLogicalFileName() + ",");
+			list = list.concat(it.next().toString()).concat(",");
 
 		//removing last comma
-		if (fileList.charAt(fileList.length()-1)==',')
-			fileList = fileList.substring(0, fileList.length()-1);
+		if (list.charAt(list.length()-1) == ',')
+			list = list.substring(0, list.length()-1);
 
-		return fileList;
+		return list;
 	}
 }

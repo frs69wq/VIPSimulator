@@ -2,7 +2,9 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
    
-	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC"/> 
+	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC">
+		<argument value="LFCCatalog.csv"/>
+	</process> 
     <process host="ccsrm02.in2p3.fr" function="DefaultSE"/>
 	<process host="vip.creatis.insa-lyon.fr" function="VIPServer"/>
    
