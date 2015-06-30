@@ -89,6 +89,8 @@ public class LCG {
 			//TODO should we retry the receive?
 		} else {
 			SEName = getFileInfo.getFile().getSEName();
+			logicalFileSize = getFileInfo.getFile().getSize();
+
 			Msg.info("LFC '"+ LFCName + "' replied with SE name '" + 
 					SEName +
 					"' for file '" + logicalFileName +"' of size " +

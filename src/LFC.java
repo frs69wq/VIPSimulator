@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
@@ -11,12 +10,44 @@ import org.simgrid.msg.Process;
 
 public class LFC extends Process {
 
+	// A Logical File Catalog service is defined by:
+	// hostName: the name of the host that runs the service
+	// catalog: a vector of logical files
 	protected String hostName;
-	private Vector<LogicalFile> fileList;
+	private Vector<LogicalFile> catalog;
+
+	// A simulation can begin with some logical files referenced in the LFC.
+	// In that case, the LFC process is launched with an argument which is the
+	// name of a CSV file stored in working directory that contains logical 
+	// file description in the following format:
+	// name,size,se_1<:se_2:...:se_n>
+	// The populate function reads and parses that file, create LogicalFile 
+	// objects and add them to the local catalog.
+	private void populate(String catalogOnFile){
+		BufferedReader br = null;
+		String line = "";
+
+		Msg.info("Population of LFC '"+ hostName + "' from '"+ catalogOnFile + 
+				"'");
+		try {
+			br = new BufferedReader(new FileReader(catalogOnFile));
+			while ((line = br.readLine()) != null) {
+				String[] fileInfo = line.split(",");
+				String[] seNames = fileInfo[2].split(":");
+				LogicalFile file = new LogicalFile(fileInfo[0], 
+						Long.valueOf(fileInfo[1]).longValue(), seNames);
+				Msg.info("Importing file '" + file.toString());
+				catalog.add(file);
+			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	private void register(LogicalFile newFile){
-		if (fileList.contains((Object) newFile)){
-			LogicalFile file = fileList.get(fileList.indexOf(newFile));
+		if (catalog.contains((Object) newFile)){
+			LogicalFile file = catalog.get(catalog.indexOf(newFile));
 			if (!file.getLocations().contains((Object) newFile.getSEName())){
 				// This has to be a new replica
 				Msg.info("New replica for '" + newFile.getName () + "' on '" + 
@@ -28,53 +59,26 @@ public class LFC extends Process {
 		} else {
 			// This file is not registered yet, create and add it
 			Msg.debug ("'" + newFile.getName() + "' is not registered yet");
-			fileList.add(newFile);
+			catalog.add(newFile);
 			Msg.info("LFC '"+ hostName + "' registered " + newFile.toString());
-		}
-	}
-
-	private void populate(String catalog){
-		BufferedReader br = null;
-		String line = "";
-
-		Msg.info("Population of LFC '"+ this.hostName + "'");
-		try {
-			br = new BufferedReader(new FileReader(catalog));
-			while ((line = br.readLine()) != null) {
-				String[] fileInfo = line.split(",");
-				String[] seNames = fileInfo[2].split(":");
-				LogicalFile file = new LogicalFile(fileInfo[0], 
-						Long.valueOf(fileInfo[1]).longValue(), seNames);
-				Msg.info("Importing file '" + file.toString());
-				fileList.add(file);
-			}
-		} catch (FileNotFoundException fnf) {
-			fnf.printStackTrace();
-		} catch (IOException r) {
-			r.printStackTrace();
-		}
-		try {
-			br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.hostName = getHost().getName();
-		this.fileList = new Vector<>();
+		this.catalog = new Vector<>();
 	}
 
 	public void main(String[] args) {
 		boolean stop = false;
 	
 		Msg.debug("Register LFC on "+ hostName);
-		VIPSimulator.lfcList.add(getHost());
-		String catalog = (args.length > 0 ? args[0] : null);
+		VIPSimulator.lfcList.add(hostName);
+		String catalogOnFile = (args.length > 0 ? args[0] : null);
 
-		if (catalog != null){
-			populate(catalog);
+		if (catalogOnFile != null){
+			populate(catalogOnFile);
 		}
 
 		while (!stop){
@@ -102,8 +106,8 @@ public class LFC extends Process {
 						new Message(Message.Type.SEND_LOGICAL_FILE, file);
 
 				sendLogicalFile.emit(message.getMailbox());
-				Msg.info("LFC '"+ this.hostName + "' sent SE name '" + 
-						file.getSEName() + "' back to '" + 
+				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
+						file.toString() + " back to '" + 
 						message.getMailbox() + "'");
 				break;
 			case FINALIZE:
@@ -117,7 +121,7 @@ public class LFC extends Process {
 	}
 
 	public LogicalFile getLogicalFileByName (String logicalFileName) {
-		LogicalFile file = fileList.get(fileList.indexOf((Object) 
+		LogicalFile file = catalog.get(catalog.indexOf((Object) 
 				new LogicalFile (logicalFileName, 0, "")));
 		if(file == null){
 			Msg.error("File '" + logicalFileName + 
@@ -132,9 +136,9 @@ public class LFC extends Process {
 		return getLogicalFileByName(logicalFileName).getSEName();
 	}
 
-	public String getLogicalFileList () {
+	public String toString () {
 		String list = "";
-		Iterator<LogicalFile> it = this.fileList.iterator();
+		Iterator<LogicalFile> it = this.catalog.iterator();
 
 		while (it.hasNext())
 			list = list.concat(it.next().toString()).concat(",");

@@ -1,6 +1,4 @@
 import java.util.Vector;
-
-import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
@@ -14,7 +12,7 @@ public class VIPSimulator {
 	public static String logFile;
 
 	public static String defaultLFC = null;
-	public static Vector<Host> lfcList = new Vector<Host>();
+	public static Vector<String> lfcList = new Vector<String>();
 
 	public static String defaultSE = null;
 	public static Vector<String> seList = new Vector<String>();
