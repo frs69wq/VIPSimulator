@@ -22,10 +22,11 @@ public class Message extends Task {
 
 	private Type type;
 	private String mailbox;
-	private String logicalFileName;
-	private long logicalFileSize;
-	private String SEName;
-
+	private String logicalFileName = null;
+	private long logicalFileSize = 0;
+	private String SEName = null;
+	private LogicalFile file = null;
+	
 	public Type getType() {
 		return type;
 	}
@@ -58,26 +59,30 @@ public class Message extends Task {
 		SEName = sEName;
 	}
 
+	public LogicalFile getFile() {
+		return file;
+	}
+
 	/**
-	 * Constructor, builds a new UPLOAD/DOWNLOAD_REQUEST message
+	 * Constructor, builds a new DOWNLOAD_REQUEST message
 	 */
 	public Message(Type type, String mailbox, String logicalFileName,
 			long logicalFileSize) {
-		this(type, mailbox, logicalFileName, logicalFileSize, null);
+		super(type.toString(), 1e6, 100);
+		this.type = type;
+		this.mailbox = mailbox;
+		this.logicalFileName=logicalFileName;
+		this.logicalFileSize = logicalFileSize;
 	}
 
 	/**
 	 * Constructor, builds a new ASK_FILE_INFO message
 	 */
 	public Message(Type type, String mailbox, String logicalFileName) {
-		this(type, mailbox, logicalFileName, 0, null);
-	}
-
-	/**
-	 * Constructor, builds a new SEND_FILE_INFO message
-	 */
-	public Message(Type type, String SEName, long logicalFileSize) {
-		this(type, null, null, logicalFileSize, SEName);
+		super(type.toString(), 1e6, 100);
+		this.type = type;
+		this.mailbox = mailbox;
+		this.logicalFileName=logicalFileName;
 	}
 
 	/**
@@ -87,9 +92,7 @@ public class Message extends Task {
 		super(type.toString(), 0, logicalFileSize);
 		this.type = type;
 		this.mailbox = mailbox;
-		this.setLogicalFileName(null);
 		this.setLogicalFileSize(logicalFileSize);
-		this.setSEName(null);
 	}
 
 	/**
@@ -98,10 +101,6 @@ public class Message extends Task {
 	public Message(Type type) {
 		super(type.toString(), 1, 100);
 		this.type = type;
-		this.mailbox = null;
-		this.setLogicalFileName(null);
-		this.setLogicalFileSize(0); 
-		this.setSEName(null);
 	}
 
 	/**
@@ -110,17 +109,27 @@ public class Message extends Task {
 	public Message(Type type, long logicalFileSize){
 		super(type.toString(), 0, logicalFileSize);
 		this.type = type;
-		this.mailbox = null;
-		this.setLogicalFileName(null);
 		this.setLogicalFileSize(logicalFileSize);
-		this.setSEName(null);
 	}
 
 	/**
-	 * Constructor, builds a new CR_INPUT/REGISTER_FILE message
+	 * Constructor, builds a new CR_INPUT/SEND_FILE_INFO message
 	 */
-	public Message(Type type, String mailbox, String logicalFileName,
-			long logicalFileSize, String SEName) {
+	public Message(Type type, LogicalFile file) {
+		// Assume that 1e6 flops are needed on receiving side to process a 
+		// request 
+		// Assume that a request corresponds to 100 Bytes 
+		//TODO provide different computing and communication values depending
+		// on the type of message
+		super (type.toString(), 1e6, 100);
+		this.type = type;
+		this.file = file;
+	}
+
+	/**
+	 * Constructor, builds a new REGISTER_FILE message
+	 */
+	public Message(Type type, String mailbox, LogicalFile file) {
 		// Assume that 1e6 flops are needed on receiving side to process a 
 		// request 
 		// Assume that a request corresponds to 100 Bytes 
@@ -129,9 +138,7 @@ public class Message extends Task {
 		super (type.toString(), 1e6, 100);
 		this.type = type;
 		this.mailbox = mailbox;
-		this.setLogicalFileName(logicalFileName);
-		this.setLogicalFileSize(logicalFileSize); 
-		this.setSEName(SEName);
+		this.file = file;
 	}
 
 	public void execute() throws  HostFailureException,TaskCancelledException{

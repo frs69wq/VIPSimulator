@@ -12,11 +12,11 @@ import org.simgrid.msg.Process;
 public class LFC extends Process {
 
 	protected String hostName;
-	private Vector<LFCFile> fileList;
+	private Vector<LogicalFile> fileList;
 
-	private void register(LFCFile newFile){
+	private void register(LogicalFile newFile){
 		if (fileList.contains((Object) newFile)){
-			LFCFile file = fileList.get(fileList.indexOf(newFile));
+			LogicalFile file = fileList.get(fileList.indexOf(newFile));
 			if (!file.getLocations().contains((Object) newFile.getSEName())){
 				// This has to be a new replica
 				Msg.info("New replica for '" + newFile.getName () + "' on '" + 
@@ -34,24 +34,23 @@ public class LFC extends Process {
 	}
 
 	private void handleAskFileInfo(Message message) {
-		String logicalFileName = message.getLogicalFileName();
+		LogicalFile file = fileList.get(fileList.indexOf((Object) 
+				new LogicalFile (message.getLogicalFileName(), 0, "")));
 		
-		String SEName = getSEName(logicalFileName);
-		long logicalFileSize = getLogicalFileSize(logicalFileName);
-
-		if(SEName == null){
-			Msg.error("File '" + logicalFileName + 
+		if(file == null){
+			Msg.error("File '" + message.getLogicalFileName() + 
 					"' is stored on no SE. Exiting with status 1");
 			System.exit(1);
+		} else {
+			file.selectLocation();
+			Msg.info(file.toString());
+			Message replySEName = new Message(Message.Type.SEND_FILE_INFO, null,
+					file);
+
+			replySEName.emit(message.getMailbox());
+			Msg.info("LFC '"+ this.hostName + "' sent SE name '" + 
+					file.getSEName() + "' back to '" + message.getMailbox() + "'");
 		}
-
-		Message replySEName = new Message(Message.Type.SEND_FILE_INFO, SEName,
-				logicalFileSize);
-
-		replySEName.emit(message.getMailbox());
-		Msg.debug("LFC '"+ this.hostName + "' sent SE name '" + SEName +
-				"' back to '" + message.getMailbox() + "'");
-
 	}
 
 	private void populateLFC(String catalog){
@@ -64,7 +63,7 @@ public class LFC extends Process {
 			while ((line = br.readLine()) != null) {
 				String[] fileInfo = line.split(",");
 				String[] seNames = fileInfo[2].split(":");
-				LFCFile file = new LFCFile(fileInfo[0], 
+				LogicalFile file = new LogicalFile(fileInfo[0], 
 						Long.valueOf(fileInfo[1]).longValue(), seNames);
 				Msg.info("Importing file '" + file.toString());
 				fileList.add(file);
@@ -89,8 +88,7 @@ public class LFC extends Process {
 
 	public void main(String[] args) {
 		boolean stop = false;
-		LFCFile file = null;
-		
+	
 		Msg.debug("Register LFC on "+ hostName);
 		VIPSimulator.lfcList.add(getHost());
 		String catalog = (args.length > 0 ? args[0] : null);
@@ -106,14 +104,10 @@ public class LFC extends Process {
 			case CR_INPUT:
 				// Register the information sent in the message into the LFC by
 				// adding a new File
-				file = new LFCFile(message.getLogicalFileName(),
-						message.getLogicalFileSize(), message.getSEName());
-				register(file);
+				register(message.getFile());
 				break;
 			case REGISTER_FILE:
-				file = new LFCFile(message.getLogicalFileName(),
-						message.getLogicalFileSize(), message.getSEName());
-				register(file);
+				register(message.getFile());
 				Message registerAck = new Message(Message.Type.REGISTER_ACK);
 				registerAck.emit(message.getMailbox());
 				Msg.debug("LFC '"+ hostName + "' sent back an ack to '" +
@@ -134,10 +128,10 @@ public class LFC extends Process {
 
 	public String getSEName (String logicalFileName){
 		String SEName = null;
-		Iterator<LFCFile> it = this.fileList.iterator();
+		Iterator<LogicalFile> it = this.fileList.iterator();
 
 		while (it.hasNext() && SEName == null){
-			LFCFile current = it.next();
+			LogicalFile current = it.next();
 			if (current.getName().equals(logicalFileName)){
 				SEName = current.getSEName();
 			}
@@ -152,10 +146,10 @@ public class LFC extends Process {
 	
 	public long getLogicalFileSize (String logicalFileName){
 		long logicalFileSize = 0;
-		Iterator<LFCFile> it = this.fileList.iterator();
+		Iterator<LogicalFile> it = this.fileList.iterator();
 
 		while (it.hasNext() && logicalFileSize == 0){
-			LFCFile current = it.next();
+			LogicalFile current = it.next();
 			if (current.getName().equals(logicalFileName)){
 				logicalFileSize = current.getSize();
 			}
@@ -170,7 +164,7 @@ public class LFC extends Process {
 
 	public String getLogicalFileList () {
 		String list = "";
-		Iterator<LFCFile> it = this.fileList.iterator();
+		Iterator<LogicalFile> it = this.fileList.iterator();
 
 		while (it.hasNext())
 			list = list.concat(it.next().toString()).concat(",");

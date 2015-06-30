@@ -4,12 +4,12 @@ public class LCG {
 
 	public static void crInput(String mailbox, String logicalFileName,
 			long logicalFileSize, String SEName, String LFCName) {
-		Msg.info("Ask '"+ LFCName + "' to register input file '" +
-			logicalFileName + "' stored on SE '" + SEName + "'");
+		LogicalFile file = new LogicalFile(logicalFileName, logicalFileSize, 
+				SEName);
+		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
-		Message task = new Message(Message.Type.CR_INPUT, mailbox,
-				logicalFileName, logicalFileSize, SEName);
-		task.emit(LFCName);
+		Message importFile = new Message(Message.Type.CR_INPUT, file);
+		importFile.emit(LFCName);
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
@@ -44,8 +44,11 @@ public class LCG {
 		// Register file into LFC
 		Msg.info("Ask '"+ LFCName + "' to register file '" + logicalFileName + 
 				"' stored on SE '" + SEName + "'");
+		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, 
+				SEName);
+
 		Message askToRegisterFile = new Message(Message.Type.REGISTER_FILE,
-				mailbox, logicalFileName, localFileSize, SEName);
+				mailbox, file);
 		askToRegisterFile.emit(LFCName);
 
 		Msg.debug("lcg-cr of '" + logicalFileName +"' on LFC '" + LFCName +
@@ -85,10 +88,9 @@ public class LCG {
 					getFileInfo.getType().toString() + " message");
 			//TODO should we retry the receive?
 		} else {
-			SEName = getFileInfo.getSEName();
-			logicalFileSize = getFileInfo.getLogicalFileSize();
-
-			Msg.info("LFC '"+ LFCName + "' replied with SE name '" + SEName +
+			SEName = getFileInfo.getFile().getSEName();
+			Msg.info("LFC '"+ LFCName + "' replied with SE name '" + 
+					SEName +
 					"' for file '" + logicalFileName +"' of size " +
 					logicalFileSize);
 		}
