@@ -9,8 +9,8 @@ import org.simgrid.msg.TransferFailureException;
 public class Message extends Task {
 	public enum Type{
 		CR_INPUT,
-		ASK_FILE_INFO,
-		SEND_FILE_INFO,
+		ASK_LOGICAL_FILE,
+		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
 		REGISTER_ACK,
 		DOWNLOAD_REQUEST,
@@ -76,7 +76,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Constructor, builds a new ASK_FILE_INFO message
+	 * Constructor, builds a new ASK_LOGICAL_FILE message
 	 */
 	public Message(Type type, String mailbox, String logicalFileName) {
 		super(type.toString(), 1e6, 100);
@@ -113,7 +113,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Constructor, builds a new CR_INPUT/SEND_FILE_INFO message
+	 * Constructor, builds a new CR_INPUT/SEND_LOGICAL_FILE message
 	 */
 	public Message(Type type, LogicalFile file) {
 		// Assume that 1e6 flops are needed on receiving side to process a 

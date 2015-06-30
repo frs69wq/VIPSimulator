@@ -73,7 +73,7 @@ public class LCG {
 				"' using LFC '" + LFCName + "'");
 
 		//get SE name from LFC
-		Message askFileInfo = new Message(Message.Type.ASK_FILE_INFO,
+		Message askFileInfo = new Message(Message.Type.ASK_LOGICAL_FILE,
 				mailbox, logicalFileName);
 		askFileInfo.emit(LFCName);
 		Msg.info("Asked SE name to LFC '" + LFCName + "' for file '" +
@@ -83,7 +83,7 @@ public class LCG {
 				"' to reply with SE name for file '" + logicalFileName +"'");
 		Message getFileInfo = Message.process(mailbox);
 
-		if (getFileInfo.getType() != Message.Type.SEND_FILE_INFO){
+		if (getFileInfo.getType() != Message.Type.SEND_LOGICAL_FILE){
 			Msg.warn("While waiting for a reply from LFC, received a " +
 					getFileInfo.getType().toString() + " message");
 			//TODO should we retry the receive?

@@ -33,27 +33,7 @@ public class LFC extends Process {
 		}
 	}
 
-	private void handleAskFileInfo(Message message) {
-		LogicalFile file = fileList.get(fileList.indexOf((Object) 
-				new LogicalFile (message.getLogicalFileName(), 0, "")));
-		
-		if(file == null){
-			Msg.error("File '" + message.getLogicalFileName() + 
-					"' is stored on no SE. Exiting with status 1");
-			System.exit(1);
-		} else {
-			file.selectLocation();
-			Msg.info(file.toString());
-			Message replySEName = new Message(Message.Type.SEND_FILE_INFO, null,
-					file);
-
-			replySEName.emit(message.getMailbox());
-			Msg.info("LFC '"+ this.hostName + "' sent SE name '" + 
-					file.getSEName() + "' back to '" + message.getMailbox() + "'");
-		}
-	}
-
-	private void populateLFC(String catalog){
+	private void populate(String catalog){
 		BufferedReader br = null;
 		String line = "";
 
@@ -94,7 +74,7 @@ public class LFC extends Process {
 		String catalog = (args.length > 0 ? args[0] : null);
 
 		if (catalog != null){
-			populateLFC(catalog);
+			populate(catalog);
 		}
 
 		while (!stop){
@@ -113,8 +93,18 @@ public class LFC extends Process {
 				Msg.debug("LFC '"+ hostName + "' sent back an ack to '" +
 						message.getMailbox() + "'");
 				break;
-			case ASK_FILE_INFO:
-				handleAskFileInfo(message);
+			case ASK_LOGICAL_FILE:
+				LogicalFile file = 
+					getLogicalFileByName(message.getLogicalFileName());
+
+				file.selectLocation();
+				Message sendLogicalFile = 
+						new Message(Message.Type.SEND_LOGICAL_FILE, file);
+
+				sendLogicalFile.emit(message.getMailbox());
+				Msg.info("LFC '"+ this.hostName + "' sent SE name '" + 
+						file.getSEName() + "' back to '" + 
+						message.getMailbox() + "'");
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");
@@ -126,40 +116,20 @@ public class LFC extends Process {
 		}
 	}
 
-	public String getSEName (String logicalFileName){
-		String SEName = null;
-		Iterator<LogicalFile> it = this.fileList.iterator();
-
-		while (it.hasNext() && SEName == null){
-			LogicalFile current = it.next();
-			if (current.getName().equals(logicalFileName)){
-				SEName = current.getSEName();
-			}
+	public LogicalFile getLogicalFileByName (String logicalFileName) {
+		LogicalFile file = fileList.get(fileList.indexOf((Object) 
+				new LogicalFile (logicalFileName, 0, "")));
+		if(file == null){
+			Msg.error("File '" + logicalFileName + 
+					"' is stored on no SE. Exiting with status 1");
+			System.exit(1);
 		}
 
-		if (SEName == null)
-			Msg.error("Logical file '" + logicalFileName + 
-					"' not found on LFC '" + this.hostName + "'");
-
-		return SEName;
+		return file;
 	}
-	
-	public long getLogicalFileSize (String logicalFileName){
-		long logicalFileSize = 0;
-		Iterator<LogicalFile> it = this.fileList.iterator();
 
-		while (it.hasNext() && logicalFileSize == 0){
-			LogicalFile current = it.next();
-			if (current.getName().equals(logicalFileName)){
-				logicalFileSize = current.getSize();
-			}
-		}
-
-		if (logicalFileSize == 0)
-			Msg.error("Logical file '" + logicalFileName + 
-					"' not found on LFC '" + this.hostName + "'");
-
-		return logicalFileSize;
+	public String getSEName (String logicalFileName){
+		return getLogicalFileByName(logicalFileName).getSEName();
 	}
 
 	public String getLogicalFileList () {
