@@ -7,7 +7,7 @@ public class DefaultLFC extends LFC {
 	}
 
 	public void main(String[] args) {
-		VIPSimulator.defaultLFC = this.getHostName();
+		VIPSimulator.defaultLFC = hostName;
 		Msg.info("Default LFC is '"+ VIPSimulator.defaultLFC + "'"); 
 		super.main(args);
 	}
