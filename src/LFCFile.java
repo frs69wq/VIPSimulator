@@ -1,3 +1,4 @@
+import java.util.Arrays;
 import java.util.Vector;
 
 
@@ -37,6 +38,11 @@ public class LFCFile {
 		return SENames;
 	}
 
+	public String toString(){
+		return  "File '" + logicalFileName + "' of size " + logicalFileSize + 
+				" stored on " + SENames.toString();
+	}
+
 	public LFCFile(String logicalFileName, long logicalFileSize, 
 			String SEName) {
 		super();
@@ -44,6 +50,15 @@ public class LFCFile {
 		this.setLogicalFileSize(logicalFileSize);
 		this.SENames = new Vector<String>();
 		setSEName(SEName);
+	}
+	
+	public LFCFile(String logicalFileName, long logicalFileSize, 
+			String[] seNames) {
+		super();
+		this.setLogicalFileName(logicalFileName);
+		this.setLogicalFileSize(logicalFileSize);
+		this.SENames = new Vector<String>();
+		this.SENames.addAll(Arrays.asList(seNames));
 	}
 
 }
