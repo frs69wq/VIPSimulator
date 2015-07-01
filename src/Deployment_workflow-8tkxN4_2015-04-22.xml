@@ -36,10 +36,8 @@
 		<argument value="0"/>
 	</process>
 
-	<!--
 	<process host="grid213.lal.in2p3.fr" function="Merge" start_time="113" >
 		<argument value="0"/>
 	</process>
-	-->	
 
 </platform>
