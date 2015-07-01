@@ -104,14 +104,14 @@ public class VIPServer extends Process {
 		Iterator<String> it = VIPSimulator.lfcList.iterator();
 		while (it.hasNext()){
 			Message endLFC = new Message(Message.Type.FINALIZE);
-			endLFC.emit(it.next());
+			endLFC.sendTo(it.next());
 		}
 
 		// Shutting down all the SEs
 		Iterator<String> itSE = VIPSimulator.seList.iterator();
 		while (itSE.hasNext()){
 			Message endSE = new Message(Message.Type.FINALIZE);
-			endSE.emit(itSE.next());
+			endSE.sendTo(itSE.next());
 		}
 	}
 }

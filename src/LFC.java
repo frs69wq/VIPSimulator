@@ -82,20 +82,21 @@ public class LFC extends Process {
 		}
 
 		while (!stop){
-			Message message = Message.process(hostName);
+			Message message = Message.getFrom(hostName);
 
 			switch(message.getType()){
 			case CR_INPUT:
 				// Register the information sent in the message into the LFC by
 				// adding a new File
 				register(message.getFile());
+				Msg.info(message.getSource().getName());
 				break;
 			case REGISTER_FILE:
 				register(message.getFile());
 				Message registerAck = new Message(Message.Type.REGISTER_ACK);
-				registerAck.emit(message.getMailbox());
+				registerAck.sendTo(message.getSenderMailbox());
 				Msg.debug("LFC '"+ hostName + "' sent back an ack to '" +
-						message.getMailbox() + "'");
+						message.getSenderMailbox() + "'");
 				break;
 			case ASK_LOGICAL_FILE:
 				LogicalFile file = 
@@ -104,11 +105,11 @@ public class LFC extends Process {
 				file.selectLocation();
 				Message sendLogicalFile = 
 						new Message(Message.Type.SEND_LOGICAL_FILE, file);
-
-				sendLogicalFile.emit(message.getMailbox());
+				Msg.info(message.getSenderMailbox());
+				sendLogicalFile.sendTo(message.getSenderMailbox());
 				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
 						file.toString() + " back to '" + 
-						message.getMailbox() + "'");
+						message.getSenderMailbox() + "'");
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");

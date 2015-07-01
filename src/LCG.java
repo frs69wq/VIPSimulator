@@ -9,7 +9,7 @@ public class LCG {
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
 		Message importFile = new Message(Message.Type.CR_INPUT, file);
-		importFile.emit(LFCName);
+		importFile.sendTo(LFCName);
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
@@ -21,9 +21,9 @@ public class LCG {
 				"' using lfc '" + LFCName +"'");
 
 		Message uploadRequest = new Message(Message.Type.UPLOAD_REQUEST, 
-				localFileSize, mailbox);
+				localFileSize);
 
-		uploadRequest.asynchronousEmit(SEName);
+		uploadRequest.sendAsynchronouslyTo(SEName);
 
 		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + 
 				logicalFileName +"' of size " + localFileSize);
@@ -31,15 +31,9 @@ public class LCG {
 		//waiting for upload to finish
 		Msg.debug("Host '" + mailbox + 
 				"' is waiting for upload-reply from SE '" + SEName +"'");
-		Message uploadAck = Message.process(mailbox);
+		Message.getFrom(mailbox);
+		Msg.info("SE '"+ SEName + "' replied with an ack");
 
-		if (uploadAck.getType() != Message.Type.UPLOAD_ACK){
-			Msg.warn("WARNING: While waiting for an ack from SE, received a "+ 
-					uploadAck.getType().toString() + " message");
-			//TODO should we retry the receive?
-		} else {
-			Msg.info("SE '"+ SEName + "' replied with an ack");
-		}
 
 		// Register file into LFC
 		Msg.info("Ask '"+ LFCName + "' to register file '" + logicalFileName + 
@@ -47,21 +41,16 @@ public class LCG {
 		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, 
 				SEName);
 
-		Message askToRegisterFile = new Message(Message.Type.REGISTER_FILE,
-				mailbox, file);
-		askToRegisterFile.emit(LFCName);
+		Message askToRegisterFile = new Message(Message.Type.REGISTER_FILE, 
+				file);
+		askToRegisterFile.sendTo(LFCName);
+
+		Message.getFrom(mailbox);
+		Msg.info("LFC '"+ LFCName + "' registered file '" + 
+				logicalFileName + "', stored on SE '" +	SEName + "'");
 
 		Msg.debug("lcg-cr of '" + logicalFileName +"' on LFC '" + LFCName +
 				"' completed");
-		Message registerAck = Message.process(mailbox);
-		if (registerAck.getType() != Message.Type.REGISTER_ACK){
-			Msg.warn("WARNING: While waiting for an ack from LFC, received a "+
-					registerAck.getType().toString() + " message");
-			//TODO should we retry the receive?
-		} else {	
-			Msg.info("LFC '"+ LFCName + "' registered file '" + 
-					logicalFileName + "', stored on SE '" +	SEName + "'");
-		}
 	}
 
 	public static void cp(String mailbox, String logicalFileName,
@@ -74,14 +63,14 @@ public class LCG {
 
 		//get SE name from LFC
 		Message askFileInfo = new Message(Message.Type.ASK_LOGICAL_FILE,
-				mailbox, logicalFileName);
-		askFileInfo.emit(LFCName);
+				logicalFileName);
+		askFileInfo.sendTo(LFCName);
 		Msg.info("Asked SE name to LFC '" + LFCName + "' for file '" +
 				logicalFileName + "'");
 
 		Msg.info("Waiting for LFC '" + LFCName +
 				"' to reply with SE name for file '" + logicalFileName +"'");
-		Message getFileInfo = Message.process(mailbox);
+		Message getFileInfo = Message.getFrom(mailbox);
 
 		if (getFileInfo.getType() != Message.Type.SEND_LOGICAL_FILE){
 			Msg.warn("While waiting for a reply from LFC, received a " +
@@ -100,15 +89,15 @@ public class LCG {
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
 				SEName + "' using LFC '" + LFCName +"'");
 		Message downloadRequest = new Message(Message.Type.DOWNLOAD_REQUEST, 
-				mailbox, logicalFileName, logicalFileSize);
+				logicalFileName, logicalFileSize);
 
-		downloadRequest.emit(SEName);
+		downloadRequest.sendTo(SEName);
 		Msg.info("Sent download request to SE '" + SEName + "' for file '" +
 				logicalFileName +"' of size " + logicalFileSize);
 
 		Msg.debug("Receiving file '" + logicalFileName + "' from SE '" + 
 				SEName + "'");
-		Message.process(mailbox);
+		Message.getFrom(mailbox);
 		Msg.info("SE '"+ SEName + "' sent file named '" + logicalFileName +"'");
 	};
 }

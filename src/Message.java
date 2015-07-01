@@ -21,18 +21,16 @@ public class Message extends Task {
 	};
 
 	private Type type;
-	private String mailbox;
 	private String logicalFileName = null;
 	private long logicalFileSize = 0;
-	private String SEName = null;
 	private LogicalFile file = null;
 	
 	public Type getType() {
 		return type;
 	}
 
-	public String getMailbox(){
-		return mailbox;
+	public String getSenderMailbox(){
+		return getSender().getPID()+ "@" + getSource().getName();
 	}
 
 	public String getLogicalFileName() {
@@ -51,14 +49,6 @@ public class Message extends Task {
 		this.logicalFileSize = logicalFileSize;
 	}
 
-	public String getSEName() {
-		return SEName;
-	}
-
-	public void setSEName(String sEName) {
-		SEName = sEName;
-	}
-
 	public LogicalFile getFile() {
 		return file;
 	}
@@ -66,11 +56,10 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new DOWNLOAD_REQUEST message
 	 */
-	public Message(Type type, String mailbox, String logicalFileName,
+	public Message(Type type, String logicalFileName,
 			long logicalFileSize) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
-		this.mailbox = mailbox;
 		this.logicalFileName=logicalFileName;
 		this.logicalFileSize = logicalFileSize;
 	}
@@ -78,21 +67,10 @@ public class Message extends Task {
 	/**
 	 * Constructor, builds a new ASK_LOGICAL_FILE message
 	 */
-	public Message(Type type, String mailbox, String logicalFileName) {
+	public Message(Type type, String logicalFileName) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
-		this.mailbox = mailbox;
 		this.logicalFileName=logicalFileName;
-	}
-
-	/**
-	 * Constructor, builds a new UPLOAD_REQUEST message
-	 */
-	public Message(Type type, long logicalFileSize, String mailbox ) {
-		super(type.toString(), 0, logicalFileSize);
-		this.type = type;
-		this.mailbox = mailbox;
-		this.setLogicalFileSize(logicalFileSize);
 	}
 
 	/**
@@ -104,7 +82,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Constructor, builds a new SEND_FILE message
+	 * Constructor, builds a new UPLOAD_REQUEST/SEND_FILE message
 	 */
 	public Message(Type type, long logicalFileSize){
 		super(type.toString(), 0, logicalFileSize);
@@ -113,7 +91,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Constructor, builds a new CR_INPUT/SEND_LOGICAL_FILE message
+	 * Constructor, builds a new CR_INPUT/REGISTER_FILE/SEND_LOGICAL_FILE message
 	 */
 	public Message(Type type, LogicalFile file) {
 		// Assume that 1e6 flops are needed on receiving side to process a 
@@ -126,47 +104,27 @@ public class Message extends Task {
 		this.file = file;
 	}
 
-	/**
-	 * Constructor, builds a new REGISTER_FILE message
-	 */
-	public Message(Type type, String mailbox, LogicalFile file) {
-		// Assume that 1e6 flops are needed on receiving side to process a 
-		// request 
-		// Assume that a request corresponds to 100 Bytes 
-		//TODO provide different computing and communication values depending
-		// on the type of message
-		super (type.toString(), 1e6, 100);
-		this.type = type;
-		this.mailbox = mailbox;
-		this.file = file;
-	}
-
 	public void execute() throws  HostFailureException,TaskCancelledException{
 		super.execute();
 	}
 
-	public static Message process (String mailbox) {
+	public static Message getFrom (String mailbox) {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
+			Msg.debug("Received a '" + message.type.toString() + "' message");
+			// Simulate the cost of the local processing of the request.
+			// Depends on the value set when the Message was created
+			message.execute();
 		} catch (TransferFailureException | HostFailureException| 
-				TimeoutException e) {
+				TimeoutException | TaskCancelledException e) {
 			e.printStackTrace();
 		}
 
-		Msg.debug("Received a '" + message.type.toString() + "' message");
-		// Simulate the cost of the local processing of the request.
-		// Depends on the value set when the Message was created
-		try {
-			message.execute();
-		} catch (HostFailureException | TaskCancelledException e) {
-			Msg.error("Execution of a Message failed ...");
-			e.printStackTrace();
-		}
 		return message;
 	}
 
-	public void emit (String mailbox) {
+	public void sendTo (String mailbox) {
 		try{
 			// TODO this might be made an asynchronous send
 			this.send(mailbox);
@@ -178,7 +136,7 @@ public class Message extends Task {
 		}
 	}
 
-	public void asynchronousEmit (String mailbox) {
+	public void sendAsynchronouslyTo (String mailbox) {
 			this.isend(mailbox);
 	}
 }

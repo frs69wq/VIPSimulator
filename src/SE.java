@@ -10,22 +10,22 @@ public class SE extends Process {
 		//TODO this function should read a file on disk at some point
 		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
 
-		uploadAck.emit(message.getMailbox());
+		uploadAck.sendTo(message.getSenderMailbox());
 
 		Msg.debug("SE '"+ hostName + "' sent ack back to '" +
-				message.getMailbox() + "'");
+				message.getSenderMailbox() + "'");
 	}
 
 	private void handleDownloadRequest(Message message) {
 		Message sendFile= new Message(Message.Type.SEND_FILE,
 					message.getLogicalFileSize());
 
-		sendFile.asynchronousEmit(message.getMailbox());
+		sendFile.sendAsynchronouslyTo(message.getSenderMailbox());
 
 		Msg.debug("SE '"+ hostName + "' sent file '" +
 				message.getLogicalFileName() + "' of size " +
 				message.getLogicalFileSize() + " to '" +
-				message.getMailbox() + "'");
+				message.getSenderMailbox() + "'");
 	}
 
 	public String getHostName() {
@@ -47,7 +47,7 @@ public class SE extends Process {
 		VIPSimulator.seList.add(hostName);
 
 		while (!stop){
-			Message message = Message.process(hostName);
+			Message message = Message.getFrom(hostName);
 
 			switch(message.getType()){
 			case DOWNLOAD_REQUEST:
