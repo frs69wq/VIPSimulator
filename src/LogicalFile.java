@@ -1,6 +1,8 @@
 import java.util.Arrays;
 import java.util.Vector;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 
 public class LogicalFile {
 	//TODO Should we add a type to distinguish REGULAR, INPUT, and MERGE files?
@@ -47,8 +49,8 @@ public class LogicalFile {
 	}
 
 	public String toString(){
-		return  "File '" + name + "' of size " + size + 
-				" stored on " + locations.toString();
+		return  "file '" + name + "' of size " + size + " stored on " + 
+				locations.toString();
 	}
 
 	@Override
@@ -58,20 +60,16 @@ public class LogicalFile {
 	}
 
 	public LogicalFile(String logicalFileName, long logicalFileSize, 
-			String SEName) {
-		super();
-		this.setName(logicalFileName);
-		this.setSize(logicalFileSize);
-		this.locations = new Vector<String>();
-		this.locations.add(SEName);
-	}
-
-	public LogicalFile(String logicalFileName, long logicalFileSize, 
 			String[] seNames) {
 		super();
 		this.setName(logicalFileName);
 		this.setSize(logicalFileSize);
 		this.locations = new Vector<String>();
 		this.locations.addAll(Arrays.asList(seNames));
+	}
+
+	public LogicalFile(String logicalFileName, long logicalFileSize, 
+			String seName) {
+		this(logicalFileName, logicalFileSize, new String[] {seName});
 	}
 }
