@@ -25,10 +25,10 @@ public class LFC extends Process {
 	private void populate(String csvFile){
 		Msg.info("Population of LFC '"+ hostName + "' from '"+ csvFile + "'");
 
-		String line = "";
-
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(csvFile));
+			String line = "";
+
 			while ((line = br.readLine()) != null) {
 				String[] fileInfo = line.split(",");
 				String[] seNames = fileInfo[2].split(":");

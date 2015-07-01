@@ -10,7 +10,9 @@ public class GateMessage extends Task{
 		GATE_START,
 		GATE_PROGRESS,
 		GATE_CONTINUE,
-		GATE_STOP
+		GATE_STOP,
+		MERGE_CONNECT,
+		MERGE_START
 	};
 
 	private Type type;

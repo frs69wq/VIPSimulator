@@ -1,18 +1,12 @@
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
-import org.simgrid.msg.TimeoutException;
-import org.simgrid.msg.TransferFailureException;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 
 public class Merge extends Process {
 	private String mailbox;
+//	private String closeSEName;
 
-	public Merge(Host host, String name, String[]args) {
-		super(host,name,args);
-	}
-	
 	private void setMailbox(){
 		this.mailbox = Integer.toString(this.getPID()) + "@" +
 				getHost().getName();
@@ -22,8 +16,13 @@ public class Merge extends Process {
 		return this.mailbox;
 	}
 
-	public void main(String[] args) throws TransferFailureException, 
-		HostFailureException, TimeoutException, NativeException {
+	public Merge(Host host, String name, String[]args) {
+		super(host,name,args);
+//		this.closeSEName = host.getProperty("closeSE");
+	}
+
+	public void main(String[] args) throws MsgException {
+		boolean stop = false;
 		// Build the mailbox name from the PID and the host name. This might be 
 		// useful to distinguish different Gate processes running on a same host
 		setMailbox();
@@ -32,7 +31,23 @@ public class Merge extends Process {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
 		}
-		Msg.info("Register Merge on "+ this.getMailbox());
-		GateMessage.sendTo("VIPServer",GateMessage.Type.GATE_CONNECT);
+		Msg.info("Register Merge on '"+ mailbox + "'");
+		// Use of some simulation magic here, every worker knows the mailbox of 
+		// the VIP server
+		GateMessage.sendTo("VIPServer",GateMessage.Type.MERGE_CONNECT);
+
+		while (!stop){
+			GateMessage message = GateMessage.getFrom(mailbox);
+
+			switch(message.getType()){
+			case MERGE_START:
+				Msg.info("Processing Merge");
+				Msg.verb("Goodbye!");
+				stop = true;
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }

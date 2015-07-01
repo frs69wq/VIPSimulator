@@ -11,6 +11,7 @@ public class VIPServer extends Process {
 	// Worker node management for registration and termination 
 	private String mailbox;
 	private Vector<String> gateWorkers = new Vector<String>();
+	private Vector<Merge> mergeWorkers = new Vector<Merge>();
 	private int endedGateWorkers = 0;
 
 	private long totalParticleNumber = 0;
@@ -22,14 +23,6 @@ public class VIPServer extends Process {
 	private void setMailbox(){
 		this.mailbox = Integer.toString(this.getPID()) + "@" +
 				getHost().getName();
-	}
-
-	public Vector<String> getGateWorkers() {
-		return gateWorkers;
-	}
-
-	public void setGateWorkers(Vector<String> gateWorkers) {
-		this.gateWorkers = gateWorkers;
 	}
 
 	public VIPServer(Host host, String name, String[]args) {
@@ -55,7 +48,6 @@ public class VIPServer extends Process {
 		LCG.crInput(getMailbox(),"file-14539084101429.zip", 514388,
 				VIPSimulator.getDefaultSE(), VIPSimulator.getDefaultLFC());
 
-		// Wait for slaves to register
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
@@ -63,14 +55,21 @@ public class VIPServer extends Process {
 
 			switch (message.getType()){
 			case GATE_CONNECT:
-				getGateWorkers().add(message.getSenderMailbox());
+				gateWorkers.add(message.getSenderMailbox());
 
-				Msg.debug(getGateWorkers().size() +
-						" worker(s) registered out of " +
+				Msg.debug(gateWorkers.size() +
+						" GATE worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
 				GateMessage.sendTo(message.getSenderMailbox(), 
 						GateMessage.Type.GATE_START);
+				break;
+			case MERGE_CONNECT:
+				mergeWorkers.add((Merge) message.getSender());
+				
+				Msg.debug(mergeWorkers.size() +
+						" MERGE worker(s) registered out of " +
+						VIPSimulator.numberOfMergeJobs);
 				break;
 			case GATE_PROGRESS:
 				totalParticleNumber += message.getParticleNumber();
@@ -90,9 +89,14 @@ public class VIPServer extends Process {
 					endedGateWorkers++;
 				}
 
-				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
-					Msg.info("Exiting the interaction loop with " + 
-							endedGateWorkers + " ended jobs");
+				if (endedGateWorkers == gateWorkers.size()){
+					Msg.info("All GATE workers received a 'GATE_STOP' message" +
+							"Wake up Merge" + mergeWorkers.size() + 
+							" worker(s)");
+
+					GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
+							GateMessage.Type.MERGE_START);
+					// then stop
 					stop=true;
 				}
 
