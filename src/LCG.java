@@ -8,7 +8,8 @@ public class LCG {
 				SEName);
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
-		Message.sendTo(LFCName, Message.Type.CR_INPUT, file);
+		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
+		Message.getFrom(mailbox);
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");

@@ -9,11 +9,21 @@ import org.simgrid.msg.HostFailureException;
 public class VIPServer extends Process {
 
 	// Worker node management for registration and termination 
+	private String mailbox;
 	private Vector<String> gateWorkers = new Vector<String>();
 	private int endedGateWorkers = 0;
 
 	private long totalParticleNumber = 0;
-	
+
+	public String getMailbox(){
+		return this.mailbox;
+	}
+
+	private void setMailbox(){
+		this.mailbox = Integer.toString(this.getPID()) + "@" +
+				getHost().getName();
+	}
+
 	public Vector<String> getGateWorkers() {
 		return gateWorkers;
 	}
@@ -24,21 +34,25 @@ public class VIPServer extends Process {
 
 	public VIPServer(Host host, String name, String[]args) {
 		super(host,name,args);
+		
 	}
 
 	public void main(String[] args) throws HostFailureException {
 		Msg.info("A new simulation starts!");
 		boolean stop=false;
+		// Build the mailbox name from the PID and the host name. This might be 
+		// useful to distinguish different Gate processes running on a same host
+		setMailbox();
 		// TODO what is below is very specific to GATE
 		// Added to temporarily improve the realism of the simulation
 		// Have to be generalized at some point.
 		// WARNING: From log inspection, it seems that workers do not all get 
 		// the input files from the default SE.
-		LCG.crInput("VIPServer","gate.sh.tar.gz", 73043,
+		LCG.crInput(getMailbox(),"gate.sh.tar.gz", 73043,
 				VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
-		LCG.crInput("VIPServer","opengate_version_7.0.tar.gz", 376927945,
+		LCG.crInput(getMailbox(),"opengate_version_7.0.tar.gz", 376927945,
 				VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
-		LCG.crInput("VIPServer","file-14539084101429.zip", 514388,
+		LCG.crInput(getMailbox(),"file-14539084101429.zip", 514388,
 				VIPSimulator.defaultSE, VIPSimulator.defaultLFC);
 
 		// Wait for slaves to register

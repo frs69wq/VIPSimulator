@@ -6,7 +6,6 @@ import org.simgrid.msg.TaskCancelledException;
 
 public class Message extends Task {
 	public enum Type{
-		CR_INPUT,
 		ASK_LOGICAL_FILE,
 		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
@@ -92,8 +91,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Constructor, builds a new CR_INPUT/REGISTER_FILE/SEND_LOGICAL_FILE 
-	 * message
+	 * Constructor, builds a new REGISTER_FILE/SEND_LOGICAL_FILE message
 	 */
 	public Message(Type type, LogicalFile file) {
 		// Assume that 1e6 flops are needed on receiving side to process a 

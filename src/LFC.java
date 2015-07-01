@@ -85,12 +85,6 @@ public class LFC extends Process {
 			Message message = Message.getFrom(hostName);
 
 			switch(message.getType()){
-			case CR_INPUT:
-				// Register the information sent in the message into the LFC by
-				// adding a new File
-				register(message.getFile());
-				Msg.info(message.getSource().getName());
-				break;
 			case REGISTER_FILE:
 				register(message.getFile());
 				Message.sendTo(message.getSenderMailbox(), 
