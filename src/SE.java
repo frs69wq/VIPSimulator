@@ -4,41 +4,11 @@ import org.simgrid.msg.Process;
 
 public class SE extends Process {
 
-	private String hostName;
-
-	private void handleUploadRequest(Message message) {
-		//TODO this function should read a file on disk at some point
-		Message uploadAck= new Message(Message.Type.UPLOAD_ACK);
-
-		uploadAck.sendTo(message.getSenderMailbox());
-
-		Msg.debug("SE '"+ hostName + "' sent ack back to '" +
-				message.getSenderMailbox() + "'");
-	}
-
-	private void handleDownloadRequest(Message message) {
-		Message sendFile= new Message(Message.Type.SEND_FILE,
-					message.getLogicalFileSize());
-
-		sendFile.sendAsynchronouslyTo(message.getSenderMailbox());
-
-		Msg.debug("SE '"+ hostName + "' sent file '" +
-				message.getLogicalFileName() + "' of size " +
-				message.getLogicalFileSize() + " to '" +
-				message.getSenderMailbox() + "'");
-	}
-
-	public String getHostName() {
-		return hostName;
-	}
-
-	public void setHostName(String hostName) {
-		this.hostName = hostName;
-	}
+	protected String hostName;
 
 	public SE (Host host, String name, String[]args) {
 		super(host,name,args);
-		this.setHostName(this.getHost().getName());
+		this.hostName = this.getHost().getName();
 	}
 
 	public void main(String[] args) {
@@ -51,10 +21,21 @@ public class SE extends Process {
 
 			switch(message.getType()){
 			case DOWNLOAD_REQUEST:
-				handleDownloadRequest(message);
+				Message.sendAsynchronouslyTo(message.getSenderMailbox(), 
+						Message.Type.SEND_FILE,
+						message.getLogicalFileSize());
+
+				Msg.debug("SE '"+ hostName + "' sent file '" +
+						message.getLogicalFileName() + "' of size " +
+						message.getLogicalFileSize() + " to '" +
+						message.getSenderMailbox() + "'");
 				break;
 			case UPLOAD_REQUEST:
-				handleUploadRequest(message);
+				Message.sendTo(message.getSenderMailbox(), 
+						Message.Type.UPLOAD_ACK);
+
+				Msg.debug("SE '"+ hostName + "' sent ack back to '" +
+						message.getSenderMailbox() + "'");
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");

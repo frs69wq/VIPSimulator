@@ -101,17 +101,15 @@ public class VIPServer extends Process {
 				" It's time to shutdown the system.");
 
 		// Shutting down all the LFCs
-		Iterator<String> it = VIPSimulator.lfcList.iterator();
-		while (it.hasNext()){
-			Message endLFC = new Message(Message.Type.FINALIZE);
-			endLFC.sendTo(it.next());
+		Iterator<String> itLFC = VIPSimulator.lfcList.iterator();
+		while (itLFC.hasNext()){
+			Message.sendTo(itLFC.next(), Message.Type.FINALIZE);
 		}
 
 		// Shutting down all the SEs
 		Iterator<String> itSE = VIPSimulator.seList.iterator();
 		while (itSE.hasNext()){
-			Message endSE = new Message(Message.Type.FINALIZE);
-			endSE.sendTo(itSE.next());
+			Message.sendTo(itSE.next(), Message.Type.FINALIZE);
 		}
 	}
 }

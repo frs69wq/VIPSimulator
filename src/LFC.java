@@ -93,8 +93,8 @@ public class LFC extends Process {
 				break;
 			case REGISTER_FILE:
 				register(message.getFile());
-				Message registerAck = new Message(Message.Type.REGISTER_ACK);
-				registerAck.sendTo(message.getSenderMailbox());
+				Message.sendTo(message.getSenderMailbox(), 
+						Message.Type.REGISTER_ACK);
 				Msg.debug("LFC '"+ hostName + "' sent back an ack to '" +
 						message.getSenderMailbox() + "'");
 				break;
@@ -103,10 +103,8 @@ public class LFC extends Process {
 					getLogicalFileByName(message.getLogicalFileName());
 
 				file.selectLocation();
-				Message sendLogicalFile = 
-						new Message(Message.Type.SEND_LOGICAL_FILE, file);
-				Msg.info(message.getSenderMailbox());
-				sendLogicalFile.sendTo(message.getSenderMailbox());
+				Message.sendTo(message.getSenderMailbox(), 
+						Message.Type.SEND_LOGICAL_FILE, file);
 				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
