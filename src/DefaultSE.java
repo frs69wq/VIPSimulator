@@ -1,4 +1,3 @@
-import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 
 public class DefaultSE extends SE{
