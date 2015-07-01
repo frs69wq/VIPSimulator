@@ -20,30 +20,28 @@ public class LCG {
 		Msg.debug("lcg-cr '" + logicalFileName + "' from '" + localFileName + 
 				"' using lfc '" + LFCName +"'");
 
+		// upload file to SE
 		Message.sendAsynchronouslyTo(SEName, Message.Type.UPLOAD_REQUEST, 
 				localFileSize);
 
-		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + 
-				logicalFileName +"' of size " + localFileSize);
-
 		//waiting for upload to finish
-		Msg.debug("Host '" + mailbox + 
-				"' is waiting for upload-reply from SE '" + SEName +"'");
+		Msg.info("Sent upload request to SE '" + SEName + "' for file '" + 
+				logicalFileName +"' of size " + localFileSize +". Waiting for" +
+				" an ack");
+
 		Message.getFrom(mailbox);
-		Msg.info("SE '"+ SEName + "' replied with an ack");
+		Msg.info("SE '"+ SEName + "' replied with an ACK");
 
 
 		// Register file into LFC
-		Msg.info("Ask '"+ LFCName + "' to register file '" + logicalFileName + 
-				"' stored on SE '" + SEName + "'");
 		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, 
 				SEName);
+		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
 		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
-
 		Message.getFrom(mailbox);
-		Msg.info("LFC '"+ LFCName + "' registered file '" + 
-				logicalFileName + "', stored on SE '" +	SEName + "'");
+		
+		Msg.info("LFC '"+ LFCName + "' registered " + file.toString());
 
 		Msg.debug("lcg-cr of '" + logicalFileName +"' on LFC '" + LFCName +
 				"' completed");
@@ -57,8 +55,9 @@ public class LCG {
 		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName +
 				"' using LFC '" + LFCName + "'");
 
-		//get location and size from the LFC
+		// get information on Logical File from the LFC
 		Message.sendTo(LFCName, Message.Type.ASK_LOGICAL_FILE, logicalFileName);
+
 		Msg.info("Asked about '" + logicalFileName + "' to LFC '" + LFCName + 
 				"'. Waiting for information ...");
 		
@@ -67,21 +66,25 @@ public class LCG {
 		SEName = getFileInfo.getFile().getSEName();
 		logicalFileSize = getFileInfo.getFile().getSize();
 
-		Msg.info("LFC '"+ LFCName + "' replied with SE name '" + 
-				SEName +
-				"' for file '" + logicalFileName +"' of size " +
-				logicalFileSize);
+		Msg.info("LFC '"+ LFCName + "' replied: " + 
+				getFileInfo.getFile().toString()); 
 
+		// Download physical File from SE
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
 				SEName + "' using LFC '" + LFCName +"'");
+
 		Message.sendTo(SEName, Message.Type.DOWNLOAD_REQUEST, 
 				logicalFileName, logicalFileSize);
-		Msg.info("Sent download request to SE '" + SEName + "' for file '" +
-				logicalFileName +"' of size " + logicalFileSize);
 
-		Msg.debug("Receiving file '" + logicalFileName + "' from SE '" + 
-				SEName + "'");
+		Msg.info("Sent download request for " + 
+				getFileInfo.getFile().toString() + 
+				". Waiting for reception ...");
+
 		Message.getFrom(mailbox);
-		Msg.info("SE '"+ SEName + "' sent file named '" + logicalFileName +"'");
+
+		Msg.info("SE '"+ SEName + "' sent " + getFileInfo.getFile().toString());
+
+		Msg.debug("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
+				"' completed");
 	};
 }

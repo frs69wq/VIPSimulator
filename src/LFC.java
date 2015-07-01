@@ -60,7 +60,7 @@ public class LFC extends Process {
 			// This file is not registered yet, create and add it
 			Msg.debug ("'" + newFile.getName() + "' is not registered yet");
 			catalog.add(newFile);
-			Msg.info("LFC '"+ hostName + "' registered " + newFile.toString());
+			Msg.debug("LFC '"+ hostName + "' registered " + newFile.toString());
 		}
 	}
 
