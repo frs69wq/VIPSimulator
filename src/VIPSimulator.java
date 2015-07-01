@@ -4,7 +4,9 @@ import org.simgrid.msg.NativeException;
 
 public class VIPSimulator {
 	private static String defaultLFC = null;
+	private static Vector<String> lfcList = new Vector<String>();
 	private static String defaultSE = null;
+	private static Vector<String> seList = new Vector<String>();
 
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
@@ -13,10 +15,6 @@ public class VIPSimulator {
 	public static int cpuMergeTime;
 	public static double eventsPerSec;
 	public static String logFile;
-
-	public static Vector<String> lfcList = new Vector<String>();
-
-	public static Vector<String> seList = new Vector<String>();
 
 	public static String getDefaultLFC() {
 		return defaultLFC;
@@ -33,6 +31,10 @@ public class VIPSimulator {
 		}
 	}
 
+	public static Vector<String> getLFCList() {
+		return lfcList;
+	}
+
 	public static String getDefaultSE() {
 		return defaultSE;
 	}
@@ -46,6 +48,10 @@ public class VIPSimulator {
 			VIPSimulator.defaultSE = defaultSE;
 			Msg.info("Default SE is '"+ VIPSimulator.getDefaultSE()+ "'");
 		}
+	}
+
+	public static Vector<String> getSEList() {
+		return seList;
 	}
 
 	public static void main(String[] args) throws NativeException {

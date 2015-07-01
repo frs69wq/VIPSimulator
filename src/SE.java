@@ -14,7 +14,7 @@ public class SE extends Process {
 	public void main(String[] args) {
 		boolean stop = false;
 		Msg.debug("Register SE on "+ hostName);
-		VIPSimulator.seList.add(hostName);
+		VIPSimulator.getSEList().add(hostName);
 
 		while (!stop){
 			Message message = Message.getFrom(hostName);

@@ -74,7 +74,7 @@ public class LFC extends Process {
 		boolean stop = false;
 	
 		Msg.debug("Register LFC on "+ hostName);
-		VIPSimulator.lfcList.add(hostName);
+		VIPSimulator.getLFCList().add(hostName);
 		String catalogOnFile = (args.length > 0 ? args[0] : null);
 
 		if (catalogOnFile != null){
