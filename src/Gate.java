@@ -53,14 +53,12 @@ public class Gate extends Process {
 				Long.valueOf(args[0]).longValue() : 1000000);
 
 		Msg.info("Register GATE on '"+ mailbox + "'");
-		GateMessage connect= new GateMessage(GateMessage.Type.GATE_CONNECT, 
-				getMailbox());
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		connect.emit("VIPServer");
+		GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_CONNECT);
 		
 		while (!stop){
-			GateMessage message = GateMessage.process(mailbox);
+			GateMessage message = GateMessage.getFrom(mailbox);
 
 			switch(message.getType()){
 			case GATE_START:
@@ -96,13 +94,11 @@ public class Gate extends Process {
 				
 				nbParticles += simulatedParticles;
 				Msg.info("Sending computed number of particles to 'VIPServer'");
-				GateMessage progress = 
-						new GateMessage(GateMessage.Type.GATE_PROGRESS, 
-								getMailbox(), simulatedParticles);
 
 				// Use of some simulation magic here, every worker knows the
 				// mailbox of the VIP server
-				progress.emit("VIPServer");
+				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_PROGRESS,
+						simulatedParticles);
 
 				break;
 			case GATE_STOP:

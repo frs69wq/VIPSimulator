@@ -59,19 +59,18 @@ public class VIPServer extends Process {
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
-			GateMessage message = GateMessage.process("VIPServer");
+			GateMessage message = GateMessage.getFrom("VIPServer");
 
 			switch (message.getType()){
 			case GATE_CONNECT:
-				getGateWorkers().add(message.getMailbox());
+				getGateWorkers().add(message.getSenderMailbox());
 
 				Msg.debug(getGateWorkers().size() +
 						" worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
-				GateMessage start = new GateMessage(GateMessage.Type.GATE_START,
-						"VIPServer");
-				start.emit(message.getMailbox());
+				GateMessage.sendTo(message.getSenderMailbox(), 
+						GateMessage.Type.GATE_START);
 				break;
 			case GATE_PROGRESS:
 				totalParticleNumber += message.getParticleNumber();
@@ -79,17 +78,15 @@ public class VIPServer extends Process {
 						" particles have been computed. "+
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
-					GateMessage again = 
-							new GateMessage(GateMessage.Type.GATE_CONTINUE);
-					Msg.info("Sending a '" + again.getType().toString() +
-							"' message to '" + message.getMailbox() +"'");
-					again.emit(message.getMailbox());
+					Msg.info("Sending a 'GATE_CONTINUE' message to '" + 
+							message.getSenderMailbox() +"'");
+					GateMessage.sendTo(message.getSenderMailbox(), 
+							GateMessage.Type.GATE_CONTINUE);
 				} else {
-					GateMessage endGate = 
-							new GateMessage(GateMessage.Type.GATE_STOP);
-					Msg.info("Sending a '" + endGate.getType().toString() +
-							"' message to '" + message.getMailbox() +"'");
-					endGate.emit(message.getMailbox());
+					Msg.info("Sending a 'GATE_STOP' message to '" +
+							message.getSenderMailbox() +"'");
+					GateMessage.sendTo(message.getSenderMailbox(), 
+							GateMessage.Type.GATE_STOP);
 					endedGateWorkers++;
 				}
 

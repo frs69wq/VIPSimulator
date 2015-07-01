@@ -32,9 +32,7 @@ public class Merge extends Process {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
 		}
-		GateMessage task = new GateMessage(GateMessage.Type.GATE_CONNECT, 
-				getMailbox());
 		Msg.info("Register Merge on "+ this.getMailbox());
-		task.send("VIPServer");
+		GateMessage.sendTo("VIPServer",GateMessage.Type.GATE_CONNECT);
 	}
 }
