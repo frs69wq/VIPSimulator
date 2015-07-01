@@ -1,9 +1,6 @@
 import java.util.Arrays;
 import java.util.Vector;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
-
 public class LogicalFile {
 	//TODO Should we add a type to distinguish REGULAR, INPUT, and MERGE files?
 	private String name;

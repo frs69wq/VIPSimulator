@@ -22,14 +22,13 @@ public class LFC extends Process {
 	// name,size,se_1<:se_2:...:se_n>
 	// The populate function reads and parses that file, create LogicalFile 
 	// objects and add them to the local catalog.
-	private void populate(String catalogOnFile){
-		BufferedReader br = null;
+	private void populate(String csvFile){
+		Msg.info("Population of LFC '"+ hostName + "' from '"+ csvFile + "'");
+
 		String line = "";
 
-		Msg.info("Population of LFC '"+ hostName + "' from '"+ catalogOnFile + 
-				"'");
 		try {
-			br = new BufferedReader(new FileReader(catalogOnFile));
+			BufferedReader br = new BufferedReader(new FileReader(csvFile));
 			while ((line = br.readLine()) != null) {
 				String[] fileInfo = line.split(",");
 				String[] seNames = fileInfo[2].split(":");
