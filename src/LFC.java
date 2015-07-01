@@ -43,6 +43,11 @@ public class LFC extends Process {
 		}
 	}
 
+	// A worker might want to register a new logical file, or a replica on an 
+	// existing file in the catalog. This function first checks if a file with
+	// the same name already exists. If it does, it determines whether it is a
+	// new replica or not. Otherwise, it creates a new entry in the catalog for
+	// that file.
 	private void register(LogicalFile newFile){
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
@@ -70,13 +75,16 @@ public class LFC extends Process {
 
 	public void main(String[] args) {
 		boolean stop = false;
-	
+
 		Msg.debug("Register LFC on "+ hostName);
 		VIPSimulator.getLFCList().add(hostName);
-		String catalogOnFile = (args.length > 0 ? args[0] : null);
 
-		if (catalogOnFile != null){
-			populate(catalogOnFile);
+		// If this LFC process is started with an argument, we populate the
+		// catalog from the CSV file given as args[0
+		String csvFile = (args.length > 0 ? args[0] : null);
+
+		if (csvFile != null){
+			populate(csvFile);
 			Msg.debug(this.toString());
 		}
 
@@ -95,6 +103,9 @@ public class LFC extends Process {
 				LogicalFile file = 
 					getLogicalFileByName(message.getLogicalFileName());
 
+				// If this logical file is available on several locations, a 
+				// single one is selected before returning the file to the 
+				// worker asking for it.
 				file.selectLocation();
 				Message.sendTo(message.getSenderMailbox(), 
 						Message.Type.SEND_LOGICAL_FILE, file);

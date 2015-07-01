@@ -2,7 +2,6 @@ import java.util.Arrays;
 import java.util.Vector;
 
 public class LogicalFile {
-	//TODO Should we add a type to distinguish REGULAR, INPUT, and MERGE files?
 	private String name;
 	private long size;
 	private Vector<String>locations;
@@ -11,36 +10,30 @@ public class LogicalFile {
 		return name;
 	}
 
-	public void setName(String logicalFileName) {
-		this.name = logicalFileName;
-	}
-
 	public long getSize() {
 		return size;
-	}
-
-	public void setSize(long logicalFileSize) {
-		this.size = logicalFileSize;
 	}
 
 	public void addLocation (String seName) {
 		locations.add(seName);
 	}
 
+	public Vector<String> getLocations() {
+		return locations;
+	}
+
+	//TODO These two functions might be redundant (and/or misleading)
+	//TODO To be improved once we know more about the LFC internal algorithms.
 	public String getSEName() {
 		//TODO return the first SE for now. Might be interesting to implement 
 		// some load balancing strategy
 		return locations.get(0);
 	}
 
-	public Vector<String> getLocations() {
-		return locations;
-	}
-
 	public void selectLocation(){
 		//TODO return the first SE for now. Might be interesting to implement 
 		// some load balancing strategy
-		String selectedLocation = locations.get(0);
+		String selectedLocation = getSEName();
 		locations.clear();
 		locations.add(selectedLocation);
 	}
@@ -56,17 +49,16 @@ public class LogicalFile {
 		return name.equals(file.getName());
 	}
 
-	public LogicalFile(String logicalFileName, long logicalFileSize, 
-			String[] seNames) {
+	public LogicalFile(String name, long size, String[] locations) {
 		super();
-		this.setName(logicalFileName);
-		this.setSize(logicalFileSize);
+		this.name = name;
+		this.size = size;
 		this.locations = new Vector<String>();
-		this.locations.addAll(Arrays.asList(seNames));
+		this.locations.addAll(Arrays.asList(locations));
 	}
 
-	public LogicalFile(String logicalFileName, long logicalFileSize, 
-			String seName) {
-		this(logicalFileName, logicalFileSize, new String[] {seName});
+	// In most cases, this constructor with a single location will be used.
+	public LogicalFile(String name, long size, String location) {
+		this(name, size, new String[] {location});
 	}
 }
