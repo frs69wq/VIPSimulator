@@ -3,6 +3,9 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
 public class VIPSimulator {
+	private static String defaultLFC = null;
+	private static String defaultSE = null;
+
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
 	public static long sosTime;
@@ -11,11 +14,39 @@ public class VIPSimulator {
 	public static double eventsPerSec;
 	public static String logFile;
 
-	public static String defaultLFC = null;
 	public static Vector<String> lfcList = new Vector<String>();
 
-	public static String defaultSE = null;
 	public static Vector<String> seList = new Vector<String>();
+
+	public static String getDefaultLFC() {
+		return defaultLFC;
+	}
+
+	public static void setDefaultLFC(String defaultLFC) {
+		if (VIPSimulator.defaultLFC != null){
+			Msg.warn("The default LFC has already been identified. Please " +
+					"check there is only one 'DefaultLFC' process in the " +
+					"deployement file.");
+		} else {
+			VIPSimulator.defaultLFC = defaultLFC;
+			Msg.info("Default LFC is '"+ VIPSimulator.defaultLFC + "'");
+		}
+	}
+
+	public static String getDefaultSE() {
+		return defaultSE;
+	}
+
+	public static void setDefaultSE(String defaultSE) {
+		if (VIPSimulator.defaultSE != null){
+			Msg.warn("The default SE has already been identified. Please " +
+					"check there is only one 'DefaultSE' process in the " +
+					"deployement file.");
+		} else {
+			VIPSimulator.defaultSE = defaultSE;
+			Msg.info("Default SE is '"+ VIPSimulator.getDefaultSE()+ "'");
+		}
+	}
 
 	public static void main(String[] args) throws NativeException {
 		Msg.init(args);
