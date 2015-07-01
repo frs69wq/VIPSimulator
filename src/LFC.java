@@ -2,7 +2,6 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
-import java.util.Iterator;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
@@ -79,6 +78,7 @@ public class LFC extends Process {
 
 		if (catalogOnFile != null){
 			populate(catalogOnFile);
+			Msg.debug(this.toString());
 		}
 
 		while (!stop){
@@ -130,16 +130,6 @@ public class LFC extends Process {
 	}
 
 	public String toString () {
-		String list = "";
-		Iterator<LogicalFile> it = this.catalog.iterator();
-
-		while (it.hasNext())
-			list = list.concat(it.next().toString()).concat(",");
-
-		//removing last comma
-		if (list.charAt(list.length()-1) == ',')
-			list = list.substring(0, list.length()-1);
-
-		return list;
+		return catalog.toString();
 	}
 }
