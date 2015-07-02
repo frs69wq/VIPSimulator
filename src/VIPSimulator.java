@@ -56,38 +56,46 @@ public class VIPSimulator {
 
 	public static void main(String[] args) throws NativeException {
 		Msg.init(args);
+		String platform_file  = null;
+		String deployment_file =  null;
 
-		String platf  = args.length > 1 ? args[0] : "platform.xml";
-		String deploy =  args.length > 1 ? args[1] :
-				"Deployment_workflow-8tkxN4_2015-04-22.xml";
-		totalParticleNumber = args.length > 1 ? 
+		if (args.length < 2){
+			Msg.error("This simulator requires at least a platform and a " + 
+					"deployment files tu run");
+			System.exit(1);
+		} else {
+			platform_file  = args[0];
+			deployment_file =  args[1];
+			Msg.info("SCENARIO: platform is " + platform_file + 
+					"', deployment is '" + deployment_file+ "'");
+		}
+
+		totalParticleNumber = args.length > 2 ? 
 				Long.valueOf(args[2]).longValue() : 1000000;
-		numberOfGateJobs = args.length > 1 ? 
+		numberOfGateJobs = args.length > 3 ? 
 				Integer.valueOf(args[3]).intValue() : 5;
 		// SOS time is given in seconds on command line, but sleeps take values
 		// in milliseconds.
-		sosTime = 1000*(args.length > 1 ? 
+		sosTime = 1000*(args.length > 4 ? 
 				Long.valueOf(args[4]).longValue() : 300);
-		numberOfMergeJobs = args.length > 1 ? 
+		numberOfMergeJobs = args.length > 5 ? 
 				Integer.valueOf(args[5]).intValue() : 1;
-		cpuMergeTime = args.length > 1 ? 
+		cpuMergeTime = args.length > 6 ? 
 				Integer.valueOf(args[6]).intValue() : 10;
 
-		eventsPerSec = args.length > 1 ? 
+		eventsPerSec = args.length > 7 ? 
 				Double.valueOf(args[7]).doubleValue() : 200;
-		logFile = args.length > 1 ? args[8] : "logs.txt";
+		logFile = args.length > 8 ? args[8] : "logs.txt";
 
-		Msg.info("SCENARIO: platform is " + platf + ", deployment is " + 
-				deploy);
 		Msg.info("PARAMS:   sostime is "+ sosTime +
 				", number of Gate tasks is "+ 
 				numberOfGateJobs + ", number of merge tasks is " +
 				numberOfMergeJobs +", cpu merge time is " + cpuMergeTime);
 
 		// Load the platform description 
-		Msg.createEnvironment(platf);
+		Msg.createEnvironment(platform_file);
 		// and deploy the application 
-		Msg.deployApplication(deploy);
+		Msg.deployApplication(deployment_file);
 
 		// Now, execute the simulation. 
 		Msg.run();
