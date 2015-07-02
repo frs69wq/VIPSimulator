@@ -119,7 +119,8 @@ public class Gate extends Process {
 						uploadFileSize, logicalFileName, 
 						VIPSimulator.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
-				Msg.info("Stopping Gate job and exiting");
+				Msg.info("Stopping GATE job. Inform VIP server and exit");
+				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_END);
 
 				Msg.info("Spent " + downloadTime + "s downloading, " +
 						totalComputeTime + "s computing, and " + uploadTime +

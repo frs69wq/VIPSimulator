@@ -11,6 +11,7 @@ public class GateMessage extends Task{
 		GATE_PROGRESS,
 		GATE_CONTINUE,
 		GATE_STOP,
+		GATE_END,
 		MERGE_CONNECT,
 		MERGE_START
 	};
