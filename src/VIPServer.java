@@ -94,7 +94,8 @@ public class VIPServer extends Process {
 							"Wake up Merge" + mergeWorkers.size() + 
 							" worker(s)");
 					if (VIPSimulator.numberOfMergeJobs>0)
-						GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
+						GateMessage.sendTo(
+								mergeWorkers.firstElement().getMailbox(),
 								GateMessage.Type.MERGE_START);
 					// then stop
 					stop=true;
