@@ -103,7 +103,8 @@ public class VIPServer extends Process {
 											GateMessage.Type.MERGE_START);
 									runningMergeWorkers++;
 								} else {
-									Msg.info("No need for Merge workers");
+									Msg.info("No need for Merge workers on " +
+											" timeout expiration");
 								}
 							}
 						}.start();
