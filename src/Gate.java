@@ -114,8 +114,9 @@ public class Gate extends Process {
 						Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime = Msg.getClock();
-				LCG.cr(getMailbox(), closeSEName, "local_file.tgz", uploadFileSize,
-						logicalFileName, VIPSimulator.getDefaultLFC());
+				LCG.cr(getMailbox(), closeSEName, "local_file.tgz", 
+						uploadFileSize, logicalFileName, 
+						VIPSimulator.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping Gate job and exiting");
 
