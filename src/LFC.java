@@ -80,7 +80,7 @@ public class LFC extends Process {
 		VIPSimulator.getLFCList().add(hostName);
 
 		// If this LFC process is started with an argument, we populate the
-		// catalog from the CSV file given as args[0
+		// catalog from the CSV file given as args[0]
 		String csvFile = (args.length > 0 ? args[0] : null);
 
 		if (csvFile != null){
@@ -119,8 +119,9 @@ public class LFC extends Process {
 						message.getSenderMailbox() + "'");
 				break;
 			case ASK_MERGE_LIST:
-				Msg.info("just ack the request for now");
-				Message.sendTo(returnMailbox, Message.Type.UPLOAD_ACK);
+				Vector<LogicalFile> results = getResults();
+				Message.sendTo(returnMailbox, Message.Type.SEND_MERGE_FILE_LIST,
+						results);
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");
@@ -142,6 +143,16 @@ public class LFC extends Process {
 		}
 
 		return file;
+	}
+
+	public Vector<LogicalFile> getResults(){
+		Vector<LogicalFile> results = new Vector<LogicalFile>();
+		for (LogicalFile file : catalog) 
+			if (file.getName().matches("results/(.*)partial(.*)")){
+				results.add(file);
+			}
+
+		return results;
 	}
 
 	public String getSEName (String logicalFileName){

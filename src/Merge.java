@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
@@ -47,8 +49,13 @@ public class Merge extends Process {
 				Message.sendTo(VIPSimulator.getDefaultLFC(), 
 						Message.Type.ASK_MERGE_LIST);
 				Msg.info("asked for list of files to merge. waiting for reply from " + VIPSimulator.getDefaultLFC());
-				Message.getFrom(VIPSimulator.getDefaultLFC()+getMailbox());
-				Msg.info("ack recv?");
+				Message getFileList = 
+						Message.getFrom(
+								VIPSimulator.getDefaultLFC()+getMailbox());
+				Vector<LogicalFile> logicalfilesToMerge = 
+						getFileList.getFileList();
+
+				Msg.info("Files to merge:" + logicalfilesToMerge.toString());
 				Process.sleep(5000);
 				Msg.verb("Goodbye!");
 				stop = true;

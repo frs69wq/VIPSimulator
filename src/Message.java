@@ -49,6 +49,10 @@ public class Message extends Task {
 		return fileList.firstElement();
 	}
 
+	public Vector<LogicalFile> getFileList() {
+		return fileList;
+	}
+
 	public Message(Type type, String logicalFileName,
 			long logicalFileSize, Vector<LogicalFile> files) {
 		super(type.toString(), 1e6, 100);
