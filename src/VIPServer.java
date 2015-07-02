@@ -89,12 +89,17 @@ public class VIPServer extends Process {
 						Msg.info("The expected number of particles has been "+
 								"reached. Start a timer!");
 						new Process(this.getHost(),"Timer"){
-							public void main(String[] args) throws HostFailureException {
+							public void main(String[] args) throws 
+								HostFailureException {
 								Process.sleep(VIPSimulator.sosTime);
-								Msg.info("Time Out ! I should wake some Mergers");
 								if (runningMergeWorkers < 
 										VIPSimulator.numberOfMergeJobs){
-									GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
+									Msg.info("Timeout has expired. Wake up " + 
+										mergeWorkers.size() + 
+										" Merge worker(s)");
+
+									GateMessage.sendTo(
+											mergeWorkers.firstElement().getMailbox(),
 											GateMessage.Type.MERGE_START);
 									runningMergeWorkers++;
 								} else {
