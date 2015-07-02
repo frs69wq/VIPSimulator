@@ -72,7 +72,8 @@ public class Message extends Task {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.type.toString() + "' message");
+			Msg.debug("Received a '" + message.type.toString() + 
+					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created
 			message.execute();
@@ -87,6 +88,8 @@ public class Message extends Task {
 			String logicalFileName, long logicalFileSize, LogicalFile file) {
 		Message m = new Message (type, logicalFileName, logicalFileSize, file);
 		try{
+			Msg.debug("Send a '" + type.toString() + "' message to " +
+					destination);
 			m.send(destination);
 		} catch (MsgException e) {
 			Msg.error("Something went wrong when emitting a '" + 
