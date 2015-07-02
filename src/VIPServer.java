@@ -1,4 +1,3 @@
-import java.util.Iterator;
 import java.util.Vector;
 
 import org.simgrid.msg.Msg;
@@ -117,15 +116,11 @@ public class VIPServer extends Process {
 				" It's time to shutdown the system.");
 
 		// Shutting down all the LFCs
-		Iterator<String> itLFC = VIPSimulator.getLFCList().iterator();
-		while (itLFC.hasNext()){
-			Message.sendTo(itLFC.next(), Message.Type.FINALIZE);
-		}
+		for (String LFC : VIPSimulator.getLFCList())
+			Message.sendTo(LFC, Message.Type.FINALIZE);
 
 		// Shutting down all the SEs
-		Iterator<String> itSE = VIPSimulator.getSEList().iterator();
-		while (itSE.hasNext()){
-			Message.sendTo(itSE.next(), Message.Type.FINALIZE);
-		}
+		for (String SE : VIPSimulator.getSEList())
+			Message.sendTo(SE, Message.Type.FINALIZE);
 	}
 }
