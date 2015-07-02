@@ -40,11 +40,11 @@ public class VIPServer extends Process {
 		// Have to be generalized at some point.
 		// WARNING: From log inspection, it seems that workers do not all get 
 		// the input files from the default SE.
-		LCG.crInput(getMailbox(),"gate.sh.tar.gz", 73043,
+		LCG.crInput(getMailbox(),"inputs/gate.sh.tar.gz", 73043,
 				VIPSimulator.getDefaultSE(), VIPSimulator.getDefaultLFC());
-		LCG.crInput(getMailbox(),"opengate_version_7.0.tar.gz", 376927945,
+		LCG.crInput(getMailbox(),"inputs/opengate_version_7.0.tar.gz", 376927945,
 				VIPSimulator.getDefaultSE(), VIPSimulator.getDefaultLFC());
-		LCG.crInput(getMailbox(),"file-14539084101429.zip", 514388,
+		LCG.crInput(getMailbox(),"inputs/file-14539084101429.zip", 514388,
 				VIPSimulator.getDefaultSE(), VIPSimulator.getDefaultLFC());
 
 		while(!stop){

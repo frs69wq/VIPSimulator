@@ -70,13 +70,13 @@ public class Gate extends Process {
 				// Have to be generalized at some point.
 
 				downloadTime = Msg.getClock();
-				LCG.cp(getMailbox(), "gate.sh.tar.gz", 
+				LCG.cp(getMailbox(), "inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz",
 						VIPSimulator.getDefaultLFC());
-				LCG.cp(getMailbox(), "opengate_version_7.0.tar.gz", 
+				LCG.cp(getMailbox(), "inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPSimulator.getDefaultLFC());
-				LCG.cp(getMailbox(), "file-14539084101429.zip", 
+				LCG.cp(getMailbox(), "inputs/file-14539084101429.zip", 
 						"/scratch/file-14539084101429.zip", 
 						VIPSimulator.getDefaultLFC());
 				downloadTime = Msg.getClock() - downloadTime;
@@ -109,7 +109,8 @@ public class Gate extends Process {
 				//TODO Discuss what we can do here
 				//TODO what is the actual size of the generated file ?
 				//TODO use the actual size obtained from the logs for now
-				String logicalFileName = Long.toString(nbParticles) +
+				String logicalFileName = "results/"+ 
+						Long.toString(nbParticles) +
 						"-partial-"+ mailbox + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
