@@ -89,13 +89,13 @@ public class VIPServer extends Process {
 					endedGateWorkers++;
 				}
 
-				if (endedGateWorkers == gateWorkers.size()){
+				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
 					Msg.info("All GATE workers received a 'GATE_STOP' message" +
 							"Wake up Merge" + mergeWorkers.size() + 
 							" worker(s)");
-
-					GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
-							GateMessage.Type.MERGE_START);
+					if (VIPSimulator.numberOfMergeJobs>0)
+						GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
+								GateMessage.Type.MERGE_START);
 					// then stop
 					stop=true;
 				}
