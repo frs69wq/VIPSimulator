@@ -58,16 +58,6 @@ public class Message extends Task {
 		this.fileList = files;
 	}
 
-	public Message(Type type, String logicalFileName,
-			long logicalFileSize, LogicalFile file) {
-		super(type.toString(), 1e6, 100);
-		this.type = type;
-		this.logicalFileName=logicalFileName;
-		this.logicalFileSize = logicalFileSize;
-		this.fileList = new Vector<LogicalFile>();
-		fileList.add(file);
-	}
-
 	/**
 	 * Constructor, builds a new UPLOAD_REQUEST/SEND_FILE message
 	 */
@@ -98,8 +88,10 @@ public class Message extends Task {
 	}
 
 	public static void sendTo (String destination, Type type, 
-			String logicalFileName, long logicalFileSize, LogicalFile file) {
-		Message m = new Message (type, logicalFileName, logicalFileSize, file);
+			String logicalFileName, long logicalFileSize, 
+			Vector<LogicalFile> fileList) {
+		Message m = new Message (type, logicalFileName, logicalFileSize, 
+				fileList);
 		try{
 			Msg.debug("Send a '" + type.toString() + "' message to " +
 					destination);
@@ -112,7 +104,8 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Specialized send of a FINALIZE/UPLOAD_ACK/REGISTER_ACK message
+	 * Specialized send of a FINALIZE/UPLOAD_ACK/REGISTER_ACK/ASK_MERGE_LIST
+	 * message
 	 */
 	public static void sendTo (String destination, Type type) {
 		sendTo(destination, type, null, 0, null);
@@ -123,7 +116,17 @@ public class Message extends Task {
 	 */
 	public static void sendTo (String destination, Type type, 
 			LogicalFile file) {
-		sendTo(destination, type, null, 0, file);
+		Vector<LogicalFile> list = new Vector<LogicalFile>();
+		list.add(file);
+		sendTo(destination, type, null, 0, list);
+	}
+
+	/**
+	 *  Specialized send of a SEND_MERGE_FILE_LIST message
+	 */
+	public static void sendTo (String destination, Type type, 
+			Vector<LogicalFile> fileList) {
+		sendTo(destination, type, null, 0, fileList);
 	}
 
 	/**
