@@ -21,7 +21,7 @@ public class LCG {
 				"' using lfc '" + LFCName +"'");
 
 		// upload file to SE
-		Message.sendAsynchronouslyTo(SEName, Message.Type.UPLOAD_REQUEST, 
+		Message.sendAsynchronouslyTo(SEName, Message.Type.UPLOAD_FILE, 
 				localFileSize);
 
 		//waiting for upload to finish

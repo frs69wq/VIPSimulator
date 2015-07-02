@@ -6,13 +6,16 @@ import org.simgrid.msg.TaskCancelledException;
 
 public class Message extends Task {
 	public enum Type{
+		// Control messages
 		ASK_LOGICAL_FILE,
 		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
-		REGISTER_ACK,
 		DOWNLOAD_REQUEST,
+		// Data transfers
 		SEND_FILE,
-		UPLOAD_REQUEST,
+		UPLOAD_FILE,
+		// ACK and Signal
+		REGISTER_ACK,
 		UPLOAD_ACK,
 		FINALIZE
 	};

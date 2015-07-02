@@ -93,10 +93,13 @@ public class LFC extends Process {
 
 			switch(message.getType()){
 			case REGISTER_FILE:
+				// Add an entry for the received logical file, if needed
+				// Then send back an ACK to the the sender
 				register(message.getFile());
+
 				Message.sendTo(message.getSenderMailbox(), 
 						Message.Type.REGISTER_ACK);
-				Msg.debug("LFC '"+ hostName + "' sent back an ack to '" +
+				Msg.debug("LFC '"+ hostName + "' sent back an ACK to '" +
 						message.getSenderMailbox() + "'");
 				break;
 			case ASK_LOGICAL_FILE:
