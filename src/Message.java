@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
@@ -12,6 +14,7 @@ public class Message extends Task {
 		REGISTER_FILE,
 		DOWNLOAD_REQUEST,
 		ASK_MERGE_LIST,
+		SEND_MERGE_FILE_LIST,
 		// Data transfers
 		SEND_FILE,
 		UPLOAD_FILE,
@@ -24,7 +27,7 @@ public class Message extends Task {
 	private Type type;
 	private String logicalFileName = null;
 	private long logicalFileSize = 0;
-	private LogicalFile file = null;
+	private Vector<LogicalFile> fileList = null;
 
 	public Type getType() {
 		return type;
@@ -43,7 +46,16 @@ public class Message extends Task {
 	}
 
 	public LogicalFile getFile() {
-		return file;
+		return fileList.firstElement();
+	}
+
+	public Message(Type type, String logicalFileName,
+			long logicalFileSize, Vector<LogicalFile> files) {
+		super(type.toString(), 1e6, 100);
+		this.type = type;
+		this.logicalFileName=logicalFileName;
+		this.logicalFileSize = logicalFileSize;
+		this.fileList = files;
 	}
 
 	public Message(Type type, String logicalFileName,
@@ -52,7 +64,8 @@ public class Message extends Task {
 		this.type = type;
 		this.logicalFileName=logicalFileName;
 		this.logicalFileSize = logicalFileSize;
-		this.file =file;
+		this.fileList = new Vector<LogicalFile>();
+		fileList.add(file);
 	}
 
 	/**
