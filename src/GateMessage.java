@@ -14,7 +14,7 @@ public class GateMessage extends Task{
 		GATE_END,
 		MERGE_CONNECT,
 		MERGE_START
-	};
+		};
 
 	private Type type;
 	private long particleNumber;

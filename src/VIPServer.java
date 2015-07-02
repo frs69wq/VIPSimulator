@@ -4,6 +4,7 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.HostFailureException;
+import org.simgrid.msg.HostNotFoundException;
 
 public class VIPServer extends Process {
 
@@ -12,6 +13,7 @@ public class VIPServer extends Process {
 	private Vector<String> gateWorkers = new Vector<String>();
 	private Vector<Merge> mergeWorkers = new Vector<Merge>();
 	private int endedGateWorkers = 0;
+	private int runningMergeWorkers = 0;
 
 	private long totalParticleNumber = 0;
 
@@ -29,12 +31,14 @@ public class VIPServer extends Process {
 		
 	}
 
-	public void main(String[] args) throws HostFailureException {
+	public void main(String[] args) throws HostFailureException, 
+		HostNotFoundException {
 		Msg.info("A new simulation starts!");
-		boolean stop=false;
+		boolean stop=false, timer = false;
 		// Build the mailbox name from the PID and the host name. This might be 
 		// useful to distinguish different Gate processes running on a same host
 		setMailbox();
+
 		// TODO what is below is very specific to GATE
 		// Added to temporarily improve the realism of the simulation
 		// Have to be generalized at some point.
@@ -81,6 +85,26 @@ public class VIPServer extends Process {
 					GateMessage.sendTo(message.getSenderMailbox(), 
 							GateMessage.Type.GATE_CONTINUE);
 				} else {
+					if (!timer){
+						Msg.info("The expected number of particles has been "+
+								"reached. Start a timer!");
+						new Process(this.getHost(),"Timer"){
+							public void main(String[] args) throws HostFailureException {
+								Process.sleep(VIPSimulator.sosTime);
+								Msg.info("Time Out ! I should wake some Mergers");
+								if (runningMergeWorkers < 
+										VIPSimulator.numberOfMergeJobs){
+									GateMessage.sendTo(mergeWorkers.firstElement().getMailbox(),
+											GateMessage.Type.MERGE_START);
+									runningMergeWorkers++;
+								} else {
+									Msg.info("No need for Merge workers");
+								}
+							}
+						}.start();
+						timer = true;
+					}
+
 					Msg.info("Sending a 'GATE_STOP' message to '" +
 							message.getSenderMailbox() +"'");
 					GateMessage.sendTo(message.getSenderMailbox(), 
@@ -90,13 +114,15 @@ public class VIPServer extends Process {
 			case GATE_END:
 				endedGateWorkers++;
 				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
-					Msg.info("All GATE workers sent a 'GATE_END' message" +
-							"Wake up " + mergeWorkers.size() + 
-							" Merge worker(s)");
-					if (VIPSimulator.numberOfMergeJobs>0)
+					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs){
+						Msg.info("All GATE workers sent a 'GATE_END' message" +
+								"Wake up " + mergeWorkers.size() + 
+								" Merge worker(s)");
+						runningMergeWorkers++;
 						GateMessage.sendTo(
 								mergeWorkers.firstElement().getMailbox(),
 								GateMessage.Type.MERGE_START);
+					}
 					// then stop
 					stop=true;
 				}
