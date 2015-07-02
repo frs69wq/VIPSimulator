@@ -11,6 +11,7 @@ public class Message extends Task {
 		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
 		DOWNLOAD_REQUEST,
+		ASK_MERGE_LIST,
 		// Data transfers
 		SEND_FILE,
 		UPLOAD_FILE,

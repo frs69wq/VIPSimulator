@@ -116,6 +116,11 @@ public class LFC extends Process {
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
 				break;
+			case ASK_MERGE_LIST:
+				Msg.info("just ack the request for now to " + message.getSenderMailbox());
+//				Message.sendTo(message.getSenderMailbox(), Message.Type.UPLOAD_ACK);
+//				Msg.info("ack sent");
+				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");
 				stop = true;

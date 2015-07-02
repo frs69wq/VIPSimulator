@@ -31,7 +31,7 @@ public class Merge extends Process {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
 		}
-		Msg.info("Register Merge on '"+ mailbox + "'");
+		Msg.info("Register Merge on '" + mailbox + "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
 		GateMessage.sendTo("VIPServer",GateMessage.Type.MERGE_CONNECT);
@@ -42,6 +42,14 @@ public class Merge extends Process {
 			switch(message.getType()){
 			case MERGE_START:
 				Msg.info("Processing Merge");
+
+				// Ask the LFC for the list of files to merge
+				Message.sendTo(VIPSimulator.getDefaultLFC(), 
+						Message.Type.ASK_MERGE_LIST);
+				Msg.info("asked for list of files to merge. waiting for reply from " + VIPSimulator.getDefaultLFC());
+//				Message.getFrom(VIPSimulator.getDefaultLFC());
+//				Msg.info("ack recv?");
+				Process.sleep(5000);
 				Msg.verb("Goodbye!");
 				stop = true;
 				break;
