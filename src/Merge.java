@@ -47,8 +47,8 @@ public class Merge extends Process {
 				Message.sendTo(VIPSimulator.getDefaultLFC(), 
 						Message.Type.ASK_MERGE_LIST);
 				Msg.info("asked for list of files to merge. waiting for reply from " + VIPSimulator.getDefaultLFC());
-//				Message.getFrom(VIPSimulator.getDefaultLFC());
-//				Msg.info("ack recv?");
+				Message.getFrom(VIPSimulator.getDefaultLFC()+getMailbox());
+				Msg.info("ack recv?");
 				Process.sleep(5000);
 				Msg.verb("Goodbye!");
 				stop = true;

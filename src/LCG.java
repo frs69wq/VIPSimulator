@@ -4,12 +4,16 @@ public class LCG {
 
 	public static void crInput(String mailbox, String logicalFileName,
 			long logicalFileSize, String SEName, String LFCName) {
+		// To prevent message mixing, a specific mailbox is used whose name
+		// is the concatenation of LFC's hostName and the given mailbox
+		String LFCMailbox = LFCName+mailbox;
+
 		LogicalFile file = new LogicalFile(logicalFileName, logicalFileSize, 
 				SEName);
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
 		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
-		Message.getFrom(mailbox);
+		Message.getFrom(LFCMailbox);
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
@@ -19,6 +23,9 @@ public class LCG {
 			long localFileSize, String logicalFileName, String LFCName) {
 		Msg.debug("lcg-cr '" + logicalFileName + "' from '" + localFileName + 
 				"' using lfc '" + LFCName +"'");
+		// To prevent message mixing, a specific mailbox is used whose name
+		// is the concatenation of LFC's hostName and the given mailbox
+		String LFCMailbox = LFCName+mailbox;
 
 		// upload file to SE
 		Message.sendAsynchronouslyTo(SEName, Message.Type.UPLOAD_FILE, 
@@ -39,7 +46,7 @@ public class LCG {
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
 		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
-		Message.getFrom(mailbox);
+		Message.getFrom(LFCMailbox);
 		
 		Msg.info("LFC '"+ LFCName + "' registered " + file.toString());
 
@@ -51,6 +58,9 @@ public class LCG {
 			String localFileName, String LFCName){
 		String SEName = null;
 		long logicalFileSize = 0;
+		// To prevent message mixing, a specific mailbox is used whose name
+		// is the concatenation of LFC's hostName and the given mailbox
+		String LFCMailbox = LFCName+mailbox;
 
 		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName +
 				"' using LFC '" + LFCName + "'");
@@ -61,7 +71,7 @@ public class LCG {
 		Msg.info("Asked about '" + logicalFileName + "' to LFC '" + LFCName + 
 				"'. Waiting for information ...");
 		
-		Message getFileInfo = Message.getFrom(mailbox);
+		Message getFileInfo = Message.getFrom(LFCMailbox);
 
 		SEName = getFileInfo.getFile().getSEName();
 		logicalFileSize = getFileInfo.getFile().getSize();

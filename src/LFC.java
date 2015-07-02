@@ -90,15 +90,17 @@ public class LFC extends Process {
 
 		while (!stop){
 			Message message = Message.getFrom(hostName);
-
+			// To prevent message mixing, a specific mailbox is used whose name
+			// is the concatenation of LFC's hostName and sender mailbox
+			String returnMailbox = hostName+message.getSenderMailbox();
+			
 			switch(message.getType()){
 			case REGISTER_FILE:
 				// Add an entry for the received logical file, if needed
 				// Then send back an ACK to the the sender
 				register(message.getFile());
 
-				Message.sendTo(message.getSenderMailbox(), 
-						Message.Type.REGISTER_ACK);
+				Message.sendTo(returnMailbox, Message.Type.REGISTER_ACK);
 				Msg.debug("LFC '"+ hostName + "' sent back an ACK to '" +
 						message.getSenderMailbox() + "'");
 				break;
@@ -110,16 +112,15 @@ public class LFC extends Process {
 				// single one is selected before returning the file to the 
 				// worker asking for it.
 				file.selectLocation();
-				Message.sendTo(message.getSenderMailbox(), 
+				Message.sendTo(returnMailbox, 
 						Message.Type.SEND_LOGICAL_FILE, file);
 				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
 				break;
 			case ASK_MERGE_LIST:
-				Msg.info("just ack the request for now to " + message.getSenderMailbox());
-//				Message.sendTo(message.getSenderMailbox(), Message.Type.UPLOAD_ACK);
-//				Msg.info("ack sent");
+				Msg.info("just ack the request for now");
+				Message.sendTo(returnMailbox, Message.Type.UPLOAD_ACK);
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");
