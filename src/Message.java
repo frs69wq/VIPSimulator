@@ -8,14 +8,10 @@ import org.simgrid.msg.TaskCancelledException;
 
 public class Message extends Task {
 	public enum Type{
-		// Control messages
 		DOWNLOAD_REQUEST,
-		// Data transfers
 		SEND_FILE,
 		UPLOAD_FILE,
-		// ACK and Signal
-		UPLOAD_ACK,
-		FINALIZE
+		UPLOAD_ACK
 	};
 
 	private Type type;
@@ -100,7 +96,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Specialized send of a FINALIZE/UPLOAD_ACK
+	 * Specialized send of a UPLOAD_ACK
 	 * message
 	 */
 	public static void sendTo (String destination, Type type) {

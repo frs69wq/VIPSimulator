@@ -17,7 +17,7 @@ public class SE extends Process {
 		// of the simulation to send a FINALIZE message and cleanly stop this 
 		// process. 
 		Msg.debug("Register SE on "+ hostName);
-		VIPSimulator.getSEList().add(hostName);
+		VIPSimulator.getSEList().add(this);
 
 		while (!stop){
 			Message message = Message.getFrom(hostName);
@@ -49,10 +49,6 @@ public class SE extends Process {
 
 				Msg.debug("SE '"+ hostName + "' sent ack back to '" +
 						message.getSenderMailbox() + "'");
-				break;
-			case FINALIZE:
-				Msg.verb("Goodbye!");
-				stop = true;
 				break;
 			default:
 				break;

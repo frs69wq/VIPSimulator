@@ -148,11 +148,11 @@ public class VIPServer extends Process {
 				" It's time to shutdown the system.");
 
 		// Shutting down all the LFCs
-		for (String LFC : VIPSimulator.getLFCList())
-			LFCMessage.sendTo(LFC, LFCMessage.Type.FINALIZE);
+		for (Process LFC : VIPSimulator.getLFCList())
+			LFC.kill();
 
 		// Shutting down all the SEs
-		for (String SE : VIPSimulator.getSEList())
-			Message.sendTo(SE, Message.Type.FINALIZE);
+		for (Process SE : VIPSimulator.getSEList())
+			SE.kill();
 	}
 }

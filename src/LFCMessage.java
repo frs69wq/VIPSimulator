@@ -7,14 +7,16 @@ import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.TaskCancelledException;
 
 public class LFCMessage extends Task {
+	// this class of control messages is dedicated to the interactions with the 
+	// Logical File Catalog(s) that happen only through lcg-utils functions.
+	// These functions are called by the worker processes.
 	public enum Type{
 		ASK_LOGICAL_FILE,
 		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
 		REGISTER_ACK,
 		ASK_LS,
-		SEND_LS,
-		FINALIZE
+		SEND_LS
 	};
 
 	private Type type;
@@ -84,7 +86,7 @@ public class LFCMessage extends Task {
 	}
 
 	/**
-	 * Specialized send of a FINALIZE/REGISTER_ACK
+	 * Specialized send of a REGISTER_ACK
 	 * message
 	 */
 	public static void sendTo (String destination, Type type) {

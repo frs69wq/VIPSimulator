@@ -77,7 +77,7 @@ public class LFC extends Process {
 		boolean stop = false;
 
 		Msg.debug("Register LFC on "+ hostName);
-		VIPSimulator.getLFCList().add(hostName);
+		VIPSimulator.getLFCList().add(this);
 
 		// If this LFC process is started with an argument, we populate the
 		// catalog from the CSV file given as args[0]
@@ -126,10 +126,6 @@ public class LFC extends Process {
 						directoryContents.add(f);
 				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.SEND_LS,
 						directoryContents);
-				break;
-			case FINALIZE:
-				Msg.verb("Goodbye!");
-				stop = true;
 				break;
 			default:
 				break;

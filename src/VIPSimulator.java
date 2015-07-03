@@ -1,12 +1,13 @@
 import java.util.Vector;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
+import org.simgrid.msg.Process;
 
 public class VIPSimulator {
 	private static String defaultLFC = null;
-	private static Vector<String> lfcList = new Vector<String>();
+	private static Vector<Process> lfcList = new Vector<Process>();
 	private static String defaultSE = null;
-	private static Vector<String> seList = new Vector<String>();
+	private static Vector<Process> seList = new Vector<Process>();
 
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
@@ -31,7 +32,7 @@ public class VIPSimulator {
 		}
 	}
 
-	public static Vector<String> getLFCList() {
+	public static Vector<Process> getLFCList() {
 		return lfcList;
 	}
 
@@ -50,7 +51,7 @@ public class VIPSimulator {
 		}
 	}
 
-	public static Vector<String> getSEList() {
+	public static Vector<Process> getSEList() {
 		return seList;
 	}
 
