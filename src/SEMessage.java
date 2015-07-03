@@ -1,5 +1,3 @@
-import java.util.Vector;
-
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
@@ -17,7 +15,6 @@ public class SEMessage extends Task {
 	private Type type;
 	private String logicalName = null;
 	private long size = 0;
-	private Vector<LogicalFile> fileList = null;
 
 	public Type getType() {
 		return type;
@@ -35,21 +32,11 @@ public class SEMessage extends Task {
 		return size;
 	}
 
-	public LogicalFile getFile() {
-		return fileList.firstElement();
-	}
-
-	public Vector<LogicalFile> getFileList() {
-		return fileList;
-	}
-
-	public SEMessage(Type type, String logicalName, long size, 
-			Vector<LogicalFile> files) {
+	public SEMessage(Type type, String logicalName, long size) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
 		this.logicalName=logicalName;
 		this.size = size;
-		this.fileList = files;
 	}
 
 	/**
@@ -81,9 +68,12 @@ public class SEMessage extends Task {
 		return message;
 	}
 
+	/**
+	 *  Specialized send of a DOWNLOAD_REQUEST message
+	 */
 	public static void sendTo (String destination, Type type, 
-			String logicalName, long size, Vector<LogicalFile> fileList) {
-		SEMessage m = new SEMessage (type, logicalName, size, fileList);
+			String logicalName, long size) {
+		SEMessage m = new SEMessage (type, logicalName, size);
 		try{
 			Msg.debug("Send a '" + type.toString() + "' message to " +
 					destination);
@@ -100,15 +90,7 @@ public class SEMessage extends Task {
 	 * message
 	 */
 	public static void sendTo (String destination, Type type) {
-		sendTo(destination, type, null, 0, null);
-	}
-
-	/**
-	 *  Specialized send of a DOWNLOAD_REQUEST message
-	 */
-	public static void sendTo (String destination, Type type, 
-			String logicalName, long size) {
-		sendTo(destination, type, logicalName, size, null);
+		sendTo(destination, type, null, 0);
 	}
 
 	public static void sendAsynchronouslyTo (String destination, Type type, 
