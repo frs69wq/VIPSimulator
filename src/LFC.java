@@ -106,7 +106,7 @@ public class LFC extends Process {
 				break;
 			case ASK_LOGICAL_FILE:
 				LogicalFile file = 
-					getLogicalFileByName(message.getLogicalFileName());
+					getLogicalFileByName(message.getLogicalName());
 
 				// If this logical file is available on several locations, a 
 				// single one is selected before returning the file to the 
@@ -118,10 +118,14 @@ public class LFC extends Process {
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
 				break;
-			case ASK_MERGE_LIST:
-				Vector<LogicalFile> results = getResults();
-				Message.sendTo(returnMailbox, Message.Type.SEND_MERGE_FILE_LIST,
-						results);
+			case ASK_LS:
+				Vector<LogicalFile> directoryContents = 
+					new Vector<LogicalFile>();
+				for (LogicalFile f : catalog) 
+					if (f.getName().matches(message.getLogicalName()+"(.*)"))
+						directoryContents.add(f);
+				Message.sendTo(returnMailbox, Message.Type.SEND_LS,
+						directoryContents);
 				break;
 			case FINALIZE:
 				Msg.verb("Goodbye!");
