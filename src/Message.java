@@ -13,8 +13,8 @@ public class Message extends Task {
 		SEND_LOGICAL_FILE,
 		REGISTER_FILE,
 		DOWNLOAD_REQUEST,
-		ASK_MERGE_LIST,
-		SEND_MERGE_FILE_LIST,
+		ASK_LS,
+		SEND_LS,
 		// Data transfers
 		SEND_FILE,
 		UPLOAD_FILE,
@@ -25,8 +25,8 @@ public class Message extends Task {
 	};
 
 	private Type type;
-	private String logicalFileName = null;
-	private long logicalFileSize = 0;
+	private String logicalName = null;
+	private long size = 0;
 	private Vector<LogicalFile> fileList = null;
 
 	public Type getType() {
@@ -37,12 +37,12 @@ public class Message extends Task {
 		return getSender().getPID()+ "@" + getSource().getName();
 	}
 
-	public String getLogicalFileName() {
-		return logicalFileName;
+	public String getLogicalName() {
+		return logicalName;
 	}
 
-	public long getLogicalFileSize() {
-		return logicalFileSize;
+	public long getSize() {
+		return size;
 	}
 
 	public LogicalFile getFile() {
@@ -53,22 +53,22 @@ public class Message extends Task {
 		return fileList;
 	}
 
-	public Message(Type type, String logicalFileName,
-			long logicalFileSize, Vector<LogicalFile> files) {
+	public Message(Type type, String logicalName, long size, 
+			Vector<LogicalFile> files) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
-		this.logicalFileName=logicalFileName;
-		this.logicalFileSize = logicalFileSize;
+		this.logicalName=logicalName;
+		this.size = size;
 		this.fileList = files;
 	}
 
 	/**
 	 * Constructor, builds a new UPLOAD_REQUEST/SEND_FILE message
 	 */
-	public Message(Type type, long logicalFileSize){
-		super(type.toString(), 0, logicalFileSize);
+	public Message(Type type, long size){
+		super(type.toString(), 0, size);
 		this.type = type;
-		this.logicalFileSize = logicalFileSize;
+		this.size = size;
 	}
 
 	public void execute() throws  HostFailureException,TaskCancelledException{
@@ -92,10 +92,8 @@ public class Message extends Task {
 	}
 
 	public static void sendTo (String destination, Type type, 
-			String logicalFileName, long logicalFileSize, 
-			Vector<LogicalFile> fileList) {
-		Message m = new Message (type, logicalFileName, logicalFileSize, 
-				fileList);
+			String logicalName, long size, Vector<LogicalFile> fileList) {
+		Message m = new Message (type, logicalName, size, fileList);
 		try{
 			Msg.debug("Send a '" + type.toString() + "' message to " +
 					destination);
@@ -108,7 +106,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Specialized send of a FINALIZE/UPLOAD_ACK/REGISTER_ACK/ASK_MERGE_LIST
+	 * Specialized send of a FINALIZE/UPLOAD_ACK/REGISTER_ACK
 	 * message
 	 */
 	public static void sendTo (String destination, Type type) {
@@ -126,7 +124,7 @@ public class Message extends Task {
 	}
 
 	/**
-	 *  Specialized send of a SEND_MERGE_FILE_LIST message
+	 *  Specialized send of a SEND_LS message
 	 */
 	public static void sendTo (String destination, Type type, 
 			Vector<LogicalFile> fileList) {
@@ -134,19 +132,19 @@ public class Message extends Task {
 	}
 
 	/**
-	 * Specialized send of a ASK_LOGICAL_FILE message
+	 * Specialized send of a ASK_LOGICAL_FILE message/ASK_LS
 	 */
 	public static void sendTo (String destination, Type type, 
-			String logicalFileName) {
-		sendTo(destination, type, logicalFileName, 0, null);
+			String logicalName) {
+		sendTo(destination, type, logicalName, 0, null);
 	}
 
 	/**
 	 *  Specialized send of a DOWNLOAD_REQUEST message
 	 */
 	public static void sendTo (String destination, Type type, 
-			String logicalFileName, long logicalFileSize) {
-		sendTo(destination, type, logicalFileName, logicalFileSize, null);
+			String logicalName, long size) {
+		sendTo(destination, type, logicalName, size, null);
 	}
 
 	public static void sendAsynchronouslyTo (String destination, Type type, 
