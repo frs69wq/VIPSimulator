@@ -1,3 +1,5 @@
+import java.util.Vector;
+
 import org.simgrid.msg.Msg;
 
 public class LCG {
@@ -97,4 +99,21 @@ public class LCG {
 		Msg.debug("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
 				"' completed");
 	};
+
+	public static Vector<String> ls(String mailbox, String directoryName, 
+			String LFCName){
+		Vector<String> results = new Vector<String>();
+		String LFCMailbox = LFCName+mailbox;
+
+		// Ask the LFC for the list of files to merge
+		Message.sendTo(LFCName, Message.Type.ASK_LS, directoryName);
+		Msg.info("asked for list of files to merge. waiting for reply from " + 
+				LFCName);
+		Message m = Message.getFrom(LFCMailbox);
+		for (LogicalFile f : m.getFileList()) 
+			results.add (f.getName());
+
+		return results;
+	}
+
 }
