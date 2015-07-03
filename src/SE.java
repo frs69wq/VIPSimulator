@@ -32,18 +32,18 @@ public class SE extends Process {
 				// TODO operations at some point to increase realism.
 				Message.sendAsynchronouslyTo(message.getSenderMailbox(), 
 						Message.Type.SEND_FILE,
-						message.getLogicalFileSize());
+						message.getSize());
 
 				Msg.debug("SE '"+ hostName + "' sent file '" +
-						message.getLogicalFileName() + "' of size " +
-						message.getLogicalFileSize() + " to '" +
+						message.getLogicalName() + "' of size " +
+						message.getSize() + " to '" +
 						message.getSenderMailbox() + "'");
 				break;
 			case UPLOAD_FILE:
 				// A physical file has been received (inducing a data transfer.
 				// An ACK is sent back to notify the reception of the file.
 				// TODO This will have to be replaced/completed  by some I/O 
-				// TODO operations at some point to increase realism.				
+				// TODO operations at some point to increase realism.
 				Message.sendTo(message.getSenderMailbox(), 
 						Message.Type.UPLOAD_ACK);
 
