@@ -20,7 +20,7 @@ public class SE extends Process {
 		VIPSimulator.getSEList().add(this);
 
 		while (!stop){
-			Message message = Message.getFrom(hostName);
+			SEMessage message = SEMessage.getFrom(hostName);
 
 			switch(message.getType()){
 			case DOWNLOAD_REQUEST:
@@ -30,8 +30,8 @@ public class SE extends Process {
 				// messages.
 				// TODO This will have to be replaced/completed  by some I/O 
 				// TODO operations at some point to increase realism.
-				Message.sendAsynchronouslyTo(message.getSenderMailbox(), 
-						Message.Type.SEND_FILE,
+				SEMessage.sendAsynchronouslyTo(message.getSenderMailbox(), 
+						SEMessage.Type.SEND_FILE,
 						message.getSize());
 
 				Msg.debug("SE '"+ hostName + "' sent file '" +
@@ -44,8 +44,8 @@ public class SE extends Process {
 				// An ACK is sent back to notify the reception of the file.
 				// TODO This will have to be replaced/completed  by some I/O 
 				// TODO operations at some point to increase realism.
-				Message.sendTo(message.getSenderMailbox(), 
-						Message.Type.UPLOAD_ACK);
+				SEMessage.sendTo(message.getSenderMailbox(), 
+						SEMessage.Type.UPLOAD_ACK);
 
 				Msg.debug("SE '"+ hostName + "' sent ack back to '" +
 						message.getSenderMailbox() + "'");

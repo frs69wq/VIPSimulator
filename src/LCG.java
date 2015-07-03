@@ -30,7 +30,7 @@ public class LCG {
 		String LFCMailbox = LFCName+mailbox;
 
 		// upload file to SE
-		Message.sendAsynchronouslyTo(SEName, Message.Type.UPLOAD_FILE, 
+		SEMessage.sendAsynchronouslyTo(SEName, SEMessage.Type.UPLOAD_FILE, 
 				localFileSize);
 
 		//waiting for upload to finish
@@ -38,7 +38,7 @@ public class LCG {
 				logicalFileName +"' of size " + localFileSize +". Waiting for" +
 				" an ack");
 
-		Message.getFrom(mailbox);
+		SEMessage.getFrom(mailbox);
 		Msg.info("SE '"+ SEName + "' replied with an ACK");
 
 
@@ -86,14 +86,14 @@ public class LCG {
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
 				SEName + "' using LFC '" + LFCName +"'");
 
-		Message.sendTo(SEName, Message.Type.DOWNLOAD_REQUEST, 
+		SEMessage.sendTo(SEName, SEMessage.Type.DOWNLOAD_REQUEST, 
 				logicalFileName, logicalFileSize);
 
 		Msg.info("Sent download request for " + 
 				getFileInfo.getFile().toString() + 
 				". Waiting for reception ...");
 
-		Message.getFrom(mailbox);
+		SEMessage.getFrom(mailbox);
 
 		Msg.info("SE '"+ SEName + "' sent " + getFileInfo.getFile().toString());
 
