@@ -45,17 +45,10 @@ public class Merge extends Process {
 			case MERGE_START:
 				Msg.info("Processing Merge");
 
-				// Ask the LFC for the list of files to merge
-				Message.sendTo(VIPSimulator.getDefaultLFC(), 
-						Message.Type.ASK_MERGE_LIST);
-				Msg.info("asked for list of files to merge. waiting for reply from " + VIPSimulator.getDefaultLFC());
-				Message getFileList = 
-						Message.getFrom(
-								VIPSimulator.getDefaultLFC()+getMailbox());
-				Vector<LogicalFile> logicalfilesToMerge = 
-						getFileList.getFileList();
+				Vector<String> fileNameList = 
+						LCG.ls(mailbox,"results/",VIPSimulator.getDefaultLFC());
 
-				Msg.info("Files to merge:" + logicalfilesToMerge.toString());
+				Msg.info("Files to merge:" + fileNameList.toString());
 				Process.sleep(5000);
 				Msg.verb("Goodbye!");
 				stop = true;
