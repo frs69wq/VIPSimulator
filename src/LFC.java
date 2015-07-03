@@ -89,7 +89,7 @@ public class LFC extends Process {
 		}
 
 		while (!stop){
-			Message message = Message.getFrom(hostName);
+			LFCMessage message = LFCMessage.getFrom(hostName);
 			// To prevent message mixing, a specific mailbox is used whose name
 			// is the concatenation of LFC's hostName and sender mailbox
 			String returnMailbox = hostName+message.getSenderMailbox();
@@ -100,7 +100,7 @@ public class LFC extends Process {
 				// Then send back an ACK to the the sender
 				register(message.getFile());
 
-				Message.sendTo(returnMailbox, Message.Type.REGISTER_ACK);
+				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.REGISTER_ACK);
 				Msg.debug("LFC '"+ hostName + "' sent back an ACK to '" +
 						message.getSenderMailbox() + "'");
 				break;
@@ -112,8 +112,8 @@ public class LFC extends Process {
 				// single one is selected before returning the file to the 
 				// worker asking for it.
 				file.selectLocation();
-				Message.sendTo(returnMailbox, 
-						Message.Type.SEND_LOGICAL_FILE, file);
+				LFCMessage.sendTo(returnMailbox, 
+						LFCMessage.Type.SEND_LOGICAL_FILE, file);
 				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
@@ -124,7 +124,7 @@ public class LFC extends Process {
 				for (LogicalFile f : catalog) 
 					if (f.getName().matches(message.getLogicalName()+"(.*)"))
 						directoryContents.add(f);
-				Message.sendTo(returnMailbox, Message.Type.SEND_LS,
+				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.SEND_LS,
 						directoryContents);
 				break;
 			case FINALIZE:

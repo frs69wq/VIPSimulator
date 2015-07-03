@@ -149,7 +149,7 @@ public class VIPServer extends Process {
 
 		// Shutting down all the LFCs
 		for (String LFC : VIPSimulator.getLFCList())
-			Message.sendTo(LFC, Message.Type.FINALIZE);
+			LFCMessage.sendTo(LFC, LFCMessage.Type.FINALIZE);
 
 		// Shutting down all the SEs
 		for (String SE : VIPSimulator.getSEList())

@@ -14,8 +14,8 @@ public class LCG {
 				SEName);
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
-		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
-		Message.getFrom(LFCMailbox);
+		LFCMessage.sendTo(LFCName, LFCMessage.Type.REGISTER_FILE, file);
+		LFCMessage.getFrom(LFCMailbox);
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
@@ -47,8 +47,8 @@ public class LCG {
 				SEName);
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
-		Message.sendTo(LFCName, Message.Type.REGISTER_FILE, file);
-		Message.getFrom(LFCMailbox);
+		LFCMessage.sendTo(LFCName, LFCMessage.Type.REGISTER_FILE, file);
+		LFCMessage.getFrom(LFCMailbox);
 		
 		Msg.info("LFC '"+ LFCName + "' registered " + file.toString());
 
@@ -68,12 +68,13 @@ public class LCG {
 				"' using LFC '" + LFCName + "'");
 
 		// get information on Logical File from the LFC
-		Message.sendTo(LFCName, Message.Type.ASK_LOGICAL_FILE, logicalFileName);
+		LFCMessage.sendTo(LFCName, LFCMessage.Type.ASK_LOGICAL_FILE, 
+				logicalFileName);
 
 		Msg.info("Asked about '" + logicalFileName + "' to LFC '" + LFCName + 
 				"'. Waiting for information ...");
 		
-		Message getFileInfo = Message.getFrom(LFCMailbox);
+		LFCMessage getFileInfo = LFCMessage.getFrom(LFCMailbox);
 
 		SEName = getFileInfo.getFile().getSEName();
 		logicalFileSize = getFileInfo.getFile().getSize();
@@ -106,10 +107,11 @@ public class LCG {
 		String LFCMailbox = LFCName+mailbox;
 
 		// Ask the LFC for the list of files to merge
-		Message.sendTo(LFCName, Message.Type.ASK_LS, directoryName);
+		LFCMessage.sendTo(LFCName, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("asked for list of files to merge. waiting for reply from " + 
 				LFCName);
-		Message m = Message.getFrom(LFCMailbox);
+		LFCMessage m = LFCMessage.getFrom(LFCMailbox);
+		
 		for (LogicalFile f : m.getFileList()) 
 			results.add (f.getName());
 
