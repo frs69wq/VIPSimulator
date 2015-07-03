@@ -49,8 +49,13 @@ public class Gate extends Process {
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
 		// value as in the C version.
-		long uploadFileSize= (args.length > 0 ? 
-				Long.valueOf(args[0]).longValue() : 1000000);
+		
+		int jobId = (args.length > 0 ? 
+				Integer.valueOf(args[0]).intValue() : 1);
+		long executionTime = (args.length > 1 ? 
+				1000*Long.valueOf(args[1]).longValue() : VIPSimulator.sosTime);
+		long uploadFileSize= (args.length > 2 ? 
+				Long.valueOf(args[2]).longValue() : 1000000);
 
 		Msg.info("Register GATE on '"+ mailbox + "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
@@ -87,7 +92,7 @@ public class Gate extends Process {
 
 				//TODO Discuss what we can do here. Make the process just sleep 
 				// for now
-				simulatedParticles = simulateForNsec(VIPSimulator.sosTime);
+				simulatedParticles = simulateForNsec(executionTime);
 
 				computeTime = Msg.getClock() - computeTime;
 				totalComputeTime += computeTime;
@@ -125,7 +130,9 @@ public class Gate extends Process {
 				Msg.info("Spent " + downloadTime + "s downloading, " +
 						totalComputeTime + "s computing, and " + uploadTime +
 						"s uploading.");
-
+//				System.out.println(jobId + "," + downloadTime + "," + 
+//						uploadTime + "," + executionTime + "," + 
+//						(downloadTime+uploadTime+executionTime));
 				Msg.verb("Goodbye!");
 				stop = true;
 				break;
