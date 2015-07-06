@@ -44,11 +44,14 @@ public class VIPServer extends Process {
 		// Have to be generalized at some point.
 		// WARNING: From log inspection, it seems that workers do not all get 
 		// the input files from the default SE.
-		LCG.crInput(VIPSimulator.getDefaultLFC(),"inputs/gate.sh.tar.gz", 73043,
+		LCG.crInput(VIPSimulator.getDefaultLFC(),
+				"inputs/gate.sh.tar.gz", 73043,
 				VIPSimulator.getDefaultSE());
-		LCG.crInput(VIPSimulator.getDefaultLFC(),"inputs/opengate_version_7.0.tar.gz", 376927945,
+		LCG.crInput(VIPSimulator.getDefaultLFC(),
+				"inputs/opengate_version_7.0.tar.gz", 376927945,
 				VIPSimulator.getDefaultSE());
-		LCG.crInput(VIPSimulator.getDefaultLFC(),"inputs/file-14539084101429.zip", 514388,
+		LCG.crInput(VIPSimulator.getDefaultLFC(),
+				"inputs/file-14539084101429.zip", 514388,
 				VIPSimulator.getDefaultSE());
 
 		while(!stop){
@@ -152,7 +155,7 @@ public class VIPServer extends Process {
 			lfc.kill();
 
 		// Shutting down all the SEs
-		for (Process SE : VIPSimulator.getSEList())
-			SE.kill();
+		for (SE se : VIPSimulator.getSEList())
+			se.kill();
 	}
 }
