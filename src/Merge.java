@@ -46,8 +46,7 @@ public class Merge extends Process {
 				Msg.info("Processing Merge");
 
 				Vector<String> fileNameList = 
-						LCG.ls(mailbox,"results/",
-								VIPSimulator.getDefaultLFC().getName());
+						LCG.ls(VIPSimulator.getDefaultLFC(),"results/");
 
 				Msg.info("Files to merge:" + fileNameList.toString());
 				Process.sleep(5000);

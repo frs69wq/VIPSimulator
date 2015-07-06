@@ -16,7 +16,8 @@ public class LFCMessage extends Task {
 		REGISTER_FILE,
 		REGISTER_ACK,
 		ASK_LS,
-		SEND_LS
+		SEND_LS,
+		FINALIZE
 	};
 
 	private Type type;
@@ -58,8 +59,8 @@ public class LFCMessage extends Task {
 	public static LFCMessage getFrom (String mailbox) {
 		LFCMessage message = null;
 		try {
-			message = (LFCMessage) Task.receive(mailbox);
-			Msg.info("Received a '" + message.type.toString() + 
+			message = (LFCMessage) Task.receive("return-"+mailbox);
+			Msg.debug("Received a '" + message.type.toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created
@@ -86,8 +87,7 @@ public class LFCMessage extends Task {
 	}
 
 	/**
-	 * Specialized send of a REGISTER_ACK
-	 * message
+	 * Specialized send of a REGISTER_ACK/FINALIZE message
 	 */
 	public static void sendTo (String destination, Type type) {
 		sendTo(destination, type, null, null);
@@ -119,23 +119,4 @@ public class LFCMessage extends Task {
 		sendTo(destination, type, logicalName, null);
 	}
 
-	public static void register (LFC lfc, LogicalFile file){
-		boolean tryAgain = true;
-		while (tryAgain){
-			for (String mailbox : lfc.getMailboxes()){
-				if (Task.listen(mailbox)){
-					Msg.info("Send a message to : " + mailbox + 
-							" which is listening");
-					Vector<LogicalFile> list = new Vector<LogicalFile>();
-					list.add(file);
-					LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, 
-							list);
-					
-					LFCMessage.getFrom(mailbox);
-					tryAgain = false;
-					break;
-				}
-			}
-		}
-	}
 }

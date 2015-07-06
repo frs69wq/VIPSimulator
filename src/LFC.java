@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.simgrid.msg.Comm;
-import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
@@ -24,7 +24,7 @@ public class LFC extends Process {
 	}
 
 	private Vector<String> mailboxes;
-
+	private Vector<Process> listeners;
 	
 	// TODO WIP: try to have several listeners on the LFC to handle more than 
 	// TODO one request at a time.
@@ -65,7 +65,7 @@ public class LFC extends Process {
 	// the same name already exists. If it does, it determines whether it is a
 	// new replica or not. Otherwise, it creates a new entry in the catalog for
 	// that file.
-	private void register(LogicalFile newFile){
+	private void addtoCatalog(LogicalFile newFile){
 		Msg.debug("Inserting '"+ newFile.toString() + "'into the catalog");
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
@@ -92,12 +92,11 @@ public class LFC extends Process {
 		// TODO WIP: try to have several listeners on the LFC to handle more 
 		// TODO than one request at a time.
 		this.mailboxes = new Vector<String>();
+		this.listeners = new Vector<Process>();
 		for (int i=0; i<3; this.mailboxes.add(this.name+"_"+i++));
 	}
 
-	public void main(String[] args) throws HostNotFoundException {
-		boolean stop = false;
-
+	public void main(String[] args) throws MsgException {
 		Msg.debug("Register LFC on "+ name);
 		VIPSimulator.getLFCList().add(this);
 
@@ -110,81 +109,77 @@ public class LFC extends Process {
 			Msg.debug(this.toString());
 		}
 		
-		//TODO begin of WIP
 		for (String mailbox : mailboxes){
-			try{
-				new Process(this.getHost(),"Listener", new String[] {mailbox}){
-					public void main(String[] args) throws MsgException {
-						String mailbox =  args[0];
-						Msg.info("Start a new listener on: " + mailbox);
-						Comm listener = Task.irecv(mailbox);
+			listeners.add(new Process(name, "Listener", new String[] {mailbox}){
+				public void main(String[] args) throws MsgException {
+					String mailbox =  args[0];
+					boolean stop = false;
+					
+					Msg.info("Start a new listener on: " + mailbox);
+					Comm listener = Task.irecv(mailbox);
+
+					while (!stop){
 						listener.waitCompletion();
-						LFCMessage m = (LFCMessage) listener.getTask();
-						Msg.info("Received: " + m.getType() + " from " + 
-								m.getSenderMailbox()+ " in "+ mailbox);
-						m.execute();
-						register(m.getFile());
+						LFCMessage message = (LFCMessage) listener.getTask();
+						Msg.debug ("Received " + message.getType() + " from " + 
+								message.getSenderMailbox() + " in "+ mailbox);
+						message.execute();
 
-						LFCMessage.sendTo(mailbox, 
-								LFCMessage.Type.REGISTER_ACK);
-						Msg.debug("LFC '"+ name + 
-								"' sent back an ACK on'" +
-								 mailbox + "'");
+						if (message.getType() == LFCMessage.Type.FINALIZE) {
+							Msg.debug("Stop listening on "+ mailbox);
+							stop = true;
+						} else {
+							switch(message.getType()){
+							case REGISTER_FILE:
+								// Add an entry in the catalog for the received 
+								// logical file, if needed.
+								// Then send back an ACK to the the sender.
+								addtoCatalog(message.getFile());
+								LFCMessage.sendTo("return-"+mailbox, 
+										LFCMessage.Type.REGISTER_ACK);
+								Msg.debug("LFC '"+ name + "' sent back an ACK" +
+										" on 'return-" + mailbox + "'");
+								break;
+							case ASK_LOGICAL_FILE:
+								LogicalFile file = 
+									getLogicalFileByName(
+											message.getLogicalName());
 
-						Msg.info("posting a new irecv on "+ mailbox);
-						//listeners.set(index, Task.irecv(mailbox));
-						Msg.info("this process should end now!");
+								// If this logical file is available on several 
+								// locations, one is selected before returning 
+								// the file to the worker asking for it.
+								file.selectLocation();
+								LFCMessage.sendTo("return-"+mailbox, 
+										LFCMessage.Type.SEND_LOGICAL_FILE, 
+										file);
+								Msg.debug("LFC '"+ name + 
+										"' sent logical " + file.toString() + 
+										" back on 'return-" + mailbox + "'");
+								break;
+							case ASK_LS:
+								Vector<LogicalFile> directoryContents = 
+									new Vector<LogicalFile>();
+								for (LogicalFile f : catalog) 
+									if (f.getName().matches(
+											message.getLogicalName()+"(.*)"))
+										directoryContents.add(f);
+								LFCMessage.sendTo("return-"+mailbox, 
+										LFCMessage.Type.SEND_LS,
+										directoryContents);
+								break;
+							default:
+								break;
+							}
+							listener = Task.irecv(mailbox);
+							Msg.debug("New irecv posted on "+ mailbox);
+							
+						}
 					}
-				}.start();
-			} catch (MsgException e){
-				e.printStackTrace();
-			}
+				}
+			});
 		}
-		//TODO end of WIP
-
-		while (!stop){
-			LFCMessage message = LFCMessage.getFrom(name);
-			// To prevent message mixing, a specific mailbox is used whose name
-			// is the concatenation of LFC's hostName and sender mailbox
-			String returnMailbox = name+message.getSenderMailbox();
-			
-			switch(message.getType()){
-			case REGISTER_FILE:
-				// Add an entry for the received logical file, if needed
-				// Then send back an ACK to the the sender
-				register(message.getFile());
-
-				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.REGISTER_ACK);
-				Msg.debug("LFC '"+ name + "' sent back an ACK to '" +
-						message.getSenderMailbox() + "'");
-				break;
-			case ASK_LOGICAL_FILE:
-				LogicalFile file = 
-					getLogicalFileByName(message.getLogicalName());
-
-				// If this logical file is available on several locations, a 
-				// single one is selected before returning the file to the 
-				// worker asking for it.
-				file.selectLocation();
-				LFCMessage.sendTo(returnMailbox, 
-						LFCMessage.Type.SEND_LOGICAL_FILE, file);
-				Msg.debug("LFC '"+ name + "' returned Logical " + 
-						file.toString() + " back to '" + 
-						message.getSenderMailbox() + "'");
-				break;
-			case ASK_LS:
-				Vector<LogicalFile> directoryContents = 
-					new Vector<LogicalFile>();
-				for (LogicalFile f : catalog) 
-					if (f.getName().matches(message.getLogicalName()+"(.*)"))
-						directoryContents.add(f);
-				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.SEND_LS,
-						directoryContents);
-				break;
-			default:
-				break;
-			}
-		}
+		for(Process p : listeners)
+			p.start();
 	}
 
 	public LogicalFile getLogicalFileByName (String logicalFileName) {
@@ -205,5 +200,55 @@ public class LFC extends Process {
 
 	public String toString () {
 		return catalog.toString();
+	}
+
+	public void kill(){
+		for (String mailbox : mailboxes){
+			LFCMessage.sendTo(mailbox, LFCMessage.Type.FINALIZE);
+		}
+	}
+	
+	private String findAvailableMailbox(){
+		while (true){
+			for (String mailbox : this.getMailboxes()){
+				if (Task.listen(mailbox)){
+					Msg.info("Send a message to : " + mailbox + 
+							" which is listening");
+					return mailbox;
+				}
+			}
+			Msg.warn("All the listeners are busy to register. Try Again!");
+			try {
+				Process.sleep(10);
+			} catch (HostFailureException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void register (LogicalFile file) {
+		String mailbox = this.findAvailableMailbox();
+		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
+		LFCMessage.getFrom(mailbox);
+	}
+
+	public LogicalFile getLogicalFile (String logicalFileName) {
+		String mailbox = this.findAvailableMailbox();
+		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LOGICAL_FILE, 
+				logicalFileName);
+		Msg.info("Asked about '" + logicalFileName + 
+				"'. Waiting for information ...");
+
+		LFCMessage m = LFCMessage.getFrom(mailbox);
+		return m.getFile();
+	}
+
+	public Vector<LogicalFile> getLogicalFileList(String directoryName){
+		String mailbox = this.findAvailableMailbox();
+		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
+		Msg.info("Asked for list of files to merge in '" + directoryName + 
+				"'. Waiting for reply ...");
+		LFCMessage m = LFCMessage.getFrom(mailbox);
+		return m.getFileList();
 	}
 }
