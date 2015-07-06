@@ -59,7 +59,7 @@ public class LFCMessage extends Task {
 		LFCMessage message = null;
 		try {
 			message = (LFCMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.type.toString() + 
+			Msg.info("Received a '" + message.type.toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created
@@ -117,5 +117,25 @@ public class LFCMessage extends Task {
 	public static void sendTo (String destination, Type type, 
 			String logicalName) {
 		sendTo(destination, type, logicalName, null);
+	}
+
+	public static void register (LFC lfc, LogicalFile file){
+		boolean tryAgain = true;
+		while (tryAgain){
+			for (String mailbox : lfc.getMailboxes()){
+				if (Task.listen(mailbox)){
+					Msg.info("Send a message to : " + mailbox + 
+							" which is listening");
+					Vector<LogicalFile> list = new Vector<LogicalFile>();
+					list.add(file);
+					LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, 
+							list);
+					
+					LFCMessage.getFrom(mailbox);
+					tryAgain = false;
+					break;
+				}
+			}
+		}
 	}
 }

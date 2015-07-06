@@ -16,11 +16,16 @@ public class LFC extends Process {
 	// A Logical File Catalog service is defined by:
 	// hostName: the name of the host that runs the service
 	// catalog: a vector of logical files
-	protected String hostName;
+	protected String name;
 	private Vector<LogicalFile> catalog;
+
+	public String getName() {
+		return name;
+	}
 
 	private Vector<String> mailboxes;
 
+	
 	// TODO WIP: try to have several listeners on the LFC to handle more than 
 	// TODO one request at a time.
 	public Vector<String> getMailboxes() {
@@ -35,7 +40,7 @@ public class LFC extends Process {
 	// The populate function reads and parses that file, create LogicalFile 
 	// objects and add them to the local catalog.
 	private void populate(String csvFile){
-		Msg.info("Population of LFC '"+ hostName + "' from '"+ csvFile + "'");
+		Msg.info("Population of LFC '"+ name + "' from '"+ csvFile + "'");
 
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(csvFile));
@@ -61,6 +66,7 @@ public class LFC extends Process {
 	// new replica or not. Otherwise, it creates a new entry in the catalog for
 	// that file.
 	private void register(LogicalFile newFile){
+		Msg.debug("Inserting '"+ newFile.toString() + "'into the catalog");
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
 			if (!file.getLocations().contains((Object) newFile.getLocation())){
@@ -75,24 +81,24 @@ public class LFC extends Process {
 			// This file is not registered yet, create and add it
 			Msg.debug ("'" + newFile.getName() + "' is not registered yet");
 			catalog.add(newFile);
-			Msg.debug("LFC '"+ hostName + "' registered " + newFile.toString());
 		}
+		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
 	}
 
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.hostName = getHost().getName();
+		this.name = getHost().getName();
 		this.catalog = new Vector<LogicalFile>();
 		// TODO WIP: try to have several listeners on the LFC to handle more 
 		// TODO than one request at a time.
 		this.mailboxes = new Vector<String>();
-		for (int i=0; i<3; this.mailboxes.add(this.hostName+"_"+i++));
+		for (int i=0; i<3; this.mailboxes.add(this.name+"_"+i++));
 	}
 
 	public void main(String[] args) throws HostNotFoundException {
 		boolean stop = false;
 
-		Msg.debug("Register LFC on "+ hostName);
+		Msg.debug("Register LFC on "+ name);
 		VIPSimulator.getLFCList().add(this);
 
 		// If this LFC process is started with an argument, we populate the
@@ -110,6 +116,7 @@ public class LFC extends Process {
 				new Process(this.getHost(),"Listener", new String[] {mailbox}){
 					public void main(String[] args) throws MsgException {
 						String mailbox =  args[0];
+						Msg.info("Start a new listener on: " + mailbox);
 						Comm listener = Task.irecv(mailbox);
 						listener.waitCompletion();
 						LFCMessage m = (LFCMessage) listener.getTask();
@@ -118,11 +125,11 @@ public class LFC extends Process {
 						m.execute();
 						register(m.getFile());
 
-						LFCMessage.sendTo(m.getSenderMailbox(), 
+						LFCMessage.sendTo(mailbox, 
 								LFCMessage.Type.REGISTER_ACK);
-						Msg.debug("LFC '"+ hostName + 
-								"' sent back an ACK to '" +
-								m.getSenderMailbox() + "'");
+						Msg.debug("LFC '"+ name + 
+								"' sent back an ACK on'" +
+								 mailbox + "'");
 
 						Msg.info("posting a new irecv on "+ mailbox);
 						//listeners.set(index, Task.irecv(mailbox));
@@ -136,10 +143,10 @@ public class LFC extends Process {
 		//TODO end of WIP
 
 		while (!stop){
-			LFCMessage message = LFCMessage.getFrom(hostName);
+			LFCMessage message = LFCMessage.getFrom(name);
 			// To prevent message mixing, a specific mailbox is used whose name
 			// is the concatenation of LFC's hostName and sender mailbox
-			String returnMailbox = hostName+message.getSenderMailbox();
+			String returnMailbox = name+message.getSenderMailbox();
 			
 			switch(message.getType()){
 			case REGISTER_FILE:
@@ -148,7 +155,7 @@ public class LFC extends Process {
 				register(message.getFile());
 
 				LFCMessage.sendTo(returnMailbox, LFCMessage.Type.REGISTER_ACK);
-				Msg.debug("LFC '"+ hostName + "' sent back an ACK to '" +
+				Msg.debug("LFC '"+ name + "' sent back an ACK to '" +
 						message.getSenderMailbox() + "'");
 				break;
 			case ASK_LOGICAL_FILE:
@@ -161,7 +168,7 @@ public class LFC extends Process {
 				file.selectLocation();
 				LFCMessage.sendTo(returnMailbox, 
 						LFCMessage.Type.SEND_LOGICAL_FILE, file);
-				Msg.debug("LFC '"+ hostName + "' returned Logical " + 
+				Msg.debug("LFC '"+ name + "' returned Logical " + 
 						file.toString() + " back to '" + 
 						message.getSenderMailbox() + "'");
 				break;
