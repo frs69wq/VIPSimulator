@@ -1,4 +1,5 @@
 import org.simgrid.msg.Host;
+import org.simgrid.msg.HostNotFoundException;
 
 public class DefaultLFC extends LFC {
 	// In a simulation deployment file, there is a single host identified as the
@@ -9,7 +10,7 @@ public class DefaultLFC extends LFC {
 		super(host, name, args);
 	}
 
-	public void main(String[] args) {
+	public void main(String[] args) throws HostNotFoundException {
 		VIPSimulator.setDefaultLFC(hostName);
 		super.main(args);
 	}

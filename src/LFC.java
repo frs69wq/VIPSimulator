@@ -3,9 +3,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Vector;
 
+import org.simgrid.msg.Comm;
+import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.Task;
 
 public class LFC extends Process {
 
@@ -78,15 +82,14 @@ public class LFC extends Process {
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.hostName = getHost().getName();
-		this.catalog = new Vector<>();
-		this.mailboxes = new Vector<>();
+		this.catalog = new Vector<LogicalFile>();
 		// TODO WIP: try to have several listeners on the LFC to handle more 
 		// TODO than one request at a time.
+		this.mailboxes = new Vector<String>();
 		for (int i=0; i<3; this.mailboxes.add(this.hostName+"_"+i++));
-		this.mailboxes.add(this.hostName);
 	}
 
-	public void main(String[] args) {
+	public void main(String[] args) throws HostNotFoundException {
 		boolean stop = false;
 
 		Msg.debug("Register LFC on "+ hostName);
@@ -100,6 +103,37 @@ public class LFC extends Process {
 			populate(csvFile);
 			Msg.debug(this.toString());
 		}
+		
+		//TODO begin of WIP
+		for (String mailbox : mailboxes){
+			try{
+				new Process(this.getHost(),"Listener", new String[] {mailbox}){
+					public void main(String[] args) throws MsgException {
+						String mailbox =  args[0];
+						Comm listener = Task.irecv(mailbox);
+						listener.waitCompletion();
+						LFCMessage m = (LFCMessage) listener.getTask();
+						Msg.info("Received: " + m.getType() + " from " + 
+								m.getSenderMailbox()+ " in "+ mailbox);
+						m.execute();
+						register(m.getFile());
+
+						LFCMessage.sendTo(m.getSenderMailbox(), 
+								LFCMessage.Type.REGISTER_ACK);
+						Msg.debug("LFC '"+ hostName + 
+								"' sent back an ACK to '" +
+								m.getSenderMailbox() + "'");
+
+						Msg.info("posting a new irecv on "+ mailbox);
+						//listeners.set(index, Task.irecv(mailbox));
+						Msg.info("this process should end now!");
+					}
+				}.start();
+			} catch (MsgException e){
+				e.printStackTrace();
+			}
+		}
+		//TODO end of WIP
 
 		while (!stop){
 			LFCMessage message = LFCMessage.getFrom(hostName);

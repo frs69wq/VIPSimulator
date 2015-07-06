@@ -7,25 +7,42 @@ public class LCG {
 
 	public static void crInput(String mailbox, String logicalFileName,
 			long logicalFileSize, String SEName, String LFCName) {
-		// To prevent message mixing, a specific mailbox is used whose name
-		// is the concatenation of LFC's hostName and the given mailbox
-		String LFCMailbox = LFCName+mailbox;
 
 		LogicalFile file = new LogicalFile(logicalFileName, logicalFileSize, 
 				SEName);
 		Msg.info("Ask '"+ LFCName + "' to register " + file.toString());
 
-		LFCMessage.sendTo(LFCName, LFCMessage.Type.REGISTER_FILE, file);
-		LFCMessage.getFrom(LFCMailbox);
+		// TODO WIP: try to have several listeners on the LFC to handle more 
+		// TODO than one request at a time.
+		Vector<String> LFCMailboxes = 
+				((LFC) VIPSimulator.getLFCList().firstElement()).getMailboxes();
 
+		boolean tryAgain = true;
+		while (tryAgain){
+			for (String m : LFCMailboxes){
+				if (Task.listen(m)){
+					Msg.info("Send a message to : " + m + 
+							" which is listening");
+					LFCMessage.sendTo(m, LFCMessage.Type.REGISTER_FILE, file);
+					LFCMessage.getFrom(mailbox);
+					tryAgain = false;
+					break;
+				}
+			}
+		}
+		// TODO end of WIP
+
+		// To prevent message mixing, a specific mailbox is used whose name
+		// is the concatenation of LFC's hostName and the given mailbox
+//		String LFCMailbox = LFCName+mailbox;
+//
+//
+//		LFCMessage.sendTo(LFCName, LFCMessage.Type.REGISTER_FILE, file);
+//		LFCMessage.getFrom(LFCMailbox);
+//
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
 
-		// TODO WIP: try to have several listeners on the LFC to handle more 
-		// TODO than one request at a time.
-		Vector<String> LFCMailboxes = ((LFC) VIPSimulator.getLFCList().firstElement()).getMailboxes();
-		for (String m :LFCMailboxes)
-			Msg.debug(m +" : " + Task.listen(m));
 	}
 
 	public static void cr(String mailbox, String SEName, String localFileName,
