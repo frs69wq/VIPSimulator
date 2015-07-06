@@ -15,6 +15,14 @@ public class LFC extends Process {
 	protected String hostName;
 	private Vector<LogicalFile> catalog;
 
+	private Vector<String> mailboxes;
+
+	// TODO WIP: try to have several listeners on the LFC to handle more than 
+	// TODO one request at a time.
+	public Vector<String> getMailboxes() {
+		return mailboxes;
+	}
+
 	// A simulation can begin with some logical files referenced in the LFC.
 	// In that case, the LFC process is launched with an argument which is the
 	// name of a CSV file stored in working directory that contains logical 
@@ -71,6 +79,11 @@ public class LFC extends Process {
 		super(host,name,args);
 		this.hostName = getHost().getName();
 		this.catalog = new Vector<>();
+		this.mailboxes = new Vector<>();
+		// TODO WIP: try to have several listeners on the LFC to handle more 
+		// TODO than one request at a time.
+		for (int i=0; i<3; this.mailboxes.add(this.hostName+"_"+i++));
+		this.mailboxes.add(this.hostName);
 	}
 
 	public void main(String[] args) {
@@ -143,16 +156,6 @@ public class LFC extends Process {
 		}
 
 		return file;
-	}
-
-	public Vector<LogicalFile> getResults(){
-		Vector<LogicalFile> results = new Vector<LogicalFile>();
-		for (LogicalFile file : catalog) 
-			if (file.getName().matches("results/(.*)partial(.*)")){
-				results.add(file);
-			}
-
-		return results;
 	}
 
 	public String getSEName (String logicalFileName){

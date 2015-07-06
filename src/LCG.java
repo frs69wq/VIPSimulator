@@ -1,6 +1,7 @@
 import java.util.Vector;
 
 import org.simgrid.msg.Msg;
+import org.simgrid.msg.Task;
 
 public class LCG {
 
@@ -19,6 +20,12 @@ public class LCG {
 
 		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
 				LFCName +"' completed");
+
+		// TODO WIP: try to have several listeners on the LFC to handle more 
+		// TODO than one request at a time.
+		Vector<String> LFCMailboxes = ((LFC) VIPSimulator.getLFCList().firstElement()).getMailboxes();
+		for (String m :LFCMailboxes)
+			Msg.debug(m +" : " + Task.listen(m));
 	}
 
 	public static void cr(String mailbox, String SEName, String localFileName,
