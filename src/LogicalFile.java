@@ -27,14 +27,14 @@ public class LogicalFile {
 	//TODO These two functions might be redundant (and/or misleading)
 	//TODO To be improved once we know more about the LFC internal algorithms.
 	public String getLocation() {
-		//TODO return the first SE for now. Might be interesting to implement 
+		//TODO return SE randomly for now. Might be interesting to implement 
 		// some load balancing strategy
 		int selectedIndex = randomGenerator.nextInt(locations.size());
 		return locations.get(selectedIndex);
 	}
 
 	public void selectLocation(){
-		//TODO return the first SE for now. Might be interesting to implement 
+		//TODO return SE randomly for now. Might be interesting to implement 
 		// some load balancing strategy
 		String selectedLocation = getLocation();
 		locations.clear();
