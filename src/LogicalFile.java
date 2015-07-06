@@ -1,10 +1,12 @@
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Vector;
 
 public class LogicalFile {
 	private String name;
 	private long size;
 	private Vector<String>locations;
+	private Random randomGenerator;
 
 	public String getName() {
 		return name;
@@ -24,16 +26,17 @@ public class LogicalFile {
 
 	//TODO These two functions might be redundant (and/or misleading)
 	//TODO To be improved once we know more about the LFC internal algorithms.
-	public String getSEName() {
+	public String getLocation() {
 		//TODO return the first SE for now. Might be interesting to implement 
 		// some load balancing strategy
-		return locations.get(0);
+		int selectedIndex = randomGenerator.nextInt(locations.size());
+		return locations.get(selectedIndex);
 	}
 
 	public void selectLocation(){
 		//TODO return the first SE for now. Might be interesting to implement 
 		// some load balancing strategy
-		String selectedLocation = getSEName();
+		String selectedLocation = getLocation();
 		locations.clear();
 		locations.add(selectedLocation);
 	}
@@ -55,6 +58,7 @@ public class LogicalFile {
 		this.size = size;
 		this.locations = new Vector<String>();
 		this.locations.addAll(Arrays.asList(locations));
+		this.randomGenerator = new Random();
 	}
 
 	// In most cases, this constructor with a single location will be used.

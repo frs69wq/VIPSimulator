@@ -83,7 +83,7 @@ public class LCG {
 		
 		LFCMessage getFileInfo = LFCMessage.getFrom(LFCMailbox);
 
-		SEName = getFileInfo.getFile().getSEName();
+		SEName = getFileInfo.getFile().getLocation();
 		logicalFileSize = getFileInfo.getFile().getSize();
 
 		Msg.info("LFC '"+ LFCName + "' replied: " + 

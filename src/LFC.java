@@ -59,11 +59,11 @@ public class LFC extends Process {
 	private void register(LogicalFile newFile){
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
-			if (!file.getLocations().contains((Object) newFile.getSEName())){
+			if (!file.getLocations().contains((Object) newFile.getLocation())){
 				// This has to be a new replica
 				Msg.info("New replica for '" + newFile.getName () + "' on '" + 
-						newFile.getSEName() + "'");
-				file.addLocation(newFile.getSEName());
+						newFile.getLocation() + "'");
+				file.addLocation(newFile.getLocation());
 			} else {
 				Msg.debug(file.toString() + "is already registered");
 			}
@@ -159,7 +159,7 @@ public class LFC extends Process {
 	}
 
 	public String getSEName (String logicalFileName){
-		return getLogicalFileByName(logicalFileName).getSEName();
+		return getLogicalFileByName(logicalFileName).getLocation();
 	}
 
 	public String toString () {
