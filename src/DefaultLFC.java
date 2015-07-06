@@ -11,7 +11,7 @@ public class DefaultLFC extends LFC {
 	}
 
 	public void main(String[] args) throws HostNotFoundException {
-		VIPSimulator.setDefaultLFC(hostName);
+		VIPSimulator.setDefaultLFC(this);
 		super.main(args);
 	}
 }

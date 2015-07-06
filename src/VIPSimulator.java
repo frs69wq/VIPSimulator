@@ -4,8 +4,8 @@ import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Process;
 
 public class VIPSimulator {
-	private static String defaultLFC = null;
-	private static Vector<Process> lfcList = new Vector<Process>();
+	private static LFC defaultLFC = null;
+	private static Vector<LFC> lfcList = new Vector<LFC>();
 	private static String defaultSE = null;
 	private static Vector<Process> seList = new Vector<Process>();
 
@@ -17,22 +17,23 @@ public class VIPSimulator {
 	public static double eventsPerSec;
 	public static String logFile;
 
-	public static String getDefaultLFC() {
+	public static LFC getDefaultLFC() {
 		return defaultLFC;
 	}
 
-	public static void setDefaultLFC(String defaultLFC) {
+	public static void setDefaultLFC(LFC defaultLFC) {
 		if (VIPSimulator.defaultLFC != null){
 			Msg.warn("The default LFC has already been identified. Please " +
 					"check there is only one 'DefaultLFC' process in the " +
 					"deployement file.");
 		} else {
 			VIPSimulator.defaultLFC = defaultLFC;
-			Msg.info("Default LFC is '"+ VIPSimulator.defaultLFC + "'");
+			Msg.info("Default LFC is '"+ 
+					VIPSimulator.defaultLFC.getName() + "'");
 		}
 	}
 
-	public static Vector<Process> getLFCList() {
+	public static Vector<LFC> getLFCList() {
 		return lfcList;
 	}
 

@@ -77,13 +77,13 @@ public class Gate extends Process {
 				downloadTime = Msg.getClock();
 				LCG.cp(getMailbox(), "inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz",
-						VIPSimulator.getDefaultLFC());
+						VIPSimulator.getDefaultLFC().getName());
 				LCG.cp(getMailbox(), "inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
-						VIPSimulator.getDefaultLFC());
+						VIPSimulator.getDefaultLFC().getName());
 				LCG.cp(getMailbox(), "inputs/file-14539084101429.zip", 
 						"/scratch/file-14539084101429.zip", 
-						VIPSimulator.getDefaultLFC());
+						VIPSimulator.getDefaultLFC().getName());
 				downloadTime = Msg.getClock() - downloadTime;
 
 			case GATE_CONTINUE:	
@@ -122,7 +122,7 @@ public class Gate extends Process {
 				uploadTime = Msg.getClock();
 				LCG.cr(getMailbox(), closeSEName, "local_file.tgz", 
 						uploadFileSize, logicalFileName, 
-						VIPSimulator.getDefaultLFC());
+						VIPSimulator.getDefaultLFC().getHost().getName());
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping GATE job. Inform VIP server and exit");
 				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_END);
