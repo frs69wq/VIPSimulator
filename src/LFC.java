@@ -72,7 +72,10 @@ public class LFC extends Process {
 		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
 	}
 
+	// TODO to be factored with similar function of Class SE
 	private String findAvailableMailbox(){
+		//TODO move this as parameter of the method
+		long retryAfter = 10;
 		while (true){
 			for (Process listener: this.listeners){
 				String mailbox = listener.getName();
@@ -82,9 +85,10 @@ public class LFC extends Process {
 					return mailbox;
 				}
 			}
-			Msg.warn("All the listeners are busy to register. Try Again!");
 			try {
-				Process.sleep(10);
+				Msg.warn("All the listeners are busy. Wait for " + retryAfter +
+						"ms and try again");
+				Process.sleep(retryAfter);
 			} catch (HostFailureException e) {
 				e.printStackTrace();
 			}
@@ -122,7 +126,7 @@ public class LFC extends Process {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();
 
-					Msg.info("Start a new listener on: " + mailbox);
+					Msg.debug("Start a new listener on: " + mailbox);
 					while (true){
 						LFCMessage message = (LFCMessage) Task.receive(mailbox);
 						Msg.debug ("Received " + message.getType() + " from " + 

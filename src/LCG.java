@@ -4,77 +4,43 @@ import org.simgrid.msg.Msg;
 
 public class LCG {
 
-	public static void crInput(LFC lfc, String logicalFileName,
-			long logicalFileSize, String seName) {
-
-		LogicalFile file = 
-				new LogicalFile(logicalFileName, logicalFileSize, seName);
-		Msg.info("Ask '"+ lfc.getName() + "' to register " + file.toString());
-
-		lfc.register(file);
-
-		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
-				lfc +"' completed");
-
-	}
-
-	public static void cr(String mailbox, String seName, String localFileName,
-			long localFileSize, String logicalFileName, LFC lfc) {
+	protected static void cr(String localFileName, long localFileSize, 
+			String logicalFileName, SE se, LFC lfc) {
 		Msg.info("lcg-cr '" + logicalFileName + "' from '" + localFileName + 
-				"' using lfc '" + lfc +"'");
-		// To prevent message mixing, a specific mailbox is used whose name
-		// is the concatenation of LFC's hostName and the given mailbox
+				"' using '" + lfc.getName() +"'");
 
 		// upload file to SE
-		SEMessage.sendAsynchronouslyTo(seName, SEMessage.Type.UPLOAD_FILE, 
-				localFileSize);
-
-		//waiting for upload to finish
-		Msg.info("Sent upload request to SE '" + seName + "' for file '" + 
-				logicalFileName +"' of size " + localFileSize +". Waiting for" +
-				" an ack");
-
-		SEMessage.getFrom(mailbox);
-		Msg.info("SE '"+ seName + "' replied with an ACK");
-
+		se.upload(localFileSize);
+		Msg.info("SE '"+ se.getName() + "' replied with an ACK");
 
 		// Register file into LFC
 		LogicalFile file = 
-				new LogicalFile(logicalFileName, localFileSize, seName);
+				new LogicalFile(logicalFileName, localFileSize, se.getName());
 		Msg.info("Ask '"+ lfc.getName() + "' to register " + file.toString());
 		
 		lfc.register(file);
 
-		Msg.info("lcg-cr of '" + logicalFileName +"' on LFC '" + 
-				lfc.getName() + "' completed");
+		Msg.info("lcg-cr of '" + logicalFileName +"' on '" + lfc.getName() + 
+				"' completed");
 	}
 
-	public static void cp(String mailbox, String logicalFileName,
-			String localFileName, LFC lfc){
+	public static void cp(String logicalFileName, String localFileName, 
+			LFC lfc){
 		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName +
-				"' using LFC '" + lfc.getName() + "'");
+				"' using '" + lfc.getName() + "'");
 
-		// get information on Logical File from the LFC
+		// get Logical File from the LFC
 		LogicalFile file = lfc.getLogicalFile(logicalFileName);
 
 		Msg.info("LFC '"+ lfc.getName() + "' replied: " + file.toString()); 
 
 		// Download physical File from SE
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
-				file.getLocation() + "' using LFC '" + lfc.getName() +"'");
+				file.getLocation() + "' using '" + lfc.getName() +"'");
 
-		SEMessage.sendTo(file.getLocation(), SEMessage.Type.DOWNLOAD_REQUEST, 
-				logicalFileName, file.getSize());
+		file.getSE().download(logicalFileName, file.getSize());
 
-		Msg.info("Sent download request for " + 
-				file.toString() + 
-				". Waiting for reception ...");
-
-		SEMessage.getFrom(mailbox);
-
-		Msg.info("SE '"+ file.getLocation() + "' sent " + file.toString());
-
-		Msg.debug("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
+		Msg.info("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
 				"' completed");
 	};
 
@@ -88,5 +54,20 @@ public class LCG {
 			results.add (f.getName());
 
 		return results;
+	}
+
+	//TODO To be removed
+	public static void crInput(LFC lfc, String logicalFileName,
+			long logicalFileSize, String seName) {
+
+		LogicalFile file = 
+				new LogicalFile(logicalFileName, logicalFileSize, seName);
+		Msg.info("Ask '"+ lfc.getName() + "' to register " + file.toString());
+
+		lfc.register(file);
+
+		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
+				lfc +"' completed");
+
 	}
 }

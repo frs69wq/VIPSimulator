@@ -1,4 +1,5 @@
 import org.simgrid.msg.Host;
+import org.simgrid.msg.MsgException;
 
 public class DefaultSE extends SE{
 	// In a simulation deployment file, there is a single host identified as the
@@ -10,8 +11,8 @@ public class DefaultSE extends SE{
 		super(host, name, args);
 	}
 
-	public void main(String[] args) {
-		VIPSimulator.setDefaultSE(this.hostName);
+	public void main(String[] args) throws MsgException {
+		VIPSimulator.setDefaultSE(this.name);
 		super.main(args);
 	}
 }

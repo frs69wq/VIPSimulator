@@ -55,6 +55,15 @@ public class VIPSimulator {
 		return seList;
 	}
 
+	public static SE getSEbyName(String seName){
+		SE notFound = null;
+		for (SE se : seList) 
+			if (se.getName().matches(seName))
+				return se;
+		Msg.error("Cannot find an SE named '" + seName +"'");
+		return notFound;
+	}
+	
 	public static void main(String[] args) throws NativeException {
 		Msg.init(args);
 		String platform_file  = null;

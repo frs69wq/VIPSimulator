@@ -36,11 +36,11 @@ public class SEMessage extends Task {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
 		this.logicalName=logicalName;
-		this.size = size;
+		this.size=size;
 	}
 
 	/**
-	 * Constructor, builds a new UPLOAD_REQUEST/SEND_FILE message
+	 * Constructor, builds a new UPLOAD_FILE/SEND_FILE message
 	 */
 	public SEMessage(Type type, long size){
 		super(type.toString(), 0, size);
@@ -55,7 +55,7 @@ public class SEMessage extends Task {
 	public static SEMessage getFrom (String mailbox) {
 		SEMessage message = null;
 		try {
-			message = (SEMessage) Task.receive(mailbox);
+			message = (SEMessage) Task.receive("return-"+mailbox);
 			Msg.debug("Received a '" + message.type.toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
@@ -68,12 +68,11 @@ public class SEMessage extends Task {
 		return message;
 	}
 
-	/**
-	 *  Specialized send of a DOWNLOAD_REQUEST message
-	 */
 	public static void sendTo (String destination, Type type, 
 			String logicalName, long size) {
-		SEMessage m = new SEMessage (type, logicalName, size);
+		SEMessage m = (logicalName == null) ? 
+				new SEMessage (type, size) : 
+				new SEMessage (type, logicalName, size);
 		try{
 			Msg.debug("Send a '" + type.toString() + "' message to " +
 					destination);
@@ -86,16 +85,16 @@ public class SEMessage extends Task {
 	}
 
 	/**
-	 * Specialized send of a UPLOAD_ACK
-	 * message
+	 * Specialized send of a UPLOAD_ACK message
 	 */
 	public static void sendTo (String destination, Type type) {
-		sendTo(destination, type, null, 0);
+		sendTo(destination, type, type.toString(), 0);
 	}
 
-	public static void sendAsynchronouslyTo (String destination, Type type, 
-			long payload) {
-		SEMessage m = new SEMessage (type, payload);
-		m.isend(destination);
+	/**
+	 *  Specialized send of a UPLOAD_FILE/SEND_FILE message
+	 */
+	public static void sendTo (String destination, Type type, long size) {
+		sendTo(destination, type, null, size);
 	}
 }

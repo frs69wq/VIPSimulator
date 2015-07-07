@@ -24,8 +24,12 @@ public class LogicalFile {
 		return locations;
 	}
 
-	//TODO These two functions might be redundant (and/or misleading)
+	public SE getSE() {
+		return VIPSimulator.getSEbyName(getLocation());
+	}
+	
 	//TODO To be improved once we know more about the LFC internal algorithms.
+	//TODO These two functions might be redundant (and/or misleading)
 	public String getLocation() {
 		//TODO return SE randomly for now. Might be interesting to implement 
 		// some load balancing strategy

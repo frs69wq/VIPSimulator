@@ -6,7 +6,7 @@ import org.simgrid.msg.MsgException;
 
 public class Gate extends Process {
 	private String mailbox;
-	private String closeSEName;
+	private SE closeSE;
 	private double downloadTime = 0.;
 	private double totalComputeTime = 0.;
 	private double uploadTime = 0.;
@@ -34,7 +34,7 @@ public class Gate extends Process {
 
 	public Gate(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.closeSEName = host.getProperty("closeSE");
+		this.closeSE = VIPSimulator.getSEbyName(host.getProperty("closeSE"));
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -75,13 +75,13 @@ public class Gate extends Process {
 				// Have to be generalized at some point.
 
 				downloadTime = Msg.getClock();
-				LCG.cp(getMailbox(), "inputs/gate.sh.tar.gz", 
-						"/scratch/gate.sh.tar.gz",
+				LCG.cp("inputs/gate.sh.tar.gz", 
+						"/scratch/gate.sh.tar.gz", 
 						VIPSimulator.getDefaultLFC());
-				LCG.cp(getMailbox(), "inputs/opengate_version_7.0.tar.gz", 
+				LCG.cp("inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPSimulator.getDefaultLFC());
-				LCG.cp(getMailbox(), "inputs/file-14539084101429.zip", 
+				LCG.cp("inputs/file-14539084101429.zip", 
 						"/scratch/file-14539084101429.zip", 
 						VIPSimulator.getDefaultLFC());
 				downloadTime = Msg.getClock() - downloadTime;
@@ -120,9 +120,8 @@ public class Gate extends Process {
 						Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime = Msg.getClock();
-				LCG.cr(getMailbox(), closeSEName, "local_file.tgz", 
-						uploadFileSize, logicalFileName, 
-						VIPSimulator.getDefaultLFC());
+				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, 
+						closeSE, VIPSimulator.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping GATE job. Inform VIP server and exit");
 				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_END);
