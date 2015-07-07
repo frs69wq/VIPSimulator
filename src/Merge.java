@@ -7,7 +7,7 @@ import org.simgrid.msg.Process;
 
 public class Merge extends Process {
 	private String mailbox;
-//	private String closeSEName;
+//	private String closeSE;
 
 	private void setMailbox(){
 		this.mailbox = Integer.toString(this.getPID()) + "@" +
@@ -20,7 +20,7 @@ public class Merge extends Process {
 
 	public Merge(Host host, String name, String[]args) {
 		super(host,name,args);
-//		this.closeSEName = host.getProperty("closeSE");
+//		this.closeSE = VIPSimulator.getSEbyName(host.getProperty("closeSE"));
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -49,6 +49,10 @@ public class Merge extends Process {
 						LCG.ls(VIPSimulator.getDefaultLFC(),"results/");
 
 				Msg.info("Files to merge:" + fileNameList.toString());
+				for (String fileName : fileNameList){
+					LCG.cp(fileName, "/scratch/" + fileName, 
+							VIPSimulator.getDefaultLFC());
+				}
 				Process.sleep(5000);
 				Msg.verb("Goodbye!");
 				stop = true;
