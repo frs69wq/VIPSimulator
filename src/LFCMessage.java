@@ -16,8 +16,7 @@ public class LFCMessage extends Task {
 		REGISTER_FILE,
 		REGISTER_ACK,
 		ASK_LS,
-		SEND_LS,
-		FINALIZE
+		SEND_LS
 	};
 
 	private Type type;
