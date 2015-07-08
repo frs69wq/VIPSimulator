@@ -1,7 +1,6 @@
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
 
 public class SE extends GridService {
@@ -24,10 +23,7 @@ public class SE extends GridService {
 					Msg.debug("Start a new listener on: " + mailbox);
 
 					while (true){
-						SEMessage message = (SEMessage) Task.receive(mailbox);
-						Msg.debug ("Received " + message.getType() + " from " + 
-								message.getSenderMailbox() + " in "+ mailbox);
-						message.execute();
+						SEMessage message = SEMessage.getFrom(mailbox);
 						
 						switch(message.getType()){
 						case DOWNLOAD_REQUEST:
@@ -76,7 +72,7 @@ public class SE extends GridService {
 		SEMessage.sendTo(mailbox, SEMessage.Type.UPLOAD_FILE, 
 				size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
-		SEMessage.getFrom(mailbox);
+		SEMessage.getFrom("return-"+mailbox);
 	}
 
 	public void download(String fileName, long fileSize){
@@ -85,7 +81,7 @@ public class SE extends GridService {
 				fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
 				"'. Waiting for reception ...");
-		SEMessage.getFrom(mailbox);
+		SEMessage.getFrom("return-"+mailbox);
 	}
 }
 

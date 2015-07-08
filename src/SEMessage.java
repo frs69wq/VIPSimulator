@@ -55,7 +55,7 @@ public class SEMessage extends Task {
 	public static SEMessage getFrom (String mailbox) {
 		SEMessage message = null;
 		try {
-			message = (SEMessage) Task.receive("return-"+mailbox);
+			message = (SEMessage) Task.receive(mailbox);
 			Msg.debug("Received a '" + message.type.toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.

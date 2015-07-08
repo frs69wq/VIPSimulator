@@ -6,7 +6,6 @@ import java.util.Vector;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
 
 public class LFC extends GridService {
@@ -94,10 +93,7 @@ public class LFC extends GridService {
 
 					Msg.debug("Start a new listener on: " + mailbox);
 					while (true){
-						LFCMessage message = (LFCMessage) Task.receive(mailbox);
-						Msg.debug ("Received " + message.getType() + " from " + 
-								message.getSenderMailbox() + " in "+ mailbox);
-						message.execute();
+						LFCMessage message = LFCMessage.getFrom(mailbox);
 
 						switch(message.getType()){
 						case REGISTER_FILE:
@@ -164,7 +160,7 @@ public class LFC extends GridService {
 	public void register (LogicalFile file) {
 		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
-		LFCMessage.getFrom(mailbox);
+		LFCMessage.getFrom("return-"+mailbox);
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
@@ -174,7 +170,7 @@ public class LFC extends GridService {
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
 
-		LFCMessage m = LFCMessage.getFrom(mailbox);
+		LFCMessage m = LFCMessage.getFrom("return-"+mailbox);
 		return m.getFile();
 	}
 
@@ -183,7 +179,7 @@ public class LFC extends GridService {
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
-		LFCMessage m = LFCMessage.getFrom(mailbox);
+		LFCMessage m = LFCMessage.getFrom("return-"+mailbox);
 		return m.getFileList();
 	}
 }

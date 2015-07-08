@@ -58,7 +58,7 @@ public class LFCMessage extends Task {
 	public static LFCMessage getFrom (String mailbox) {
 		LFCMessage message = null;
 		try {
-			message = (LFCMessage) Task.receive("return-"+mailbox);
+			message = (LFCMessage) Task.receive(mailbox);
 			Msg.debug("Received a '" + message.type.toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
