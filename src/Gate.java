@@ -4,37 +4,24 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
-public class Gate extends Process {
-	private String mailbox;
-	private SE closeSE;
+public class Gate extends Job {
 	private double downloadTime = 0.;
 	private double totalComputeTime = 0.;
 	private double uploadTime = 0.;
-
-	private void setMailbox(){
-		this.mailbox = Integer.toString(this.getPID()) + "@" +
-				getHost().getName();
-	}
-
-	public String getMailbox(){
-		return this.mailbox;
-	}
 
 	private long simulateForNsec(long nSec) throws HostFailureException {
 		double nbPart;
 
 		Process.sleep(nSec);
 		nbPart = VIPSimulator.eventsPerSec* nSec;
-		Msg.info("simulateForNsec: '"+ mailbox + "' simulated "+ 
+		Msg.info("simulateForNsec: '"+ getMailbox() + "' simulated "+ 
 				(long) nbPart + " particles");
 
 		return (long) (nbPart);
-
 	}
 
 	public Gate(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.closeSE = VIPSimulator.getSEbyName(host.getProperty("closeSE"));
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -57,13 +44,13 @@ public class Gate extends Process {
 		long uploadFileSize= (args.length > 2 ? 
 				Long.valueOf(args[2]).longValue() : 1000000);
 
-		Msg.info("Register GATE on '"+ mailbox + "'");
+		Msg.info("Register GATE on '"+ getMailbox()+ "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
 		GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_CONNECT);
 		
 		while (!stop){
-			GateMessage message = GateMessage.getFrom(mailbox);
+			GateMessage message = GateMessage.getFrom(getMailbox());
 
 			switch(message.getType()){
 			case GATE_START:
@@ -109,19 +96,19 @@ public class Gate extends Process {
 			case GATE_STOP:
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
-						mailbox +"'");
+						getMailbox() +"'");
 
 				//TODO Discuss what we can do here
 				//TODO what is the actual size of the generated file ?
 				//TODO use the actual size obtained from the logs for now
 				String logicalFileName = "results/"+ 
 						Long.toString(nbParticles) +
-						"-partial-"+ mailbox + "-" +
+						"-partial-"+ getMailbox() + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime = Msg.getClock();
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, 
-						closeSE, VIPSimulator.getDefaultLFC());
+						getCloseSE(), VIPSimulator.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
 				Msg.info("Stopping GATE job. Inform VIP server and exit");
 				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_END);

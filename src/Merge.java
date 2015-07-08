@@ -5,22 +5,10 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 
-public class Merge extends Process {
-	private String mailbox;
-//	private String closeSE;
-
-	private void setMailbox(){
-		this.mailbox = Integer.toString(this.getPID()) + "@" +
-				getHost().getName();
-	}
-
-	public String getMailbox(){
-		return this.mailbox;
-	}
+public class Merge extends Job {
 
 	public Merge(Host host, String name, String[]args) {
 		super(host,name,args);
-//		this.closeSE = VIPSimulator.getSEbyName(host.getProperty("closeSE"));
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -33,13 +21,13 @@ public class Merge extends Process {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
 		}
-		Msg.info("Register Merge on '" + mailbox + "'");
+		Msg.info("Register Merge on '" + getMailbox() + "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
 		GateMessage.sendTo("VIPServer",GateMessage.Type.MERGE_CONNECT);
 
 		while (!stop){
-			GateMessage message = GateMessage.getFrom(mailbox);
+			GateMessage message = GateMessage.getFrom(getMailbox());
 
 			switch(message.getType()){
 			case MERGE_START:
