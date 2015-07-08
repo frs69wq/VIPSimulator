@@ -7,17 +7,14 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
-import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.MsgException;
 
-public class LFC extends Process {
+public class LFC extends GridService {
 
 	// A Logical File Catalog service is defined by:
 	// hostName: the name of the host that runs the service
 	// catalog: a vector of logical files
-	protected String name;
 	private Vector<LogicalFile> catalog;
-	private Vector<Process> listeners;
 
 	// A simulation can begin with some logical files referenced in the LFC.
 	// In that case, the LFC process is launched with an argument which is the
@@ -72,40 +69,9 @@ public class LFC extends Process {
 		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
 	}
 
-	// TODO to be factored with similar function of Class SE
-	private String findAvailableMailbox(){
-		//TODO move this as parameter of the method
-		long retryAfter = 10;
-		while (true){
-			for (Process listener: this.listeners){
-				String mailbox = listener.getName();
-				if (Task.listen(mailbox)){
-					Msg.info("Send a message to : " + mailbox + 
-							" which is listening");
-					return mailbox;
-				}
-			}
-			try {
-				Msg.warn("All the listeners are busy. Wait for " + retryAfter +
-						"ms and try again");
-				Process.sleep(retryAfter);
-			} catch (HostFailureException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public String getName() {
-		return name;
-	}
-
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
-		this.name = getHost().getName();
 		this.catalog = new Vector<LogicalFile>();
-		// TODO WIP: try to have several listeners on the LFC to handle more 
-		// TODO than one request at a time.
-		this.listeners = new Vector<Process>();
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -195,19 +161,14 @@ public class LFC extends Process {
 		return catalog.toString();
 	}
 
-	public void kill(){
-		for (Process p : listeners)
-			p.kill();
-	}
-	
 	public void register (LogicalFile file) {
-		String mailbox = this.findAvailableMailbox();
+		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
 		LFCMessage.getFrom(mailbox);
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
-		String mailbox = this.findAvailableMailbox();
+		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LOGICAL_FILE, 
 				logicalFileName);
 		Msg.info("Asked about '" + logicalFileName + 
@@ -218,7 +179,7 @@ public class LFC extends Process {
 	}
 
 	public Vector<LogicalFile> getLogicalFileList(String directoryName){
-		String mailbox = this.findAvailableMailbox();
+		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");

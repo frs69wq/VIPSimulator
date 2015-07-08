@@ -1,44 +1,13 @@
-import java.util.Vector;
-
-import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
+import org.simgrid.msg.MsgException;
 
-public class SE extends Process {
-
-	protected String name;
-	private Vector<Process> listeners;
-
-	private String findAvailableMailbox(){
-		while (true){
-			for (Process listener: this.listeners){
-				String mailbox = listener.getName();
-				if (Task.listen(mailbox)){
-					Msg.info("Send a message to : " + mailbox + 
-							" which is listening");
-					return mailbox;
-				}
-			}
-			Msg.warn("All the listeners are busy to register. Try Again!");
-			try {
-				Process.sleep(100);
-			} catch (HostFailureException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public String getName() {
-		return name;
-	}
+public class SE extends GridService {
 
 	public SE (Host host, String name, String[]args) {
 		super(host,name,args);
-		this.name = this.getHost().getName();
-		this.listeners = new Vector<Process>();
 	}
 
 	public void main(String[] args) throws MsgException {
@@ -102,13 +71,8 @@ public class SE extends Process {
 			p.start();
 	}
 
-	public void kill(){
-		for (Process p : listeners)
-			p.kill();
-	}
-
 	public void upload (long size) {
-		String mailbox = this.findAvailableMailbox();
+		String mailbox = this.findAvailableMailbox(100);
 		SEMessage.sendTo(mailbox, SEMessage.Type.UPLOAD_FILE, 
 				size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
@@ -116,7 +80,7 @@ public class SE extends Process {
 	}
 
 	public void download(String fileName, long fileSize){
-		String mailbox = this.findAvailableMailbox();
+		String mailbox = this.findAvailableMailbox(100);
 		SEMessage.sendTo(mailbox, SEMessage.Type.DOWNLOAD_REQUEST, 
 				fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
