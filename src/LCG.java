@@ -2,7 +2,7 @@ import java.util.Vector;
 
 import org.simgrid.msg.Msg;
 
-public class LCG {
+public abstract class LCG {
 
 	protected static void cr(String localFileName, long localFileSize, 
 			String logicalFileName, SE se, LFC lfc) {
