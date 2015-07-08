@@ -7,6 +7,7 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.Task;
 
 public class LFC extends GridService {
 
@@ -48,7 +49,7 @@ public class LFC extends GridService {
 	// the same name already exists. If it does, it determines whether it is a
 	// new replica or not. Otherwise, it creates a new entry in the catalog for
 	// that file.
-	private void addtoCatalog(LogicalFile newFile){
+	private void addToCatalog(LogicalFile newFile){
 		Msg.debug("Inserting '"+ newFile.toString() + "'into the catalog");
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
@@ -93,18 +94,15 @@ public class LFC extends GridService {
 
 					Msg.debug("Start a new listener on: " + mailbox);
 					while (true){
-						LFCMessage message = LFCMessage.getFrom(mailbox);
+						LFCMessage message = getFrom(mailbox);
 
 						switch(message.getType()){
 						case REGISTER_FILE:
 							// Add an entry in the catalog for the received 
 							// logical file, if needed.
+							addToCatalog(message.getFile());
 							// Then send back an ACK to the the sender.
-							addtoCatalog(message.getFile());
-							LFCMessage.sendTo("return-"+mailbox, 
-									LFCMessage.Type.REGISTER_ACK);
-							Msg.debug("LFC '"+ name + "' sent back an ACK" +
-									" on 'return-" + mailbox + "'");
+							sendAckTo("return-" + mailbox);
 							break;
 						case ASK_LOGICAL_FILE:
 							LogicalFile file = 
@@ -116,9 +114,9 @@ public class LFC extends GridService {
 							file.selectLocation();
 							LFCMessage.sendTo("return-"+mailbox, 
 									LFCMessage.Type.SEND_LOGICAL_FILE, file);
-							Msg.debug("LFC '"+ name + 
-									"' sent logical " + file.toString() + 
-									" back on 'return-" + mailbox + "'");
+							Msg.debug("'LFC@"+ name + "' sent logical " + 
+									file.toString() + " back on 'return-" + 
+									mailbox + "'");
 							break;
 						case ASK_LS:
 							Vector<LogicalFile> directoryContents = 
@@ -160,7 +158,7 @@ public class LFC extends GridService {
 	public void register (LogicalFile file) {
 		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
-		LFCMessage.getFrom("return-"+mailbox);
+		getFrom("return-"+mailbox);
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
@@ -170,7 +168,7 @@ public class LFC extends GridService {
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
 
-		LFCMessage m = LFCMessage.getFrom("return-"+mailbox);
+		LFCMessage m = getFrom("return-"+mailbox);
 		return m.getFile();
 	}
 
@@ -179,7 +177,29 @@ public class LFC extends GridService {
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
-		LFCMessage m = LFCMessage.getFrom("return-"+mailbox);
+		LFCMessage m = getFrom("return-"+mailbox);
 		return m.getFileList();
 	}
+
+	public static LFCMessage getFrom (String mailbox) {
+		LFCMessage message = null;
+		try {
+			message = (LFCMessage) Task.receive(mailbox);
+			Msg.debug("Received a '" + message.getType().toString() + 
+					"' message from " + mailbox);
+			// Simulate the cost of the local processing of the request.
+			// Depends on the value set when the Message was created
+			message.execute();
+		} catch (MsgException e) {
+			e.printStackTrace();
+		}
+
+		return message;
+	}
+
+	public void sendAckTo (String mailbox) {
+		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_ACK, null, null);
+		Msg.debug("'LFC@" + getName()+ "' sent an ACK on '" + mailbox + "'");
+	}
+
 }

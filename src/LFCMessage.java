@@ -55,21 +55,6 @@ public class LFCMessage extends Task {
 		super.execute();
 	}
 
-	public static LFCMessage getFrom (String mailbox) {
-		LFCMessage message = null;
-		try {
-			message = (LFCMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.type.toString() + 
-					"' message from " + mailbox);
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the Message was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-
-		return message;
-	}
 
 	public static void sendTo (String destination, Type type, 
 			String logicalName, Vector<LogicalFile> fileList) {
@@ -83,13 +68,6 @@ public class LFCMessage extends Task {
 				type.toString() +"' message to '" + destination + "'");
 			e.printStackTrace();
 		}
-	}
-
-	/**
-	 * Specialized send of a REGISTER_ACK/FINALIZE message
-	 */
-	public static void sendTo (String destination, Type type) {
-		sendTo(destination, type, null, null);
 	}
 
 	/**
