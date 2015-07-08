@@ -43,10 +43,10 @@ public class SE extends GridService {
 		VIPSimulator.getSEList().add(this);
 
 		for (int i = 0; i < 10; i++){
-			listeners.add(new Process(name, name+"_"+i) {
+			mailboxes.add(new Process(name, name+"_"+i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();
-					Msg.debug("Start a new listener on: " + mailbox);
+					Msg.debug("Create a new mailbox on: " + mailbox);
 
 					while (true){
 						SEMessage message = getFrom(mailbox);
@@ -80,7 +80,7 @@ public class SE extends GridService {
 					}
 				}
 			});
-			listeners.lastElement().start();
+			mailboxes.lastElement().start();
 		}
 	}
 

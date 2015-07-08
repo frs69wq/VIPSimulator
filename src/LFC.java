@@ -69,6 +69,27 @@ public class LFC extends GridService {
 		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
 	}
 
+	private static LFCMessage getFrom (String mailbox) {
+		LFCMessage message = null;
+		try {
+			message = (LFCMessage) Task.receive(mailbox);
+			Msg.debug("Received a '" + message.getType().toString() + 
+					"' message from " + mailbox);
+			// Simulate the cost of the local processing of the request.
+			// Depends on the value set when the Message was created
+			message.execute();
+		} catch (MsgException e) {
+			e.printStackTrace();
+		}
+	
+		return message;
+	}
+
+	private void sendAckTo (String mailbox) {
+		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_ACK, null, null);
+		Msg.debug("'LFC@" + getName()+ "' sent an ACK on '" + mailbox + "'");
+	}
+
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.catalog = new Vector<LogicalFile>();
@@ -88,11 +109,11 @@ public class LFC extends GridService {
 		}
 
 		for (int i=0; i<3; i++){
-			listeners.add(new Process(name, name+"_"+i) {
+			mailboxes.add(new Process(name, name+"_"+i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();
 
-					Msg.debug("Start a new listener on: " + mailbox);
+					Msg.debug("Create a new mailbox on: " + mailbox);
 					while (true){
 						LFCMessage message = getFrom(mailbox);
 
@@ -134,9 +155,8 @@ public class LFC extends GridService {
 					}
 				}
 			});
+			mailboxes.lastElement().start();
 		}
-		for(Process p : listeners)
-			p.start();
 	}
 
 	public LogicalFile getLogicalFileByName (String logicalFileName) {
@@ -179,27 +199,6 @@ public class LFC extends GridService {
 				"'. Waiting for reply ...");
 		LFCMessage m = getFrom("return-"+mailbox);
 		return m.getFileList();
-	}
-
-	public static LFCMessage getFrom (String mailbox) {
-		LFCMessage message = null;
-		try {
-			message = (LFCMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType().toString() + 
-					"' message from " + mailbox);
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the Message was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-
-		return message;
-	}
-
-	public void sendAckTo (String mailbox) {
-		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_ACK, null, null);
-		Msg.debug("'LFC@" + getName()+ "' sent an ACK on '" + mailbox + "'");
 	}
 
 }

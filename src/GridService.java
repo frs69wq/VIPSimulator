@@ -9,11 +9,11 @@ import org.simgrid.msg.Task;
 
 public abstract class GridService extends Process {
 	protected String name;
-	protected Vector<Process> listeners;
+	protected Vector<Process> mailboxes;
 
 	protected String findAvailableMailbox(long retryAfter){
 		while (true){
-			for (Process listener: this.listeners){
+			for (Process listener: this.mailboxes){
 				String mailbox = listener.getName();
 				if (Task.listen(mailbox)){
 					Msg.info("Send a message to : " + mailbox + 
@@ -38,11 +38,11 @@ public abstract class GridService extends Process {
 	public GridService(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.name = getHost().getName();
-		this.listeners = new Vector<Process>();
+		this.mailboxes = new Vector<Process>();
 	}
 
 	public void kill(){
-		for (Process p : listeners)
+		for (Process p : mailboxes)
 			p.kill();
 	}
 }
