@@ -73,6 +73,19 @@ public class LFC extends GridService {
 		Msg.debug("'LFC@" + getName()+ "' sent an ACK on '" + mailbox + "'");
 	}
 
+	private void sendLogicalFile (String mailbox, LogicalFile file) {
+		Vector<LogicalFile> list = new Vector<LogicalFile>();
+		list.add(file);
+		LFCMessage.sendTo(mailbox, Message.Type.SEND_LOGICAL_FILE, null, list);
+		Msg.debug("'LFC@"+ name + "' sent logical " + file.toString() + 
+				" back on '" + mailbox + "'");
+	}
+
+	private void sendLogicalFileList (String mailbox, 
+			Vector<LogicalFile> list) {
+		LFCMessage.sendTo(mailbox, Message.Type.SEND_LOGICAL_FILE, null, list);
+	}
+
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.catalog = new Vector<LogicalFile>();
@@ -117,11 +130,9 @@ public class LFC extends GridService {
 							// locations, one is selected before returning 
 							// the file to the worker asking for it.
 							file.selectLocation();
-							LFCMessage.sendTo("return-"+mailbox, 
-									LFCMessage.Type.SEND_LOGICAL_FILE, file);
-							Msg.debug("'LFC@"+ name + "' sent logical " + 
-									file.toString() + " back on 'return-" + 
-									mailbox + "'");
+
+							// Send this file back to the sender
+							sendLogicalFile ("return-" + mailbox, file);
 							break;
 						case ASK_LS:
 							Vector<LogicalFile> directoryContents = 
@@ -130,8 +141,9 @@ public class LFC extends GridService {
 								if (f.getName().matches(
 										message.getFileName()+"(.*)"))
 									directoryContents.add(f);
-							LFCMessage.sendTo("return-"+mailbox, 
-									LFCMessage.Type.SEND_LS, directoryContents);
+							// Send the directory contents back to the sender
+							sendLogicalFileList ("return-" + mailbox,
+									directoryContents);
 							break;
 						default:
 							break;
@@ -161,14 +173,16 @@ public class LFC extends GridService {
 
 	public void register (LogicalFile file) {
 		String mailbox = this.findAvailableMailbox(10);
-		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
+		Vector<LogicalFile> list = new Vector<LogicalFile>();
+		list.add(file);
+		LFCMessage.sendTo(mailbox, Message.Type.REGISTER_FILE, null, list);
 		Message.getFrom("return-"+mailbox);
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
 		String mailbox = this.findAvailableMailbox(10);
-		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LOGICAL_FILE, 
-				logicalFileName);
+		LFCMessage.sendTo(mailbox, Message.Type.ASK_LOGICAL_FILE, 
+				logicalFileName, null);
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
 
@@ -176,13 +190,15 @@ public class LFC extends GridService {
 		return m.getFile();
 	}
 
-	public Vector<LogicalFile> getLogicalFileList(String directoryName){
+	public Vector<LogicalFile> getLogicalDirectoryContents(
+			String directoryName){
 		String mailbox = this.findAvailableMailbox(10);
-		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
+		LFCMessage.sendTo(mailbox, Message.Type.ASK_LS, directoryName, null);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
 		LFCMessage m = (LFCMessage) Message.getFrom("return-"+mailbox);
 		return m.getFileList();
 	}
+
 
 }

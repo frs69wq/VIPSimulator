@@ -48,7 +48,7 @@ public abstract class LCG {
 		Vector<String> results = new Vector<String>();
 
 		// Ask the LFC for the list of files to merge
-		Vector<LogicalFile> fileList = lfc.getLogicalFileList(directoryName);
+		Vector<LogicalFile> fileList = lfc.getLogicalDirectoryContents(directoryName);
 		
 		for (LogicalFile f : fileList) 
 			results.add (f.getName());

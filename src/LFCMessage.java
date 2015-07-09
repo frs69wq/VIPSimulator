@@ -17,7 +17,7 @@ public class LFCMessage extends Message {
 		return fileList;
 	}
 
-	public LFCMessage(Type type, String logicalName, 
+	private LFCMessage(Type type, String logicalName, 
 			Vector<LogicalFile> files) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
