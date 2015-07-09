@@ -71,7 +71,7 @@ public class Gate extends Job {
 			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
-			case START:
+			case BEGIN:
 				Msg.info("Processing GATE");
 
 				// downloading inputs
@@ -108,7 +108,7 @@ public class Gate extends Job {
 				sendProgress(simulatedParticles);
 
 				break;
-			case STOP:
+			case END:
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
 						getMailbox() +"'");

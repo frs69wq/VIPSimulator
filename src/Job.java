@@ -38,8 +38,8 @@ public abstract class Job extends Process{
 	}
 
 	public void begin(){
-		Msg.debug("Sending a 'START' message to '" + mailbox +"'");
-		GateMessage.sendTo(mailbox, Message.Type.START, 0);
+		Msg.debug("Sending a 'BEGIN' message to '" + mailbox +"'");
+		GateMessage.sendTo(mailbox, Message.Type.BEGIN, 0);
 	}
 
 	public void carryOn (){
@@ -49,7 +49,7 @@ public abstract class Job extends Process{
 
 	public void end(){
 		Msg.debug("Sending a 'END' message to '" + mailbox +"'");
-		GateMessage.sendTo(mailbox, Message.Type.STOP, 0);
+		GateMessage.sendTo(mailbox, Message.Type.END, 0);
 	}
 
 	public Job(Host host, String name, String[]args) {
