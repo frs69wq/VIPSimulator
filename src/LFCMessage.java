@@ -38,31 +38,4 @@ public class LFCMessage extends Message {
 			e.printStackTrace();
 		}
 	}
-
-	/**
-	 *  Specialized send of a REGISTER_FILE/SEND_LOGICAL_FILE message
-	 */
-	public static void sendTo (String destination, Type type, 
-			LogicalFile file) {
-		Vector<LogicalFile> list = new Vector<LogicalFile>();
-		list.add(file);
-		sendTo(destination, type, null, list);
-	}
-
-	/**
-	 *  Specialized send of a SEND_LS message
-	 */
-	public static void sendTo (String destination, Type type, 
-			Vector<LogicalFile> fileList) {
-		sendTo(destination, type, null, fileList);
-	}
-
-	/**
-	 * Specialized send of a ASK_LOGICAL_FILE message/ASK_LS
-	 */
-	public static void sendTo (String destination, Type type, 
-			String logicalName) {
-		sendTo(destination, type, logicalName, null);
-	}
-
 }
