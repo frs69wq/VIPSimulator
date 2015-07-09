@@ -14,7 +14,7 @@ public class Gate extends Job {
 
 		Process.sleep(nSec);
 		nbPart = VIPSimulator.eventsPerSec* nSec;
-		Msg.info("simulateForNsec: '"+ getMailbox() + "' simulated "+ 
+		Msg.info("simulateForNsec: '"+ getName() + "' simulated "+ 
 				(long) nbPart + " particles");
 
 		return (long) (nbPart);
@@ -49,7 +49,7 @@ public class Gate extends Job {
 		double computeTime;
 		// Build the mailbox name from the PID and the host name. This might be 
 		// useful to distinguish different Gate processes running on a same host
-		setMailbox();
+		setName();
 
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
@@ -62,13 +62,13 @@ public class Gate extends Job {
 		long uploadFileSize= (args.length > 2 ? 
 				Long.valueOf(args[2]).longValue() : 1000000);
 
-		Msg.info("Register GATE on '"+ getMailbox()+ "'");
+		Msg.info("Register GATE on '"+ getName()+ "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
 		this.connect();
 
 		while (true){
-			GateMessage message = getFrom(getMailbox());
+			GateMessage message = (GateMessage) Message.getFrom(getName());
 
 			switch(message.getType()){
 			case BEGIN:
@@ -111,14 +111,14 @@ public class Gate extends Job {
 			case END:
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
-						getMailbox() +"'");
+						getName() +"'");
 
 				//TODO Discuss what we can do here
 				//TODO what is the actual size of the generated file ?
 				//TODO use the actual size obtained from the logs for now
 				String logicalFileName = "results/"+ 
 						Long.toString(nbParticles) +
-						"-partial-"+ getMailbox() + "-" +
+						"-partial-"+ getName() + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime = Msg.getClock();

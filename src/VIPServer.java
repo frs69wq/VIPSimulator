@@ -6,15 +6,13 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 
-public class VIPServer extends Job {
+public class VIPServer extends Process {
 
 	// Worker node management for registration and termination 
-	private Vector<String> gateWorkers = new Vector<String>();
+	private Vector<Gate> gateWorkers = new Vector<Gate>();
 	private Vector<Merge> mergeWorkers = new Vector<Merge>();
 	private int endedGateWorkers = 0;
 	private int runningMergeWorkers = 0;
-
-	private long totalParticleNumber = 0;
 
 	public VIPServer(Host host, String name, String[]args) {
 		super(host,name,args);
@@ -25,10 +23,8 @@ public class VIPServer extends Job {
 		HostNotFoundException {
 		Msg.info("A new simulation starts!");
 		boolean stop=false, timer = false;
-		// Build the mailbox name from the PID and the host name. This might be 
-		// useful to distinguish different Gate processes running on a same host
-		setMailbox();
-
+		long totalParticleNumber = 0;
+		
 		// TODO what is below is very specific to GATE
 		// Added to temporarily improve the realism of the simulation
 		// Have to be generalized at some point.
@@ -47,12 +43,12 @@ public class VIPServer extends Job {
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
-			GateMessage message = getFrom("VIPServer");
+			GateMessage message = (GateMessage) Message.getFrom("VIPServer");
 			Job job = (Job) message.getSender();
 			
 			switch (message.getType()){
 			case GATE_CONNECT:
-				gateWorkers.add(message.getSenderName());
+				gateWorkers.add((Gate) job);
 
 				Msg.debug(gateWorkers.size() +
 						" GATE worker(s) registered out of " +
@@ -61,7 +57,7 @@ public class VIPServer extends Job {
 				job.begin();
 				break;
 			case MERGE_CONNECT:
-				mergeWorkers.add((Merge) message.getSender());
+				mergeWorkers.add((Merge) job);
 				Msg.debug(mergeWorkers.size() +
 						" MERGE worker(s) registered out of " +
 						VIPSimulator.numberOfMergeJobs);
@@ -122,7 +118,6 @@ public class VIPServer extends Job {
 
 			}
 		}
-
 
 		// sleep sosTime so that tasks have the time to finish before shutting 
 		// down the LFCs and SEs

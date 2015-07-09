@@ -21,17 +21,17 @@ public class Merge extends Job {
 		boolean stop = false;
 		// Build the mailbox name from the PID and the host name. This might be 
 		// useful to distinguish different Gate processes running on a same host
-		setMailbox();
+		setName();
 
 		if (args.length < 1) {
 			Msg.info("Slave needs 1 argument (its number)");
 			System.exit(1);
 		}
-		Msg.info("Register Merge on '" + getMailbox() + "'");
+		Msg.info("Register Merge on '" + getName() + "'");
 		this.connect();
 
 		while (!stop){
-			GateMessage message = getFrom(getMailbox());
+			GateMessage message = (GateMessage) Message.getFrom(getName());
 
 			switch(message.getType()){
 			case BEGIN:

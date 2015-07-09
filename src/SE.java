@@ -32,7 +32,7 @@ public class SE extends GridService {
 					Msg.debug("Create a new mailbox on: " + mailbox);
 
 					while (true){
-						SEMessage message = (SEMessage) getFrom(mailbox);
+						SEMessage message = (SEMessage) Message.getFrom(mailbox);
 						
 						switch(message.getType()){
 						case DOWNLOAD_REQUEST:
@@ -44,7 +44,7 @@ public class SE extends GridService {
 							Msg.debug("SE '"+ name + "' send file '" +
 									message.getFileName() + "' of size " +
 									message.getSize() + " to '" +
-									message.getSenderName() + "'");
+									((Job) message.getSender()).getName() + "'");
 							sendFileTo("return-"+mailbox, message.getSize());
 
 							break;
@@ -71,7 +71,7 @@ public class SE extends GridService {
 		String mailbox = this.findAvailableMailbox(100);
 		SEMessage.sendTo(mailbox, Message.Type.FILE_TRANSFER, null, size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
-		getFrom("return-"+mailbox);
+		Message.getFrom("return-"+mailbox);
 	}
 
 	public void download(String fileName, long fileSize){
@@ -80,7 +80,7 @@ public class SE extends GridService {
 				fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
 				"'. Waiting for reception ...");
-		getFrom("return-"+mailbox);
+		Message.getFrom("return-"+mailbox);
 	}
 	
 

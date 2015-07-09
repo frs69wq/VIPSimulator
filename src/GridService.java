@@ -3,7 +3,6 @@ import java.util.Vector;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 
@@ -29,22 +28,6 @@ public abstract class GridService extends Process {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	public Message getFrom (String mailbox) {
-		Message message = null;
-		try {
-			message = (Message) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType().toString() + 
-					"' message from " + mailbox);
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the Message was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-
-		return message;
 	}
 
 	public String getName() {

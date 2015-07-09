@@ -98,7 +98,8 @@ public class LFC extends GridService {
 
 					Msg.debug("Create a new mailbox on: " + mailbox);
 					while (true){
-						LFCMessage message = (LFCMessage) getFrom(mailbox);
+						LFCMessage message = 
+								(LFCMessage) Message.getFrom(mailbox);
 
 						switch(message.getType()){
 						case REGISTER_FILE:
@@ -161,7 +162,7 @@ public class LFC extends GridService {
 	public void register (LogicalFile file) {
 		String mailbox = this.findAvailableMailbox(10);
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_FILE, file);
-		getFrom("return-"+mailbox);
+		Message.getFrom("return-"+mailbox);
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
@@ -171,7 +172,7 @@ public class LFC extends GridService {
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
 
-		LFCMessage m = (LFCMessage) getFrom("return-"+mailbox);
+		LFCMessage m = (LFCMessage) Message.getFrom("return-"+mailbox);
 		return m.getFile();
 	}
 
@@ -180,7 +181,7 @@ public class LFC extends GridService {
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
-		LFCMessage m = (LFCMessage) getFrom("return-"+mailbox);
+		LFCMessage m = (LFCMessage) Message.getFrom("return-"+mailbox);
 		return m.getFileList();
 	}
 
