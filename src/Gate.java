@@ -86,8 +86,8 @@ public class Gate extends Job {
 				LCG.cp("inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPSimulator.getDefaultLFC());
-				LCG.cp("inputs/file-14539084101429.zip", 
-						"/scratch/file-14539084101429.zip", 
+				LCG.cp("inputs/file-1032746166739830.zip", 
+						"/scratch/file-1032746166739830.zip", 
 						VIPSimulator.getDefaultLFC());
 				downloadTime = Msg.getClock() - downloadTime;
 
