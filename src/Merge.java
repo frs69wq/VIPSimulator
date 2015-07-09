@@ -34,7 +34,7 @@ public class Merge extends Job {
 			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
-			case START:
+			case BEGIN:
 				Msg.info("Processing Merge");
 
 				Vector<String> fileNameList = 
