@@ -1,75 +1,50 @@
-import java.util.Vector;
-
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.Task;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.TaskCancelledException;
 
-public class Message extends Task {
-	public enum Type{
+public abstract class Message  extends Task {
+	protected enum Type{
+		// Messages to and from SE
 		DOWNLOAD_REQUEST,
-		SEND_FILE,
-		UPLOAD_FILE,
-		UPLOAD_ACK
+		FILE_TRANSFER,
+		UPLOAD_ACK,
+		// Messages to and from LFC
+		ASK_LOGICAL_FILE,
+		SEND_LOGICAL_FILE,
+		REGISTER_FILE,
+		REGISTER_ACK,
+		ASK_LS,
+		SEND_LS,
+		// Message to and from GATE jobs
+		GATE_CONNECT,
+		GATE_PROGRESS,
+		GATE_DISCONNECT,
+		// Message to and from Merge jobs
+		MERGE_CONNECT,
+		// Message to Jobs
+		BEGIN,
+		CARRY_ON,
+		END
 	};
 
-	private Type type;
-	private String logicalName = null;
-	private long size = 0;
-	private Vector<LogicalFile> fileList = null;
+	protected Type type;
+	protected String fileName = null;
 
 	public Type getType() {
 		return type;
 	}
 
-	public String getSenderMailbox(){
-		return getSender().getPID()+ "@" + getSource().getName();
-	}
-
-	public String getLogicalName() {
-		return logicalName;
-	}
-
-	public long getSize() {
-		return size;
-	}
-
-	public LogicalFile getFile() {
-		return fileList.firstElement();
-	}
-
-	public Vector<LogicalFile> getFileList() {
-		return fileList;
-	}
-
-	public Message(Type type, String logicalName, long size, 
-			Vector<LogicalFile> files) {
-		super(type.toString(), 1e6, 100);
-		this.type = type;
-		this.logicalName=logicalName;
-		this.size = size;
-		this.fileList = files;
-	}
-
-	/**
-	 * Constructor, builds a new UPLOAD_REQUEST/SEND_FILE message
-	 */
-	public Message(Type type, long size){
-		super(type.toString(), 0, size);
-		this.type = type;
-		this.size = size;
-	}
-
-	public void execute() throws  HostFailureException,TaskCancelledException{
-		super.execute();
+	public String getFileName() {
+		return fileName;
 	}
 
 	public static Message getFrom (String mailbox) {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.type.toString() + 
+			Msg.debug("Received a '" + message.getType().toString() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created
@@ -81,39 +56,12 @@ public class Message extends Task {
 		return message;
 	}
 
-	public static void sendTo (String destination, Type type, 
-			String logicalName, long size, Vector<LogicalFile> fileList) {
-		Message m = new Message (type, logicalName, size, fileList);
-		try{
-			Msg.debug("Send a '" + type.toString() + "' message to " +
-					destination);
-			m.send(destination);
-		} catch (MsgException e) {
-			Msg.error("Something went wrong when emitting a '" + 
-				type.toString() +"' message to '" + destination + "'");
-			e.printStackTrace();
-		}
+	protected Message(String name, double flopAmount, double byteAmount){
+		super(name, flopAmount, byteAmount);
 	}
 
-	/**
-	 * Specialized send of a UPLOAD_ACK
-	 * message
-	 */
-	public static void sendTo (String destination, Type type) {
-		sendTo(destination, type, null, 0, null);
+	public void execute() throws  HostFailureException, TaskCancelledException{
+		super.execute();
 	}
 
-	/**
-	 *  Specialized send of a DOWNLOAD_REQUEST message
-	 */
-	public static void sendTo (String destination, Type type, 
-			String logicalName, long size) {
-		sendTo(destination, type, logicalName, size, null);
-	}
-
-	public static void sendAsynchronouslyTo (String destination, Type type, 
-			long payload) {
-		Message m = new Message (type, payload);
-		m.isend(destination);
-	}
 }
