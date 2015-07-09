@@ -132,9 +132,9 @@ public class Gate extends Job {
 				Msg.info("Spent " + downloadTime + "s downloading, " +
 						totalComputeTime + "s computing, and " + uploadTime +
 						"s uploading.");
-				//	System.out.println(jobId + "," + downloadTime + "," + 
-				//			uploadTime + "," + executionTime + "," + 
-				//			downloadTime+uploadTime+executionTime));
+				System.out.println(jobId + "," + downloadTime + "," + 
+						uploadTime + "," + totalComputeTime + "," + 
+						(downloadTime+uploadTime+ totalComputeTime));
 				break;
 			default:
 				break;
