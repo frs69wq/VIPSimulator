@@ -1,19 +1,13 @@
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.HostFailureException;
-import org.simgrid.msg.TaskCancelledException;
 
-public class SEMessage extends Task {
-	public enum Type{
-		DOWNLOAD_REQUEST,
-		FILE_TRANSFER,
-		UPLOAD_ACK
-	};
+public class SEMessage extends Message {
 
-	private Type type;
-	private String fileName = null;
 	private long size = 0;
+
+	public long getSize() {
+		return size;
+	}
 
 	/**
 	 * Constructor, builds a new control (DOWNLOAD_REQUEST/UPLOAD_ACK) message
@@ -32,26 +26,6 @@ public class SEMessage extends Task {
 		super(type.toString(), 0, size);
 		this.type = type;
 		this.size = size;
-	}
-
-	public Type getType() {
-		return type;
-	}
-
-	public String getSenderName(){
-		return getSender().getPID()+ "@" + getSource().getName();
-	}
-
-	public String getFileName() {
-		return fileName;
-	}
-
-	public long getSize() {
-		return size;
-	}
-	
-	public void execute() throws  HostFailureException, TaskCancelledException{
-		super.execute();
 	}
 
 	public static void sendTo (String mailbox, Type type, String fileName, 

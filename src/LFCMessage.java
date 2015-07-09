@@ -1,39 +1,13 @@
 import java.util.Vector;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.HostFailureException;
-import org.simgrid.msg.TaskCancelledException;
 
-public class LFCMessage extends Task {
+public class LFCMessage extends Message {
 	// this class of control messages is dedicated to the interactions with the 
 	// Logical File Catalog(s) that happen only through lcg-utils functions.
 	// These functions are called by the worker processes.
-	public enum Type{
-		ASK_LOGICAL_FILE,
-		SEND_LOGICAL_FILE,
-		REGISTER_FILE,
-		REGISTER_ACK,
-		ASK_LS,
-		SEND_LS
-	};
-
-	private Type type;
-	private String logicalName = null;
 	private Vector<LogicalFile> fileList = null;
-
-	public Type getType() {
-		return type;
-	}
-
-	public String getSenderMailbox(){
-		return getSender().getPID()+ "@" + getSource().getName();
-	}
-
-	public String getLogicalName() {
-		return logicalName;
-	}
 
 	public LogicalFile getFile() {
 		return fileList.firstElement();
@@ -47,14 +21,9 @@ public class LFCMessage extends Task {
 			Vector<LogicalFile> files) {
 		super(type.toString(), 1e6, 100);
 		this.type = type;
-		this.logicalName=logicalName;
+		this.fileName=logicalName;
 		this.fileList = files;
 	}
-
-	public void execute() throws  HostFailureException,TaskCancelledException{
-		super.execute();
-	}
-
 
 	public static void sendTo (String destination, Type type, 
 			String logicalName, Vector<LogicalFile> fileList) {

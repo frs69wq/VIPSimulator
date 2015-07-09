@@ -61,13 +61,13 @@ public class VIPServer extends Process {
 
 			switch (message.getType()){
 			case GATE_CONNECT:
-				gateWorkers.add(message.getSenderMailbox());
+				gateWorkers.add(message.getSenderName());
 
 				Msg.debug(gateWorkers.size() +
 						" GATE worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
-				GateMessage.sendTo(message.getSenderMailbox(), 
+				GateMessage.sendTo(message.getSenderName(), 
 						GateMessage.Type.GATE_START);
 				break;
 			case MERGE_CONNECT:
@@ -84,8 +84,8 @@ public class VIPServer extends Process {
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
 					Msg.info("Sending a 'GATE_CONTINUE' message to '" + 
-							message.getSenderMailbox() +"'");
-					GateMessage.sendTo(message.getSenderMailbox(), 
+							message.getSenderName() +"'");
+					GateMessage.sendTo(message.getSenderName(), 
 							GateMessage.Type.GATE_CONTINUE);
 				} else {
 					if (!timer){
@@ -115,8 +115,8 @@ public class VIPServer extends Process {
 					}
 
 					Msg.info("Sending a 'GATE_STOP' message to '" +
-							message.getSenderMailbox() +"'");
-					GateMessage.sendTo(message.getSenderMailbox(), 
+							message.getSenderName() +"'");
+					GateMessage.sendTo(message.getSenderName(), 
 							GateMessage.Type.GATE_STOP);
 				}
 				break;

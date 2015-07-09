@@ -4,7 +4,7 @@ import org.simgrid.msg.Msg;
 
 public abstract class LCG {
 
-	protected static void cr(String localFileName, long localFileSize, 
+	public static void cr(String localFileName, long localFileSize, 
 			String logicalFileName, SE se, LFC lfc) {
 		Msg.info("lcg-cr '" + logicalFileName + "' from '" + localFileName + 
 				"' using '" + lfc.getName() +"'");

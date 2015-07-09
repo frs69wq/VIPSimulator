@@ -1,31 +1,9 @@
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.HostFailureException;
-import org.simgrid.msg.TaskCancelledException;
 
-public class GateMessage extends Task{
-	public enum Type{
-		GATE_CONNECT,
-		GATE_START,
-		GATE_PROGRESS,
-		GATE_CONTINUE,
-		GATE_STOP,
-		GATE_END,
-		MERGE_CONNECT,
-		MERGE_START
-		};
-
-	private Type type;
+public class GateMessage extends Message{
 	private long particleNumber;
-
-	public String getSenderMailbox(){
-		return getSender().getPID()+ "@" + getSource().getName();
-	}
-
-	public Type getType() {
-		return type;
-	}
 
 	public long getParticleNumber() {
 		return particleNumber;
@@ -35,10 +13,6 @@ public class GateMessage extends Task{
 		super(type.toString(), 1, 100);
 		this.type = type;
 		this.particleNumber = particleNumber;
-	}
-
-	public void execute() throws  HostFailureException,TaskCancelledException{
-		super.execute();
 	}
 
 	public static GateMessage getFrom(String mailbox) {

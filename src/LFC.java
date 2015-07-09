@@ -55,7 +55,7 @@ public class LFC extends GridService {
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
 			if (!file.getLocations().contains((Object) newFile.getLocation())){
 				// This has to be a new replica
-				Msg.info("New replica for '" + newFile.getName () + "' on '" + 
+				Msg.debug("New replica for '" + newFile.getName () + "' on '" + 
 						newFile.getLocation() + "'");
 				file.addLocation(newFile.getLocation());
 			} else {
@@ -127,7 +127,7 @@ public class LFC extends GridService {
 							break;
 						case ASK_LOGICAL_FILE:
 							LogicalFile file = 
-								getLogicalFileByName(message.getLogicalName());
+								getLogicalFileByName(message.getFileName());
 
 							// If this logical file is available on several 
 							// locations, one is selected before returning 
@@ -144,7 +144,7 @@ public class LFC extends GridService {
 							new Vector<LogicalFile>();
 							for (LogicalFile f : catalog) 
 								if (f.getName().matches(
-										message.getLogicalName()+"(.*)"))
+										message.getFileName()+"(.*)"))
 									directoryContents.add(f);
 							LFCMessage.sendTo("return-"+mailbox, 
 									LFCMessage.Type.SEND_LS, directoryContents);
