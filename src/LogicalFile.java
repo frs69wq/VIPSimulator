@@ -8,6 +8,12 @@ public class LogicalFile {
 	private Vector<String>locations;
 	private Random randomGenerator;
 
+	public LogicalFile clone(){
+		LogicalFile newFile = new LogicalFile(name, size, 
+				getLocations().toArray(new String[getLocations().size()]));
+		return newFile;
+	}
+
 	public String getName() {
 		return name;
 	}

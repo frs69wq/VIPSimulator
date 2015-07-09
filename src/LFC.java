@@ -163,8 +163,7 @@ public class LFC extends GridService {
 					"' is stored on no SE. Exiting with status 1");
 			System.exit(1);
 		}
-
-		return file;
+		return file.clone();
 	}
 
 	public String toString () {
