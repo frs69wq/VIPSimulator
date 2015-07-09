@@ -6,7 +6,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.Task;
 
-
 public abstract class GridService extends Process {
 	protected String name;
 	protected Vector<Process> mailboxes;
@@ -16,13 +15,13 @@ public abstract class GridService extends Process {
 			for (Process listener: this.mailboxes){
 				String mailbox = listener.getName();
 				if (Task.listen(mailbox)){
-					Msg.info("Send a message to : " + mailbox + 
+					Msg.verb("Send a message to : " + mailbox + 
 							" which is listening");
 					return mailbox;
 				}
 			}
 			try {
-				Msg.warn("All the listeners are busy. Wait for " + retryAfter +
+				Msg.verb("All the listeners are busy. Wait for " + retryAfter +
 						"ms and try again");
 				Process.sleep(retryAfter);
 			} catch (HostFailureException e) {
