@@ -9,12 +9,12 @@ public abstract class Job extends Process{
 	private SE closeSE;
 
 	protected void setMailbox(){
-		this.mailbox = Integer.toString(this.getPID()) + "@" +
+		mailbox = Integer.toString(this.getPID()) + "@" +
 				getHost().getName();
 	}
 
 	public String getMailbox(){
-		return this.mailbox;
+		return mailbox;
 	}
 	
 	public SE getCloseSE() {
@@ -37,18 +37,19 @@ public abstract class Job extends Process{
 		return message;
 	}
 
-	public static void start(String jobName){
-		GateMessage.sendTo(jobName, Message.Type.START, 0);
+	public void begin(){
+		Msg.debug("Sending a 'START' message to '" + mailbox +"'");
+		GateMessage.sendTo(mailbox, Message.Type.START, 0);
 	}
 
-	public static void carryOn (String jobName){
-		Msg.info("Sending a 'CARRY_ON' message to '" + jobName +"'");
-		GateMessage.sendTo(jobName, Message.Type.CARRY_ON, 0);
+	public void carryOn (){
+		Msg.debug("Sending a 'CARRY_ON' message to '" + mailbox +"'");
+		GateMessage.sendTo(mailbox, Message.Type.CARRY_ON, 0);
 	}
 
-	public static void stop(String jobName){
-		Msg.info("Sending a 'STOP' message to '" + jobName +"'");
-		GateMessage.sendTo(jobName, Message.Type.STOP, 0);
+	public void end(){
+		Msg.debug("Sending a 'END' message to '" + mailbox +"'");
+		GateMessage.sendTo(mailbox, Message.Type.STOP, 0);
 	}
 
 	public Job(Host host, String name, String[]args) {

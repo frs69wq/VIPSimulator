@@ -44,7 +44,6 @@ public class Gate extends Job {
 	}
 
 	public void main(String[] args) throws MsgException {
-		boolean stop = false;
 		long nbParticles = 0;
 		long simulatedParticles = 0;
 		double computeTime;
@@ -66,9 +65,9 @@ public class Gate extends Job {
 		Msg.info("Register GATE on '"+ getMailbox()+ "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		connect();
+		this.connect();
 
-		while (!stop){
+		while (true){
 			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
@@ -128,7 +127,7 @@ public class Gate extends Job {
 				uploadTime = Msg.getClock() - uploadTime;
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");
-				disconnect();
+				this.disconnect();
 
 				Msg.info("Spent " + downloadTime + "s downloading, " +
 						totalComputeTime + "s computing, and " + uploadTime +
@@ -136,8 +135,6 @@ public class Gate extends Job {
 				//	System.out.println(jobId + "," + downloadTime + "," + 
 				//			uploadTime + "," + executionTime + "," + 
 				//			downloadTime+uploadTime+executionTime));
-				Msg.verb("Goodbye!");
-				stop = true;
 				break;
 			default:
 				break;

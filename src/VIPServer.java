@@ -48,7 +48,8 @@ public class VIPServer extends Job {
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
 			GateMessage message = getFrom("VIPServer");
-
+			Job job = (Job) message.getSender();
+			
 			switch (message.getType()){
 			case GATE_CONNECT:
 				gateWorkers.add(message.getSenderName());
@@ -57,11 +58,10 @@ public class VIPServer extends Job {
 						" GATE worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
-				Job.start(message.getSenderName());
+				job.begin();
 				break;
 			case MERGE_CONNECT:
 				mergeWorkers.add((Merge) message.getSender());
-				
 				Msg.debug(mergeWorkers.size() +
 						" MERGE worker(s) registered out of " +
 						VIPSimulator.numberOfMergeJobs);
@@ -72,7 +72,7 @@ public class VIPServer extends Job {
 						" particles have been computed. "+
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
-					Job.carryOn(message.getSenderName());
+					job.carryOn();
 				} else {
 					if (!timer){
 						Msg.info("The expected number of particles has been "+
@@ -87,8 +87,7 @@ public class VIPServer extends Job {
 										mergeWorkers.size() + 
 										" Merge worker(s)");
 
-									Job.start(mergeWorkers.firstElement().
-											getMailbox());
+									mergeWorkers.firstElement().begin();
 									runningMergeWorkers++;
 								} else {
 									Msg.info("No need for Merge workers on " +
@@ -98,11 +97,13 @@ public class VIPServer extends Job {
 						}.start();
 						timer = true;
 					}
-
-					Job.stop(message.getSenderName());
+					job.end();
 				}
 				break;
 			case GATE_DISCONNECT:
+				// a GATE job is now complete, send it a kill signal.
+				job.kill();
+
 				endedGateWorkers++;
 				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
 					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs){
@@ -110,7 +111,7 @@ public class VIPServer extends Job {
 								"Wake up " + mergeWorkers.size() + 
 								" Merge worker(s)");
 						runningMergeWorkers++;
-						Job.start(mergeWorkers.firstElement().getMailbox());
+						mergeWorkers.firstElement().begin();
 					}
 					// then stop
 					stop=true;
