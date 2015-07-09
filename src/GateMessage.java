@@ -1,8 +1,7 @@
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Task;
 import org.simgrid.msg.MsgException;
 
-public class GateMessage extends Message{
+public class GateMessage extends Message {
 	private long particleNumber;
 
 	public long getParticleNumber() {
@@ -13,20 +12,6 @@ public class GateMessage extends Message{
 		super(type.toString(), 1, 100);
 		this.type = type;
 		this.particleNumber = particleNumber;
-	}
-
-	public static GateMessage getFrom(String mailbox) {
-		GateMessage message = null;
-		try {
-			message = (GateMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.type.toString() + "' message");
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the GateMessage was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-		return message;
 	}
 
 	public static void sendTo(String destination, Type type) {

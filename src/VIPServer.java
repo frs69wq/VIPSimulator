@@ -6,25 +6,15 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 
-public class VIPServer extends Process {
+public class VIPServer extends Job {
 
 	// Worker node management for registration and termination 
-	private String mailbox;
 	private Vector<String> gateWorkers = new Vector<String>();
 	private Vector<Merge> mergeWorkers = new Vector<Merge>();
 	private int endedGateWorkers = 0;
 	private int runningMergeWorkers = 0;
 
 	private long totalParticleNumber = 0;
-
-	public String getMailbox(){
-		return this.mailbox;
-	}
-
-	private void setMailbox(){
-		this.mailbox = Integer.toString(this.getPID()) + "@" +
-				getHost().getName();
-	}
 
 	public VIPServer(Host host, String name, String[]args) {
 		super(host,name,args);
@@ -57,7 +47,7 @@ public class VIPServer extends Process {
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
-			GateMessage message = GateMessage.getFrom("VIPServer");
+			GateMessage message = getFrom("VIPServer");
 
 			switch (message.getType()){
 			case GATE_CONNECT:

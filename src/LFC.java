@@ -7,7 +7,6 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.Task;
 
 public class LFC extends GridService {
 
@@ -69,22 +68,6 @@ public class LFC extends GridService {
 		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
 	}
 
-	private static LFCMessage getFrom (String mailbox) {
-		LFCMessage message = null;
-		try {
-			message = (LFCMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType().toString() + 
-					"' message from " + mailbox);
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the Message was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-	
-		return message;
-	}
-
 	private void sendAckTo (String mailbox) {
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.REGISTER_ACK, null, null);
 		Msg.debug("'LFC@" + getName()+ "' sent an ACK on '" + mailbox + "'");
@@ -115,7 +98,7 @@ public class LFC extends GridService {
 
 					Msg.debug("Create a new mailbox on: " + mailbox);
 					while (true){
-						LFCMessage message = getFrom(mailbox);
+						LFCMessage message = (LFCMessage) getFrom(mailbox);
 
 						switch(message.getType()){
 						case REGISTER_FILE:
@@ -188,7 +171,7 @@ public class LFC extends GridService {
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
 
-		LFCMessage m = getFrom("return-"+mailbox);
+		LFCMessage m = (LFCMessage) getFrom("return-"+mailbox);
 		return m.getFile();
 	}
 
@@ -197,7 +180,7 @@ public class LFC extends GridService {
 		LFCMessage.sendTo(mailbox, LFCMessage.Type.ASK_LS, directoryName);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
-		LFCMessage m = getFrom("return-"+mailbox);
+		LFCMessage m = (LFCMessage) getFrom("return-"+mailbox);
 		return m.getFileList();
 	}
 

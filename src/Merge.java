@@ -27,7 +27,7 @@ public class Merge extends Job {
 		GateMessage.sendTo("VIPServer",GateMessage.Type.MERGE_CONNECT);
 
 		while (!stop){
-			GateMessage message = GateMessage.getFrom(getMailbox());
+			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
 			case MERGE_START:

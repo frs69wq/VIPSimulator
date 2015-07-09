@@ -50,7 +50,7 @@ public class Gate extends Job {
 		GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_CONNECT);
 		
 		while (!stop){
-			GateMessage message = GateMessage.getFrom(getMailbox());
+			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
 			case GATE_START:

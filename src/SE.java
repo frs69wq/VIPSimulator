@@ -1,35 +1,18 @@
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.Task;
 
 import org.simgrid.msg.MsgException;
 
 public class SE extends GridService {
 
-	private SEMessage getFrom (String mailbox) {
-		SEMessage message = null;
-		try {
-			message = (SEMessage) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType().toString() + 
-					"' message from " + mailbox);
-			// Simulate the cost of the local processing of the request.
-			// Depends on the value set when the Message was created
-			message.execute();
-		} catch (MsgException e) {
-			e.printStackTrace();
-		}
-
-		return message;
-	}
-
 	private void sendAckTo (String mailbox) {
-		SEMessage.sendTo(mailbox, SEMessage.Type.UPLOAD_ACK, "", 0);
+		SEMessage.sendTo(mailbox, Message.Type.UPLOAD_ACK, "", 0);
 		Msg.debug("'SE@"+ getName() +"' sent an ACK on '" + mailbox + "'");
 	}
 
-	public void sendFileTo (String destination, long size) {
-		SEMessage.sendTo(destination, SEMessage.Type.FILE_TRANSFER, null, size);
+	private void sendFileTo (String destination, long size) {
+		SEMessage.sendTo(destination, Message.Type.FILE_TRANSFER, null, size);
 	}
 
 	public SE (Host host, String name, String[]args) {
@@ -49,7 +32,7 @@ public class SE extends GridService {
 					Msg.debug("Create a new mailbox on: " + mailbox);
 
 					while (true){
-						SEMessage message = getFrom(mailbox);
+						SEMessage message = (SEMessage) getFrom(mailbox);
 						
 						switch(message.getType()){
 						case DOWNLOAD_REQUEST:
@@ -86,14 +69,14 @@ public class SE extends GridService {
 
 	public void upload (long size) {
 		String mailbox = this.findAvailableMailbox(100);
-		SEMessage.sendTo(mailbox, SEMessage.Type.FILE_TRANSFER, null, size);
+		SEMessage.sendTo(mailbox, Message.Type.FILE_TRANSFER, null, size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
 		getFrom("return-"+mailbox);
 	}
 
 	public void download(String fileName, long fileSize){
 		String mailbox = this.findAvailableMailbox(100);
-		SEMessage.sendTo(mailbox, SEMessage.Type.DOWNLOAD_REQUEST, 
+		SEMessage.sendTo(mailbox, Message.Type.DOWNLOAD_REQUEST, 
 				fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
 				"'. Waiting for reception ...");
