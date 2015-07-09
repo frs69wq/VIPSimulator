@@ -1,0 +1,3 @@
+java -cp ../bin:/usr/local/java/simgrid.jar VIPSimulator \
+platform_workflow-LQ4bVj_100jobs.xml \
+Deployment_workflow-LQ4bVj_2015-04-29.xml 10000000 98 100 0 10  1 logs.txt > $1
