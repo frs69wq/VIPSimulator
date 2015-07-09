@@ -37,6 +37,20 @@ public abstract class Job extends Process{
 		return message;
 	}
 
+	public static void start(String jobName){
+		GateMessage.sendTo(jobName, Message.Type.START, 0);
+	}
+
+	public static void carryOn (String jobName){
+		Msg.info("Sending a 'CARRY_ON' message to '" + jobName +"'");
+		GateMessage.sendTo(jobName, Message.Type.CARRY_ON, 0);
+	}
+
+	public static void stop(String jobName){
+		Msg.info("Sending a 'STOP' message to '" + jobName +"'");
+		GateMessage.sendTo(jobName, Message.Type.STOP, 0);
+	}
+
 	public Job(Host host, String name, String[]args) {
 		super(host,name,args);
 		if (host.getProperty("closeSE")!=null)

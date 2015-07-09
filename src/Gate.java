@@ -20,6 +20,25 @@ public class Gate extends Job {
 		return (long) (nbPart);
 	}
 
+	private void connect (){
+		// Use of some simulation magic here, every worker knows the mailbox of 
+		// the VIP server
+		GateMessage.sendTo("VIPServer",Message.Type.GATE_CONNECT, 0);
+	}
+
+	private void sendProgress(long simulatedParticles){
+		// Use of some simulation magic here, every worker knows the mailbox of 
+		// the VIP server
+		GateMessage.sendTo("VIPServer", Message.Type.GATE_PROGRESS, 
+				simulatedParticles);
+	}
+
+	private void disconnect (){
+		// Use of some simulation magic here, every worker knows the mailbox of 
+		// the VIP server
+		GateMessage.sendTo("VIPServer",Message.Type.GATE_DISCONNECT, 0);
+	}
+
 	public Gate(Host host, String name, String[]args) {
 		super(host,name,args);
 	}
@@ -36,7 +55,7 @@ public class Gate extends Job {
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
 		// value as in the C version.
-		
+
 		int jobId = (args.length > 0 ? 
 				Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 
@@ -47,13 +66,13 @@ public class Gate extends Job {
 		Msg.info("Register GATE on '"+ getMailbox()+ "'");
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_CONNECT);
-		
+		connect();
+
 		while (!stop){
 			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
-			case GATE_START:
+			case START:
 				Msg.info("Processing GATE");
 
 				// downloading inputs
@@ -73,7 +92,7 @@ public class Gate extends Job {
 						VIPSimulator.getDefaultLFC());
 				downloadTime = Msg.getClock() - downloadTime;
 
-			case GATE_CONTINUE:	
+			case CARRY_ON:	
 				// Compute for sosTime seconds
 				computeTime = Msg.getClock();
 
@@ -83,17 +102,14 @@ public class Gate extends Job {
 
 				computeTime = Msg.getClock() - computeTime;
 				totalComputeTime += computeTime;
-				
-				nbParticles += simulatedParticles;
-				Msg.info("Sending computed number of particles to 'VIPServer'");
 
-				// Use of some simulation magic here, every worker knows the
-				// mailbox of the VIP server
-				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_PROGRESS,
-						simulatedParticles);
+				nbParticles += simulatedParticles;
+
+				Msg.info("Sending computed number of particles to 'VIPServer'");
+				sendProgress(simulatedParticles);
 
 				break;
-			case GATE_STOP:
+			case STOP:
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
 						getMailbox() +"'");
@@ -110,15 +126,16 @@ public class Gate extends Job {
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, 
 						getCloseSE(), VIPSimulator.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
-				Msg.info("Stopping GATE job. Inform VIP server and exit");
-				GateMessage.sendTo("VIPServer", GateMessage.Type.GATE_END);
+
+				Msg.info("Disconnecting GATE job. Inform VIP server.");
+				disconnect();
 
 				Msg.info("Spent " + downloadTime + "s downloading, " +
 						totalComputeTime + "s computing, and " + uploadTime +
 						"s uploading.");
-//				System.out.println(jobId + "," + downloadTime + "," + 
-//						uploadTime + "," + executionTime + "," + 
-//						(downloadTime+uploadTime+executionTime));
+				//	System.out.println(jobId + "," + downloadTime + "," + 
+				//			uploadTime + "," + executionTime + "," + 
+				//			downloadTime+uploadTime+executionTime));
 				Msg.verb("Goodbye!");
 				stop = true;
 				break;

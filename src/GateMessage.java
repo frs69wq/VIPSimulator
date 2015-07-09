@@ -8,14 +8,10 @@ public class GateMessage extends Message {
 		return particleNumber;
 	}
 
-	public GateMessage(Type type, long particleNumber) {
+	private GateMessage(Type type, long particleNumber) {
 		super(type.toString(), 1, 100);
 		this.type = type;
 		this.particleNumber = particleNumber;
-	}
-
-	public static void sendTo(String destination, Type type) {
-		sendTo(destination,type, 0);
 	}
 
 	public static void sendTo(String destination, Type type, 

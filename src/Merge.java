@@ -7,6 +7,12 @@ import org.simgrid.msg.Process;
 
 public class Merge extends Job {
 
+	private void connect (){
+		// Use of some simulation magic here, every worker knows the mailbox of 
+		// the VIP server
+		GateMessage.sendTo("VIPServer",Message.Type.MERGE_CONNECT, 0);
+	}
+
 	public Merge(Host host, String name, String[]args) {
 		super(host,name,args);
 	}
@@ -22,15 +28,13 @@ public class Merge extends Job {
 			System.exit(1);
 		}
 		Msg.info("Register Merge on '" + getMailbox() + "'");
-		// Use of some simulation magic here, every worker knows the mailbox of 
-		// the VIP server
-		GateMessage.sendTo("VIPServer",GateMessage.Type.MERGE_CONNECT);
+		this.connect();
 
 		while (!stop){
 			GateMessage message = getFrom(getMailbox());
 
 			switch(message.getType()){
-			case MERGE_START:
+			case START:
 				Msg.info("Processing Merge");
 
 				Vector<String> fileNameList = 

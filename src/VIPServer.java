@@ -57,8 +57,7 @@ public class VIPServer extends Job {
 						" GATE worker(s) registered out of " +
 						VIPSimulator.numberOfGateJobs);
 
-				GateMessage.sendTo(message.getSenderName(), 
-						GateMessage.Type.GATE_START);
+				Job.start(message.getSenderName());
 				break;
 			case MERGE_CONNECT:
 				mergeWorkers.add((Merge) message.getSender());
@@ -73,10 +72,7 @@ public class VIPServer extends Job {
 						" particles have been computed. "+
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
-					Msg.info("Sending a 'GATE_CONTINUE' message to '" + 
-							message.getSenderName() +"'");
-					GateMessage.sendTo(message.getSenderName(), 
-							GateMessage.Type.GATE_CONTINUE);
+					Job.carryOn(message.getSenderName());
 				} else {
 					if (!timer){
 						Msg.info("The expected number of particles has been "+
@@ -91,9 +87,8 @@ public class VIPServer extends Job {
 										mergeWorkers.size() + 
 										" Merge worker(s)");
 
-									GateMessage.sendTo(
-											mergeWorkers.firstElement().getMailbox(),
-											GateMessage.Type.MERGE_START);
+									Job.start(mergeWorkers.firstElement().
+											getMailbox());
 									runningMergeWorkers++;
 								} else {
 									Msg.info("No need for Merge workers on " +
@@ -104,13 +99,10 @@ public class VIPServer extends Job {
 						timer = true;
 					}
 
-					Msg.info("Sending a 'GATE_STOP' message to '" +
-							message.getSenderName() +"'");
-					GateMessage.sendTo(message.getSenderName(), 
-							GateMessage.Type.GATE_STOP);
+					Job.stop(message.getSenderName());
 				}
 				break;
-			case GATE_END:
+			case GATE_DISCONNECT:
 				endedGateWorkers++;
 				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
 					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs){
@@ -118,9 +110,7 @@ public class VIPServer extends Job {
 								"Wake up " + mergeWorkers.size() + 
 								" Merge worker(s)");
 						runningMergeWorkers++;
-						GateMessage.sendTo(
-								mergeWorkers.firstElement().getMailbox(),
-								GateMessage.Type.MERGE_START);
+						Job.start(mergeWorkers.firstElement().getMailbox());
 					}
 					// then stop
 					stop=true;
