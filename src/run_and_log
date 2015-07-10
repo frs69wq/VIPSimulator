@@ -1,3 +1,6 @@
-java -cp ../bin:/usr/local/java/simgrid.jar VIPSimulator \
-platform_workflow-LQ4bVj_100jobs.xml \
-Deployment_workflow-LQ4bVj_2015-04-29.xml 10000000 98 100 0 10  1 logs.txt > $1
+# $1 => platform_file
+# $2 => deployment_file
+# $3 => number of gate jobs
+# $4 => name of log file
+java -cp ../bin:/usr/local/java/simgrid.jar VIPSimulator $1 $2 $3 $3 \
+100 0 0 0 logs.txt "--log=jmsg.thres:critical" > $4
