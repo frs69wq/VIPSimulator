@@ -69,7 +69,10 @@ public class VIPServer extends Process {
 						" particles have been computed. "+
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
-					job.carryOn();
+					//  WARNING TEMPORARY HACK FOR FIRST TEST
+					job.end();
+					// SHOULD BE REPLACED BY
+					//job.carryOn();
 				} else {
 					if (!timer){
 						Msg.info("The expected number of particles has been "+

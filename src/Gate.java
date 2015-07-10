@@ -16,8 +16,10 @@ public class Gate extends Job {
 		nbPart = VIPSimulator.eventsPerSec* nSec;
 		Msg.info("simulateForNsec: '"+ getName() + "' simulated "+ 
 				(long) nbPart + " particles");
-
-		return (long) (nbPart);
+		//  WARNING TEMPORARY HACK FOR FIRST TEST
+		return 1;
+		// SHOULD BE REPLACED BY
+//		return (long) (nbPart);
 	}
 
 	private void connect (){
