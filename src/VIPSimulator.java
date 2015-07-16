@@ -1,13 +1,6 @@
-import java.util.Vector;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
 
 public class VIPSimulator {
-	private static LFC defaultLFC = null;
-	private static Vector<LFC> lfcList = new Vector<LFC>();
-	private static String defaultSE = null;
-	private static Vector<SE> seList = new Vector<SE>();
-
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
 	public static long sosTime;
@@ -16,55 +9,7 @@ public class VIPSimulator {
 	public static double eventsPerSec;
 	public static String logFile;
 
-	public static LFC getDefaultLFC() {
-		return defaultLFC;
-	}
-
-	public static void setDefaultLFC(LFC defaultLFC) {
-		if (VIPSimulator.defaultLFC != null){
-			Msg.warn("The default LFC has already been identified. Please " +
-					"check there is only one 'DefaultLFC' process in the " +
-					"deployement file.");
-		} else {
-			VIPSimulator.defaultLFC = defaultLFC;
-			Msg.info("Default LFC is '"+ 
-					VIPSimulator.defaultLFC.getName() + "'");
-		}
-	}
-
-	public static Vector<LFC> getLFCList() {
-		return lfcList;
-	}
-
-	public static String getDefaultSE() {
-		return defaultSE;
-	}
-
-	public static void setDefaultSE(String defaultSE) {
-		if (VIPSimulator.defaultSE != null){
-			Msg.warn("The default SE has already been identified. Please " +
-					"check there is only one 'DefaultSE' process in the " +
-					"deployement file.");
-		} else {
-			VIPSimulator.defaultSE = defaultSE;
-			Msg.info("Default SE is '"+ VIPSimulator.getDefaultSE()+ "'");
-		}
-	}
-
-	public static Vector<SE> getSEList() {
-		return seList;
-	}
-
-	public static SE getSEbyName(String seName){
-		SE notFound = null;
-		for (SE se : seList) 
-			if (se.getName().matches(seName))
-				return se;
-		Msg.error("Cannot find an SE named '" + seName +"'");
-		return notFound;
-	}
-	
-	public static void main(String[] args) throws NativeException {
+	public static void main(String[] args) {
 		Msg.init(args);
 		String platform_file  = null;
 		String deployment_file =  null;

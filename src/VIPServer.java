@@ -7,6 +7,10 @@ import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 
 public class VIPServer extends Process {
+	private static DefaultLFC defaultLFC = null;
+	private static Vector<LFC> lfcList = new Vector<LFC>();
+	private static DefaultSE defaultSE = null;
+	private static Vector<SE> seList = new Vector<SE>();
 
 	// Worker node management for registration and termination 
 	private Vector<Gate> gateWorkers = new Vector<Gate>();
@@ -14,39 +18,68 @@ public class VIPServer extends Process {
 	private int endedGateWorkers = 0;
 	private int runningMergeWorkers = 0;
 
-	public VIPServer(Host host, String name, String[]args) {
-		super(host,name,args);
-		
+	public static LFC getDefaultLFC() {
+		return defaultLFC;
 	}
 
-	public void main(String[] args) throws HostFailureException, 
-		HostNotFoundException {
+	public static void setDefaultLFC(DefaultLFC lfc) {
+		if (defaultLFC != null){
+			Msg.warn("The default LFC has already been identified. Please " +
+					"check there is only one 'DefaultLFC' process in the " +
+					"deployement file.");
+		} else {
+			defaultLFC = lfc;
+		}
+	}
+
+	public static Vector<LFC> getLFCList() {
+		return lfcList;
+	}
+
+	public static SE getDefaultSE() {
+		return defaultSE;
+	}
+
+	public static void setDefaultSE(DefaultSE se) {
+		if (defaultSE != null){
+			Msg.warn("The default SE has already been identified. Please " +
+					"check there is only one 'DefaultSE' process in the " +
+					"deployement file.");
+		} else {
+			defaultSE = se;
+			Msg.info("Default SE is '"+ defaultSE.getName() + "'");
+		}
+	}
+
+	public static Vector<SE> getSEList() {
+		return seList;
+	}
+
+	public static SE getSEbyName(String seName){
+		SE notFound = null;
+		for (SE se : seList) 
+			if (se.getName().matches(seName))
+				return se;
+		Msg.error("Cannot find an SE named '" + seName +"'");
+		return notFound;
+	}
+
+	public VIPServer(Host host, String name, String[]args) {
+		super(host,name,args);
+	}
+
+	public void main(String[] args) throws HostFailureException,
+	HostNotFoundException {
 		Msg.info("A new simulation starts!");
 		boolean stop=false, timer = false;
 		long totalParticleNumber = 0;
-		
-		// TODO what is below is very specific to GATE
-		// Added to temporarily improve the realism of the simulation
-		// Have to be generalized at some point.
-		// WARNING: From log inspection, it seems that workers do not all get 
-		// the input files from the default SE.
-
-//		LCG.crInput(VIPSimulator.getDefaultLFC(),
-//				"inputs/gate.sh.tar.gz", 73043,
-//				VIPSimulator.getDefaultSE());
-//		LCG.crInput(VIPSimulator.getDefaultLFC(),
-//				"inputs/opengate_version_7.0.tar.gz", 376927945,
-//				VIPSimulator.getDefaultSE());
-//		LCG.crInput(VIPSimulator.getDefaultLFC(),
-//				"inputs/file-14539084101429.zip", 514388,
-//				VIPSimulator.getDefaultSE());
 
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
 			GateMessage message = (GateMessage) Message.getFrom("VIPServer");
 			Job job = (Job) message.getSender();
-			
+
 			switch (message.getType()){
 			case GATE_CONNECT:
 				gateWorkers.add((Gate) job);
@@ -79,13 +112,13 @@ public class VIPServer extends Process {
 								"reached. Start a timer!");
 						new Process(this.getHost(),"Timer"){
 							public void main(String[] args) throws 
-								HostFailureException {
+							HostFailureException {
 								Process.sleep(VIPSimulator.sosTime);
 								if (runningMergeWorkers < 
 										VIPSimulator.numberOfMergeJobs){
 									Msg.info("Timeout has expired. Wake up " + 
-										mergeWorkers.size() + 
-										" Merge worker(s)");
+											mergeWorkers.size() + 
+											" Merge worker(s)");
 
 									mergeWorkers.firstElement().begin();
 									runningMergeWorkers++;
@@ -131,11 +164,11 @@ public class VIPServer extends Process {
 				" It's time to shutdown the system.");
 
 		// Shutting down all the LFCs
-		for (LFC lfc : VIPSimulator.getLFCList())
+		for (LFC lfc : getLFCList())
 			lfc.kill();
 
 		// Shutting down all the SEs
-		for (SE se : VIPSimulator.getSEList())
+		for (SE se : getSEList())
 			se.kill();
 	}
 }

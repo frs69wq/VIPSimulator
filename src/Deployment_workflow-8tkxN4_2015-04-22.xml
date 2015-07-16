@@ -1,13 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-   
-	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC">
-		<argument value="LFCCatalog.csv"/>
-	</process> 
-    <process host="ccsrm02.in2p3.fr" function="DefaultSE"/>
 	<process host="vip.creatis.insa-lyon.fr" function="VIPServer"/>
-   
+
 	<process host="grid05.lal.in2p3.fr" function="SE"/>
 	<process host="srm01.ncg.ingrid.pt" function="SE"/>
 	<process host="marsedpm.in2p3.fr" function="SE"/>
@@ -15,6 +10,12 @@
 	<process host="ophelia.zih.tu-dresden.de" function="SE"/>
 	<process host="storm-se-01.ba.infn.it" function="SE"/>
 	<process host="heplnx204.pp.rl.ac.uk" function="SE"/>
+
+	<process host="ccsrm02.in2p3.fr" function="DefaultSE"/>
+
+	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC">
+		<argument value="LFCCatalog.csv"/>
+	</process> 
 		
 	<process host="llrgrwn046.in2p3.fr" function="Gate" start_time="2869" >
 		<argument value="0"/>
@@ -39,5 +40,7 @@
 	<process host="grid213.lal.in2p3.fr" function="Merge" start_time="113" >
 		<argument value="0"/>
 	</process>
+
+
 
 </platform>

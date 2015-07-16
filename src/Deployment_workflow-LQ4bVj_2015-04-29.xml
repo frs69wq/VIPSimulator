@@ -1,12 +1,8 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
 <platform version="3">
-	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC">
-		<argument value="LfcCatalog_workflow-LQ4bVj_100jobs.csv"/>
-	</process>
-	<process host="ccsrm02.in2p3.fr" function="DefaultSE"/>
-
 	<process host="vip.creatis.insa-lyon.fr" function="VIPServer"/>
+
 <process host="bohr3226.tier2.hep.manchester.ac.uk" function="SE"/>
 <process host="clrlcgse01.in2p3.fr" function="SE"/>
 <process host="dc2-grid-64.brunel.ac.uk" function="SE"/>
@@ -19,6 +15,12 @@
 <process host="svr018.gla.scotgrid.ac.uk" function="SE"/>
 <process host="tbn18.nikhef.nl" function="SE"/>
 <process host="torik1.ulakbim.gov.tr" function="SE"/>
+
+	<process host="ccsrm02.in2p3.fr" function="DefaultSE"/>
+	<process host="lfc-biomed.in2p3.fr" function="DefaultLFC">
+		<argument value="LfcCatalog_workflow-LQ4bVj_100jobs.csv"/>
+	</process>
+
 	<process host="gaew1009.ciemat.es" function="Gate" start_time="8647">
 		<argument value="30144746"/>
 		<argument value="8483"/>
