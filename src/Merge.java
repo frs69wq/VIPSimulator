@@ -19,9 +19,6 @@ public class Merge extends Job {
 
 	public void main(String[] args) throws MsgException {
 		boolean stop = false;
-		// Build the mailbox name from the PID and the host name. This might be 
-		// useful to distinguish different Gate processes running on a same host
-		setName();
 
 		if (args.length < 1) {
 			Msg.info("Slave needs 1 argument (its number)");
@@ -38,12 +35,12 @@ public class Merge extends Job {
 				Msg.info("Processing Merge");
 
 				Vector<String> fileNameList = 
-						LCG.ls(VIPSimulator.getDefaultLFC(),"results/");
+						LCG.ls(VIPServer.getDefaultLFC(),"results/");
 
 				Msg.info("Files to merge:" + fileNameList.toString());
 				for (String fileName : fileNameList){
 					LCG.cp(fileName, "/scratch/" + fileName, 
-							VIPSimulator.getDefaultLFC());
+							VIPServer.getDefaultLFC());
 				}
 				Process.sleep(5000);
 				Msg.verb("Goodbye!");

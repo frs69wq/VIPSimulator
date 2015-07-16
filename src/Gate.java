@@ -49,10 +49,6 @@ public class Gate extends Job {
 		long nbParticles = 0;
 		long simulatedParticles = 0;
 		double computeTime;
-		// Build the mailbox name from the PID and the host name. This might be 
-		// useful to distinguish different Gate processes running on a same host
-		setName();
-
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
 		// value as in the C version.
@@ -84,13 +80,13 @@ public class Gate extends Job {
 				downloadTime = Msg.getClock();
 				LCG.cp("inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz", 
-						VIPSimulator.getDefaultLFC());
+						VIPServer.getDefaultLFC());
 				LCG.cp("inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
-						VIPSimulator.getDefaultLFC());
+						VIPServer.getDefaultLFC());
 				LCG.cp("inputs/file-1032746166739830.zip", 
 						"/scratch/file-1032746166739830.zip", 
-						VIPSimulator.getDefaultLFC());
+						VIPServer.getDefaultLFC());
 				downloadTime = Msg.getClock() - downloadTime;
 
 			case CARRY_ON:	
@@ -125,7 +121,7 @@ public class Gate extends Job {
 
 				uploadTime = Msg.getClock();
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, 
-						getCloseSE(), VIPSimulator.getDefaultLFC());
+						getCloseSE(), VIPServer.getDefaultLFC());
 				uploadTime = Msg.getClock() - uploadTime;
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");

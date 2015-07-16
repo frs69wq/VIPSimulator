@@ -15,7 +15,7 @@ public abstract class LCG {
 
 		// Register file into LFC
 		LogicalFile file = 
-				new LogicalFile(logicalFileName, localFileSize, se.getName());
+				new LogicalFile(logicalFileName, localFileSize, se);
 		Msg.info("Ask '"+ lfc.getName() + "' to register " + file.toString());
 		
 		lfc.register(file);
@@ -38,7 +38,7 @@ public abstract class LCG {
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + 
 				file.getLocation() + "' using '" + lfc.getName() +"'");
 
-		file.getSE().download(logicalFileName, file.getSize());
+		file.getLocation().download(logicalFileName, file.getSize());
 
 		Msg.info("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
 				"' completed");
@@ -48,26 +48,12 @@ public abstract class LCG {
 		Vector<String> results = new Vector<String>();
 
 		// Ask the LFC for the list of files to merge
-		Vector<LogicalFile> fileList = lfc.getLogicalDirectoryContents(directoryName);
-		
+		Vector<LogicalFile> fileList = 
+				lfc.getLogicalDirectoryContents(directoryName);
+
 		for (LogicalFile f : fileList) 
 			results.add (f.getName());
 
 		return results;
-	}
-
-	//TODO To be removed
-	public static void crInput(LFC lfc, String logicalFileName,
-			long logicalFileSize, String seName) {
-
-		LogicalFile file = 
-				new LogicalFile(logicalFileName, logicalFileSize, seName);
-		Msg.info("Ask '"+ lfc.getName() + "' to register " + file.toString());
-
-		lfc.register(file);
-
-		Msg.debug("lcg-cr-input of '" + logicalFileName +"' on LFC '" + 
-				lfc +"' completed");
-
 	}
 }

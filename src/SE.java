@@ -17,13 +17,13 @@ public class SE extends GridService {
 
 	public SE (Host host, String name, String[]args) {
 		super(host,name,args);
+		// Keep track of this process in a global list. This is used at the end
+		// of the simulation to cleanly kill this process. 
+		VIPServer.getSEList().add(this);
+		Msg.debug("Register SE on "+ name);
 	}
 
 	public void main(String[] args) throws MsgException {
-		// Keep track of this process in a global list. This is used at the end
-		// of the simulation to cleanly kill this process. 
-		Msg.debug("Register SE on "+ name);
-		VIPSimulator.getSEList().add(this);
 
 		for (int i = 0; i < 10; i++){
 			mailboxes.add(new Process(name, name+"_"+i) {
@@ -32,8 +32,9 @@ public class SE extends GridService {
 					Msg.debug("Create a new mailbox on: " + mailbox);
 
 					while (true){
-						SEMessage message = (SEMessage) Message.getFrom(mailbox);
-						
+						SEMessage message = 
+								(SEMessage) Message.getFrom(mailbox);
+
 						switch(message.getType()){
 						case DOWNLOAD_REQUEST:
 							// A worker asked for a physical file. A data 
@@ -44,7 +45,8 @@ public class SE extends GridService {
 							Msg.debug("SE '"+ name + "' send file '" +
 									message.getFileName() + "' of size " +
 									message.getSize() + " to '" +
-									((Job) message.getSender()).getName() + "'");
+									((Job) message.getSender()).getName() + 
+									"'");
 							sendFileTo("return-"+mailbox, message.getSize());
 
 							break;
@@ -82,7 +84,10 @@ public class SE extends GridService {
 				"'. Waiting for reception ...");
 		Message.getFrom("return-"+mailbox);
 	}
-	
+
+	public String toString(){
+		return name;
+	}
 
 }
 

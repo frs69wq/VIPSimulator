@@ -1,54 +1,37 @@
-import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 
 public class LogicalFile {
 	private String name;
 	private long size;
-	private Vector<String>locations;
+	private Vector<SE>locations;
 	private Random randomGenerator;
-
-	public LogicalFile clone(){
-		LogicalFile newFile = new LogicalFile(name, size, 
-				getLocations().toArray(new String[getLocations().size()]));
-		return newFile;
-	}
 
 	public String getName() {
 		return name;
+	}
+
+	public void setSize(long size) {
+		this.size = size;
 	}
 
 	public long getSize() {
 		return size;
 	}
 
-	public void addLocation (String seName) {
-		locations.add(seName);
+	public void addLocation (SE se) {
+		locations.add(se);
 	}
 
-	public Vector<String> getLocations() {
-		return locations;
+	public boolean isNewLocation(SE se){
+		return locations.contains((Object) se);
 	}
 
-	public SE getSE() {
-		return VIPSimulator.getSEbyName(getLocation());
-	}
-	
-	//TODO To be improved once we know more about the LFC internal algorithms.
-	//TODO These two functions might be redundant (and/or misleading)
-	public String getLocation() {
+	public SE getLocation() {
 		//TODO return SE randomly for now. Might be interesting to implement 
-		// some load balancing strategy
+		//TODO some load balancing strategy
 		int selectedIndex = randomGenerator.nextInt(locations.size());
 		return locations.get(selectedIndex);
-	}
-
-	public void selectLocation(){
-		//TODO return SE randomly for now. Might be interesting to implement 
-		// some load balancing strategy
-		String selectedLocation = getLocation();
-		locations.clear();
-		locations.add(selectedLocation);
 	}
 
 	public String toString(){
@@ -62,17 +45,18 @@ public class LogicalFile {
 		return name.equals(file.getName());
 	}
 
-	public LogicalFile(String name, long size, String[] locations) {
+	public LogicalFile(String name, long size, Vector<SE> locations) {
 		super();
 		this.name = name;
 		this.size = size;
-		this.locations = new Vector<String>();
-		this.locations.addAll(Arrays.asList(locations));
+		this.locations = locations;
 		this.randomGenerator = new Random();
 	}
 
 	// In most cases, this constructor with a single location will be used.
-	public LogicalFile(String name, long size, String location) {
-		this(name, size, new String[] {location});
+	public LogicalFile(String name, long size, SE location) {
+		this(name, size, (Vector<SE>) null);
+		this.locations = new Vector<SE>();
+		this.locations.add(location);
 	}
 }

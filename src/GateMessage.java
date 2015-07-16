@@ -18,6 +18,8 @@ public class GateMessage extends Message {
 			long particleNumber) {
 		GateMessage m = new GateMessage(type, particleNumber);
 		try{
+			Msg.debug("Sending a '" + type.toString() + "' message to '" + 
+					destination +"'");
 			m.send(destination);
 		} catch (MsgException e) {
 			Msg.error("Something went wrong when emitting a '" +

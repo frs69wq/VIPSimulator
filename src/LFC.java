@@ -32,8 +32,12 @@ public class LFC extends GridService {
 			while ((line = br.readLine()) != null) {
 				String[] fileInfo = line.split(",");
 				String[] seNames = fileInfo[2].split(":");
+				Vector<SE> locations = new Vector<SE>();
+				for (String se : seNames)
+					locations.add(VIPServer.getSEbyName(se));
+
 				LogicalFile file = new LogicalFile(fileInfo[0], 
-						Long.valueOf(fileInfo[1]).longValue(), seNames);
+						Long.valueOf(fileInfo[1]).longValue(), locations);
 				Msg.info("Importing file '" + file.toString());
 				catalog.add(file);
 			}
@@ -52,7 +56,7 @@ public class LFC extends GridService {
 		Msg.debug("Inserting '"+ newFile.toString() + "'into the catalog");
 		if (catalog.contains((Object) newFile)){
 			LogicalFile file = catalog.get(catalog.indexOf(newFile));
-			if (!file.getLocations().contains((Object) newFile.getLocation())){
+			if (!file.isNewLocation(newFile.getLocation())){
 				// This has to be a new replica
 				Msg.debug("New replica for '" + newFile.getName () + "' on '" + 
 						newFile.getLocation() + "'");
@@ -66,6 +70,22 @@ public class LFC extends GridService {
 			catalog.add(newFile);
 		}
 		Msg.debug("LFC '"+ name + "' registered " + newFile.toString());
+	}
+
+	private LogicalFile getReplicaByName (String logicalFileName) {
+		LogicalFile replica = new LogicalFile (logicalFileName, 0, 
+				new Vector<SE>());
+		
+		LogicalFile file = catalog.get(catalog.indexOf((Object) replica));
+		if(file == null){
+			Msg.error("File '" + logicalFileName + 
+					"' is stored on no SE. Exiting with status 1");
+			System.exit(1);
+		}
+		replica.setSize(file.getSize());
+		replica.addLocation(file.getLocation());
+	
+		return replica;
 	}
 
 	private void sendAckTo (String mailbox) {
@@ -89,11 +109,11 @@ public class LFC extends GridService {
 	public LFC(Host host, String name, String[]args) {
 		super(host,name,args);
 		this.catalog = new Vector<LogicalFile>();
+		Msg.debug("Register LFC on "+ name);
+		VIPServer.getLFCList().add(this);
 	}
 
 	public void main(String[] args) throws MsgException {
-		Msg.debug("Register LFC on "+ name);
-		VIPSimulator.getLFCList().add(this);
 
 		// If this LFC process is started with an argument, we populate the
 		// catalog from the CSV file given as args[0]
@@ -124,12 +144,7 @@ public class LFC extends GridService {
 							break;
 						case ASK_LOGICAL_FILE:
 							LogicalFile file = 
-								getLogicalFileByName(message.getFileName());
-
-							// If this logical file is available on several 
-							// locations, one is selected before returning 
-							// the file to the worker asking for it.
-							file.selectLocation();
+								getReplicaByName(message.getFileName());
 
 							// Send this file back to the sender
 							sendLogicalFile ("return-" + mailbox, file);
@@ -153,21 +168,6 @@ public class LFC extends GridService {
 			});
 			mailboxes.lastElement().start();
 		}
-	}
-
-	public LogicalFile getLogicalFileByName (String logicalFileName) {
-		LogicalFile file = catalog.get(catalog.indexOf((Object) 
-				new LogicalFile (logicalFileName, 0, "")));
-		if(file == null){
-			Msg.error("File '" + logicalFileName + 
-					"' is stored on no SE. Exiting with status 1");
-			System.exit(1);
-		}
-		return file.clone();
-	}
-
-	public String toString () {
-		return catalog.toString();
 	}
 
 	public void register (LogicalFile file) {
@@ -199,5 +199,8 @@ public class LFC extends GridService {
 		return m.getFileList();
 	}
 
+	public String toString () {
+		return catalog.toString();
+	}
 
 }
