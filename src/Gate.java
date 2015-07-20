@@ -5,9 +5,6 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Gate extends Job {
-	private double downloadTime = 0.;
-	private double totalComputeTime = 0.;
-	private double uploadTime = 0.;
 
 	private long simulateForNsec(long nSec) throws HostFailureException {
 		double nbPart;
@@ -46,9 +43,10 @@ public class Gate extends Job {
 	}
 
 	public void main(String[] args) throws MsgException {
+		//TODO have to set the name here, might be a bug in simgrid
+		setName();
 		long nbParticles = 0;
 		long simulatedParticles = 0;
-		double computeTime;
 		//TODO get the output file size from logs and give it as argument of 
 		// the GATE process. If no value is given, we rely on the same default
 		// value as in the C version.
@@ -77,7 +75,7 @@ public class Gate extends Job {
 				// Added to temporarily improve the realism of the simulation
 				// Have to be generalized at some point.
 
-				downloadTime = Msg.getClock();
+				downloadTime.start();
 				LCG.cp("inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz", 
 						VIPServer.getDefaultLFC());
@@ -87,18 +85,17 @@ public class Gate extends Job {
 				LCG.cp("inputs/file-1032746166739830.zip", 
 						"/scratch/file-1032746166739830.zip", 
 						VIPServer.getDefaultLFC());
-				downloadTime = Msg.getClock() - downloadTime;
+				downloadTime.stop();
 
 			case CARRY_ON:	
 				// Compute for sosTime seconds
-				computeTime = Msg.getClock();
+				computeTime.start();
 
 				//TODO Discuss what we can do here. Make the process just sleep 
 				// for now
 				simulatedParticles = simulateForNsec(executionTime);
 
-				computeTime = Msg.getClock() - computeTime;
-				totalComputeTime += computeTime;
+				computeTime.stop();
 
 				nbParticles += simulatedParticles;
 
@@ -119,20 +116,22 @@ public class Gate extends Job {
 						"-partial-"+ getName() + "-" +
 						Double.toString(Msg.getClock()) + ".tgz";
 
-				uploadTime = Msg.getClock();
+				uploadTime.start();
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, 
 						getCloseSE(), VIPServer.getDefaultLFC());
-				uploadTime = Msg.getClock() - uploadTime;
+				uploadTime.stop();
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");
 				this.disconnect();
 
-				Msg.info("Spent " + downloadTime + "s downloading, " +
-						totalComputeTime + "s computing, and " + uploadTime +
+				Msg.info("Spent " + downloadTime.getValue() + 
+						"s downloading, " + computeTime.getValue() + 
+						"s computing, and " + uploadTime.getValue() +
 						"s uploading.");
-				System.out.println(jobId + "," + downloadTime + "," + 
-						uploadTime + "," + totalComputeTime + "," + 
-						(downloadTime+uploadTime+ totalComputeTime));
+				System.out.println(jobId + "," + downloadTime.getValue() + "," +
+						uploadTime.getValue() + "," + computeTime.getValue() + 
+						"," + (downloadTime.getValue() + uploadTime.getValue() +
+								computeTime.getValue()));
 				break;
 			default:
 				break;

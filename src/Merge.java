@@ -18,6 +18,8 @@ public class Merge extends Job {
 	}
 
 	public void main(String[] args) throws MsgException {
+		//TODO have to set the name here, might be a bug in simgrid
+		setName();
 		boolean stop = false;
 
 		if (args.length < 1) {

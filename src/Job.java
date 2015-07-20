@@ -4,9 +4,17 @@ import org.simgrid.msg.Process;
 public abstract class Job extends Process{
 	private String name;
 	private SE closeSE;
+	protected Timer downloadTime;
+	protected Timer computeTime;
+	protected Timer uploadTime;
 
 	public String getName(){
 		return name;
+	}
+	public void setName(){
+		// Build the mailbox name from the PID and the host name. This might be 
+		// useful to distinguish different Gate processes running on a same host
+		this.name = getPID() + "@" + getHost().getName();
 	}
 
 	public SE getCloseSE() {
@@ -27,10 +35,10 @@ public abstract class Job extends Process{
 
 	public Job(Host host, String name, String[]args) {
 		super(host,name,args);
-		// Build the mailbox name from the PID and the host name. This might be 
-		// useful to distinguish different Gate processes running on a same host
-		this.name = Integer.toString(this.getPID()) + "@" + getHost().getName();
 		if (host.getProperty("closeSE")!=null)
 			this.closeSE = VIPServer.getSEbyName(host.getProperty("closeSE"));
+		this.downloadTime = new Timer();
+		this.computeTime= new Timer();
+		this.uploadTime = new Timer();
 	}
 }
