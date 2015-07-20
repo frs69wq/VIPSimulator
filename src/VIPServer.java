@@ -146,9 +146,13 @@ public class VIPServer extends Process {
 						runningMergeWorkers++;
 						mergeWorkers.firstElement().begin();
 					}
-					// then stop
-					stop=true;
 				}
+				break;
+			case MERGE_DISCONNECT:
+				// a MERGE job is now complete, send it a kill signal.
+				job.kill();
+				// then stop
+				stop=true;
 				break;
 			default:
 				break;

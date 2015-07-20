@@ -23,6 +23,7 @@ public abstract class Message  extends Task {
 		GATE_DISCONNECT,
 		// Message to and from Merge jobs
 		MERGE_CONNECT,
+		MERGE_DISCONNECT,
 		// Message to Jobs
 		BEGIN,
 		CARRY_ON,
