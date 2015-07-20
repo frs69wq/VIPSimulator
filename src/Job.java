@@ -22,15 +22,15 @@ public abstract class Job extends Process{
 	}
 
 	public void begin(){
-		GateMessage.sendTo(name, Message.Type.BEGIN, 0);
+		GateMessage.sendTo(name, "BEGIN", 0);
 	}
 
 	public void carryOn (){
-		GateMessage.sendTo(name, Message.Type.CARRY_ON, 0);
+		GateMessage.sendTo(name, "CARRY_ON", 0);
 	}
 
 	public void end(){
-		GateMessage.sendTo(name, Message.Type.END, 0);
+		GateMessage.sendTo(name, "END", 0);
 	}
 
 	public Job(Host host, String name, String[]args) {

@@ -8,18 +8,17 @@ public class GateMessage extends Message {
 		return particleNumber;
 	}
 
-	private GateMessage(Type type, long particleNumber) {
-		super(type.toString(), 1, 100);
-		this.type = type;
+	private GateMessage(String type, long particleNumber) {
+		super(type, 1, 100);
 		this.particleNumber = particleNumber;
 	}
 
-	public static void sendTo(String destination, Type type, 
+	public static void sendTo(String destination, String type, 
 			long particleNumber) {
 		GateMessage m = new GateMessage(type, particleNumber);
 		try{
-			Msg.debug("Sending a '" + type.toString() + "' message to '" + 
-					destination +"'");
+			Msg.debug("Sending a '" + type + "' message to '" + destination + 
+					"'");
 			m.send(destination);
 		} catch (MsgException e) {
 			Msg.error("Something went wrong when emitting a '" +

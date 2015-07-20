@@ -7,12 +7,12 @@ import org.simgrid.msg.MsgException;
 public class SE extends GridService {
 
 	private void sendAckTo (String mailbox) {
-		SEMessage.sendTo(mailbox, Message.Type.UPLOAD_ACK, "", 0);
+		SEMessage.sendTo(mailbox, "UPLOAD_ACK", "", 0);
 		Msg.debug("'SE@"+ getName() +"' sent an ACK on '" + mailbox + "'");
 	}
 
 	private void sendFileTo (String destination, long size) {
-		SEMessage.sendTo(destination, Message.Type.FILE_TRANSFER, null, size);
+		SEMessage.sendTo(destination, "FILE_TRANSFER", null, size);
 	}
 
 	public SE (Host host, String name, String[]args) {
@@ -36,7 +36,7 @@ public class SE extends GridService {
 								(SEMessage) Message.getFrom(mailbox);
 
 						switch(message.getType()){
-						case DOWNLOAD_REQUEST:
+						case "DOWNLOAD_REQUEST":
 							// A worker asked for a physical file. A data 
 							// transfer of getSize() bytes occurs upon reply.
 							// TODO This will have to be replaced/completed by 
@@ -50,7 +50,7 @@ public class SE extends GridService {
 							sendFileTo("return-"+mailbox, message.getSize());
 
 							break;
-						case FILE_TRANSFER:
+						case "FILE_TRANSFER":
 							// A physical file has been received (inducing a 
 							// data transfer). An ACK is sent back to notify  
 							// the reception of the file.
@@ -71,15 +71,14 @@ public class SE extends GridService {
 
 	public void upload (long size) {
 		String mailbox = this.findAvailableMailbox(100);
-		SEMessage.sendTo(mailbox, Message.Type.FILE_TRANSFER, null, size);
+		SEMessage.sendTo(mailbox, "FILE_TRANSFER", null, size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
 		Message.getFrom("return-"+mailbox);
 	}
 
 	public void download(String fileName, long fileSize){
 		String mailbox = this.findAvailableMailbox(100);
-		SEMessage.sendTo(mailbox, Message.Type.DOWNLOAD_REQUEST, 
-				fileName, fileSize);
+		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
 				"'. Waiting for reception ...");
 		Message.getFrom("return-"+mailbox);

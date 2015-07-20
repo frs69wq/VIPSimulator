@@ -81,24 +81,18 @@ public class VIPServer extends Process {
 			Job job = (Job) message.getSender();
 
 			switch (message.getType()){
-			case GATE_CONNECT:
+			case "GATE_CONNECT":
 				gateWorkers.add((Gate) job);
 
-				Msg.debug(gateWorkers.size() +
-						" GATE worker(s) registered out of " +
-						VIPSimulator.numberOfGateJobs);
+				Msg.debug(gateWorkers.size() + " GATE worker(s) registered " +
+						"out of " + VIPSimulator.numberOfGateJobs);
 
 				job.begin();
 				break;
-			case MERGE_CONNECT:
-				mergeWorkers.add((Merge) job);
-				Msg.debug(mergeWorkers.size() +
-						" MERGE worker(s) registered out of " +
-						VIPSimulator.numberOfMergeJobs);
-				break;
-			case GATE_PROGRESS:
+
+			case "GATE_PROGRESS":
 				totalParticleNumber += message.getParticleNumber();
-				Msg.info (totalParticleNumber +
+				Msg.info (totalParticleNumber + 
 						" particles have been computed. "+
 						VIPSimulator.totalParticleNumber + " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber){
@@ -133,7 +127,8 @@ public class VIPServer extends Process {
 					job.end();
 				}
 				break;
-			case GATE_DISCONNECT:
+
+			case "GATE_DISCONNECT":
 				// a GATE job is now complete, send it a kill signal.
 				job.kill();
 
@@ -151,7 +146,14 @@ public class VIPServer extends Process {
 					} 
 				}
 				break;
-			case MERGE_DISCONNECT:
+
+			case "MERGE_CONNECT":
+				mergeWorkers.add((Merge) job);
+				Msg.debug(mergeWorkers.size() + " MERGE worker(s) registered "+
+						"out of " + VIPSimulator.numberOfMergeJobs);
+				break;
+
+			case "MERGE_DISCONNECT":
 				// a MERGE job is now complete, send it a kill signal.
 				job.kill();
 				// then stop

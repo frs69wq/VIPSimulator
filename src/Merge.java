@@ -10,13 +10,13 @@ public class Merge extends Job {
 	private void connect (){
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer",Message.Type.MERGE_CONNECT, 0);
+		GateMessage.sendTo("VIPServer", "MERGE_CONNECT", 0);
 	}
 
 	private void disconnect (){
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer",Message.Type.MERGE_DISCONNECT, 0);
+		GateMessage.sendTo("VIPServer", "MERGE_DISCONNECT", 0);
 	}
 
 	public Merge(Host host, String name, String[]args) {
@@ -40,7 +40,7 @@ public class Merge extends Job {
 			GateMessage message = (GateMessage) Message.getFrom(getName());
 
 			switch(message.getType()){
-			case BEGIN:
+			case "BEGIN":
 				Msg.info("Processing Merge");
 
 				Vector<String> fileNameList = null;

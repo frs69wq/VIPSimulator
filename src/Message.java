@@ -5,36 +5,10 @@ import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.TaskCancelledException;
 
 public abstract class Message  extends Task {
-	protected enum Type{
-		// Messages to and from SE
-		DOWNLOAD_REQUEST,
-		FILE_TRANSFER,
-		UPLOAD_ACK,
-		// Messages to and from LFC
-		ASK_LOGICAL_FILE,
-		SEND_LOGICAL_FILE,
-		REGISTER_FILE,
-		REGISTER_ACK,
-		ASK_LS,
-		SEND_LS,
-		// Message to and from GATE jobs
-		GATE_CONNECT,
-		GATE_PROGRESS,
-		GATE_DISCONNECT,
-		// Message to and from Merge jobs
-		MERGE_CONNECT,
-		MERGE_DISCONNECT,
-		// Message to Jobs
-		BEGIN,
-		CARRY_ON,
-		END
-	};
-
-	protected Type type;
 	protected String fileName = null;
 
-	public Type getType() {
-		return type;
+	public String getType() {
+		return getName();
 	}
 
 	public String getFileName() {
@@ -45,7 +19,7 @@ public abstract class Message  extends Task {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType().toString() + 
+			Msg.debug("Received a '" + message.getType() + 
 					"' message from " + mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created

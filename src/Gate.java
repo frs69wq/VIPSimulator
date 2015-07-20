@@ -22,20 +22,20 @@ public class Gate extends Job {
 	private void connect (){
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer",Message.Type.GATE_CONNECT, 0);
+		GateMessage.sendTo("VIPServer", "GATE_CONNECT", 0);
 	}
 
 	private void sendProgress(long simulatedParticles){
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer", Message.Type.GATE_PROGRESS, 
+		GateMessage.sendTo("VIPServer", "GATE_PROGRESS", 
 				simulatedParticles);
 	}
 
 	private void disconnect (){
 		// Use of some simulation magic here, every worker knows the mailbox of 
 		// the VIP server
-		GateMessage.sendTo("VIPServer",Message.Type.GATE_DISCONNECT, 0);
+		GateMessage.sendTo("VIPServer", "GATE_DISCONNECT", 0);
 	}
 
 	public Gate(Host host, String name, String[]args) {
@@ -67,7 +67,7 @@ public class Gate extends Job {
 			GateMessage message = (GateMessage) Message.getFrom(getName());
 
 			switch(message.getType()){
-			case BEGIN:
+			case "BEGIN":
 				Msg.info("Processing GATE");
 
 				// downloading inputs
@@ -87,7 +87,7 @@ public class Gate extends Job {
 						VIPServer.getDefaultLFC());
 				downloadTime.stop();
 
-			case CARRY_ON:	
+			case "CARRY_ON":
 				// Compute for sosTime seconds
 				computeTime.start();
 
@@ -103,7 +103,7 @@ public class Gate extends Job {
 				sendProgress(simulatedParticles);
 
 				break;
-			case END:
+			case "END":
 				Msg.info("Stopping Gate job and uploading results. " +
 						nbParticles + " particles have been simulated by '" +
 						getName() +"'");

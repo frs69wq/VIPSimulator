@@ -17,24 +17,22 @@ public class LFCMessage extends Message {
 		return fileList;
 	}
 
-	private LFCMessage(Type type, String logicalName, 
+	private LFCMessage(String type, String logicalName, 
 			Vector<LogicalFile> files) {
-		super(type.toString(), 1e6, 100);
-		this.type = type;
+		super(type, 1e6, 100);
 		this.fileName=logicalName;
 		this.fileList = files;
 	}
 
-	public static void sendTo (String destination, Type type, 
+	public static void sendTo (String destination, String type, 
 			String logicalName, Vector<LogicalFile> fileList) {
 		LFCMessage m = new LFCMessage (type, logicalName, fileList);
 		try{
-			Msg.debug("Send a '" + type.toString() + "' message to " +
-					destination);
+			Msg.debug("Send a '" + type + "' message to " + destination);
 			m.send(destination);
 		} catch (MsgException e) {
-			Msg.error("Something went wrong when emitting a '" + 
-				type.toString() +"' message to '" + destination + "'");
+			Msg.error("Something went wrong when emitting a '" + type + 
+					"' message to '" + destination + "'");
 			e.printStackTrace();
 		}
 	}
