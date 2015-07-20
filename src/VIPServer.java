@@ -139,13 +139,16 @@ public class VIPServer extends Process {
 
 				endedGateWorkers++;
 				if (endedGateWorkers == VIPSimulator.numberOfGateJobs){
+					//Add a safety guard in case the deployment has no Merge
+					if (VIPSimulator.numberOfMergeJobs == 0)
+						stop = true;
 					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs){
 						Msg.info("All GATE workers sent a 'GATE_END' message" +
 								"Wake up " + mergeWorkers.size() + 
 								" Merge worker(s)");
 						runningMergeWorkers++;
 						mergeWorkers.firstElement().begin();
-					}
+					} 
 				}
 				break;
 			case MERGE_DISCONNECT:
