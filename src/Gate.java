@@ -70,6 +70,14 @@ public class Gate extends Job {
 			case "BEGIN":
 				Msg.info("Processing GATE");
 
+				// upload-test 
+				// TODO to be factored at some point
+				uploadTime.start();
+				LCG.cr("output-0.tar.gz-uploadTest", 12, 
+						"output-0.tar.gz-uploadTest", 
+						getCloseSE(), VIPServer.getDefaultLFC());
+				uploadTime.stop();
+
 				// downloading inputs
 				// TODO what is below is very specific to GATE
 				// Added to temporarily improve the realism of the simulation
