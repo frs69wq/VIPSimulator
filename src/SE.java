@@ -70,14 +70,14 @@ public class SE extends GridService {
 	}
 
 	public void upload (long size) {
-		String mailbox = this.findAvailableMailbox(100);
+		String mailbox = this.findAvailableMailbox(2000);
 		SEMessage.sendTo(mailbox, "FILE_TRANSFER", null, size);
 		Msg.info("Sent upload request of size " + size +". Waiting for an ack");
 		Message.getFrom("return-"+mailbox);
 	}
 
 	public void download(String fileName, long fileSize){
-		String mailbox = this.findAvailableMailbox(100);
+		String mailbox = this.findAvailableMailbox(2000);
 		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", fileName, fileSize);
 		Msg.info("Sent download request for '" + fileName + 
 				"'. Waiting for reception ...");
