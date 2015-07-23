@@ -3,6 +3,7 @@ import org.simgrid.msg.Msg;
 public class VIPSimulator {
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
+	public static String gateInputFile;
 	public static long sosTime;
 	public static int numberOfMergeJobs;
 	public static int cpuMergeTime;
@@ -29,18 +30,18 @@ public class VIPSimulator {
 				Long.valueOf(args[2]).longValue() : 1000000;
 		numberOfGateJobs = args.length > 3 ? 
 				Integer.valueOf(args[3]).intValue() : 5;
+		gateInputFile = args.length > 4 ? args[4] : "file.zip";
 		// SOS time is given in seconds on command line, but sleeps take values
 		// in milliseconds.
-		sosTime = 1000*(args.length > 4 ? 
-				Long.valueOf(args[4]).longValue() : 300);
-		numberOfMergeJobs = args.length > 5 ? 
-				Integer.valueOf(args[5]).intValue() : 1;
-		cpuMergeTime = args.length > 6 ? 
-				Integer.valueOf(args[6]).intValue() : 10;
-
-		eventsPerSec = args.length > 7 ? 
-				Double.valueOf(args[7]).doubleValue() : 200;
-		logFile = args.length > 8 ? args[8] : "logs.txt";
+		sosTime = 1000*(args.length > 5 ? 
+				Long.valueOf(args[5]).longValue() : 300);
+		numberOfMergeJobs = args.length > 6 ? 
+				Integer.valueOf(args[6]).intValue() : 1;
+		cpuMergeTime = args.length > 7 ? 
+				Integer.valueOf(args[7]).intValue() : 10;
+		eventsPerSec = args.length > 8 ? 
+				Double.valueOf(args[8]).doubleValue() : 200;
+		logFile = args.length > 9 ? args[9] : "logs.txt";
 
 		Msg.info("PARAMS:   sostime is "+ sosTime +
 				", number of Gate tasks is "+ 

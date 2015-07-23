@@ -47,9 +47,6 @@ public class Gate extends Job {
 		setName();
 		long nbParticles = 0;
 		long simulatedParticles = 0;
-		//TODO get the output file size from logs and give it as argument of 
-		// the GATE process. If no value is given, we rely on the same default
-		// value as in the C version.
 
 		int jobId = (args.length > 0 ? 
 				Integer.valueOf(args[0]).intValue() : 1);
@@ -79,10 +76,8 @@ public class Gate extends Job {
 				uploadTime.stop();
 
 				// downloading inputs
-				// TODO what is below is very specific to GATE
-				// Added to temporarily improve the realism of the simulation
-				// Have to be generalized at some point.
-
+				// The first two files are common to all GATE workflow. Only
+				// the third is specific and thus given on command line.
 				downloadTime.start();
 				LCG.cp("inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz", 
@@ -90,8 +85,8 @@ public class Gate extends Job {
 				LCG.cp("inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPServer.getDefaultLFC());
-				LCG.cp("inputs/file-1032746166739830.zip", 
-						"/scratch/file-1032746166739830.zip", 
+				LCG.cp("inputs/" + VIPSimulator.gateInputFile + ".zip", 
+						"/scratch/file-" + VIPSimulator.gateInputFile + ".zip", 
 						VIPServer.getDefaultLFC());
 				downloadTime.stop();
 
@@ -116,9 +111,7 @@ public class Gate extends Job {
 						nbParticles + " particles have been simulated by '" +
 						getName() +"'");
 
-				//TODO Discuss what we can do here
-				//TODO what is the actual size of the generated file ?
-				//TODO use the actual size obtained from the logs for now
+				// The size of the file to upload is retrieve from the logs
 				String logicalFileName = "results/"+ 
 						Long.toString(nbParticles) +
 						"-partial-"+ getName() + "-" +
