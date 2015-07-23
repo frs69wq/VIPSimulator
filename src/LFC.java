@@ -124,7 +124,7 @@ public class LFC extends GridService {
 			Msg.debug(this.toString());
 		}
 
-		for (int i=0; i<3; i++){
+		for (int i=0; i<25; i++){
 			mailboxes.add(new Process(name, name+"_"+i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();
@@ -171,7 +171,7 @@ public class LFC extends GridService {
 	}
 
 	public void register (LogicalFile file) {
-		String mailbox = this.findAvailableMailbox(10);
+		String mailbox = this.findAvailableMailbox(100);
 		Vector<LogicalFile> list = new Vector<LogicalFile>();
 		list.add(file);
 		LFCMessage.sendTo(mailbox, "REGISTER_FILE", null, list);
@@ -179,7 +179,7 @@ public class LFC extends GridService {
 	}
 
 	public LogicalFile getLogicalFile (String logicalFileName) {
-		String mailbox = this.findAvailableMailbox(10);
+		String mailbox = this.findAvailableMailbox(100);
 		LFCMessage.sendTo(mailbox, "ASK_LOGICAL_FILE", logicalFileName, null);
 		Msg.info("Asked about '" + logicalFileName + 
 				"'. Waiting for information ...");
@@ -190,7 +190,7 @@ public class LFC extends GridService {
 
 	public Vector<LogicalFile> getLogicalDirectoryContents(
 			String directoryName){
-		String mailbox = this.findAvailableMailbox(10);
+		String mailbox = this.findAvailableMailbox(100);
 		LFCMessage.sendTo(mailbox, "ASK_LS", directoryName, null);
 		Msg.info("Asked for list of files to merge in '" + directoryName + 
 				"'. Waiting for reply ...");
