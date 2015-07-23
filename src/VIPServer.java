@@ -56,12 +56,14 @@ public class VIPServer extends Process {
 	}
 
 	public static SE getSEbyName(String seName){
-		SE notFound = null;
 		for (SE se : seList) 
 			if (se.getName().matches(seName))
 				return se;
-		Msg.error("Cannot find an SE named '" + seName +"'");
-		return notFound;
+		// Some worker may define a close SE that was never used, hence that 
+		// exists neither in the platform nor the deployment files. In that case
+		// we fall back on the default SE. 
+		Msg.warn("Cannot find an SE named '" + seName +"'. Return Default SE");
+		return VIPServer.getDefaultSE();
 	}
 
 	public VIPServer(Host host, String name, String[]args) {
