@@ -75,7 +75,8 @@ public class VIPServer extends Process {
 		Msg.info("A new simulation starts!");
 		boolean stop=false, timer = false;
 		long totalParticleNumber = 0;
-
+		Msg.info("Init log file with JOBID,DOWNTIME,UPTIME,EXECUTIONTIME,TOTALTIME");
+                System.out.println("JOBID,DOWNTIME,UPTIME,EXECUTIONTIME,TOTALTIME");
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
