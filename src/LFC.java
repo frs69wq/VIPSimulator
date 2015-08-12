@@ -124,7 +124,7 @@ public class LFC extends GridService {
 			Msg.debug(this.toString());
 		}
 
-		for (int i=0; i<25; i++){
+		for (int i=0; i<250; i++){
 			mailboxes.add(new Process(name, name+"_"+i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();
