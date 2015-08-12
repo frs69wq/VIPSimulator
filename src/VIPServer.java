@@ -78,7 +78,7 @@ public class VIPServer extends Process {
 		Msg.verb("Init log file with JobId,DownTime,UpTime,ExecutionTime," +
 				"TotalTime");
 		System.out.println("JobId,DownTime,UpTime,ExecutionTime,TotalTime");
-		System.err.println("JobId,Destination,Source,FileSize,Time,1");
+		System.err.println("JobId,Destination,Source,FileSize,Time,UpDown");
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server
