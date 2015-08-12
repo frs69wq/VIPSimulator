@@ -1,11 +1,12 @@
-import java.util.Random;
+//import java.util.Random;
 import java.util.Vector;
 
 public class LogicalFile {
 	private String name;
 	private long size;
 	private Vector<SE>locations;
-	private Random randomGenerator;
+	//private Random randomGenerator;
+	private int index;
 
 	public String getName() {
 		return name;
@@ -30,7 +31,8 @@ public class LogicalFile {
 	public SE getLocation() {
 		//TODO return SE randomly for now. Might be interesting to implement 
 		//TODO some load balancing strategy
-		int selectedIndex = randomGenerator.nextInt(locations.size());
+		int selectedIndex = (index++) % locations.size(); 
+		// randomGenerator.nextInt(locations.size());
 		return locations.get(selectedIndex);
 	}
 
@@ -47,10 +49,11 @@ public class LogicalFile {
 
 	public LogicalFile(String name, long size, Vector<SE> locations) {
 		super();
+		this.index=0;
 		this.name = name;
 		this.size = size;
 		this.locations = locations;
-		this.randomGenerator = new Random();
+		//this.randomGenerator = new Random();
 	}
 
 	// In most cases, this constructor with a single location will be used.
