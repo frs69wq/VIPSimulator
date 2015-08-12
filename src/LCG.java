@@ -24,8 +24,10 @@ public abstract class LCG {
 				"' completed");
 	}
 
-	public static void cp(String logicalFileName, String localFileName, 
+	public static String cp(String logicalFileName, String localFileName, 
 			LFC lfc){
+		Timer duration = new Timer();
+		duration.start();
 		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName +
 				"' using '" + lfc.getName() + "'");
 
@@ -42,6 +44,8 @@ public abstract class LCG {
 
 		Msg.info("lcg-cp of '" + logicalFileName +"' to '" + localFileName +
 				"' completed");
+		duration.stop();
+		return file.getLocation()+","+ file.getSize()+","+duration.getValue();
 	};
 
 	public static Vector<String> ls(LFC lfc, String directoryName){

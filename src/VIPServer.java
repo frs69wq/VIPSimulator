@@ -77,7 +77,8 @@ public class VIPServer extends Process {
 		long totalParticleNumber = 0;
 		Msg.verb("Init log file with JobId,DownTime,UpTime,ExecutionTime," +
 				"TotalTime");
-		System.out.println("JobId,DownTime,UpTime,ExecutionTime,Totaltime");
+		System.out.println("JobId,DownTime,UpTime,ExecutionTime,TotalTime");
+		System.err.println("JobId,Destination,Source,FileSize,Time,1");
 		while(!stop){
 			// Use of some simulation magic here, every worker knows the 
 			// mailbox of the VIP server

@@ -47,7 +47,8 @@ public class Gate extends Job {
 		setName();
 		long nbParticles = 0;
 		long simulatedParticles = 0;
-
+		String transfer_info;
+		
 		int jobId = (args.length > 0 ? 
 				Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 
@@ -79,15 +80,26 @@ public class Gate extends Job {
 				// The first two files are common to all GATE workflow. Only
 				// the third is specific and thus given on command line.
 				downloadTime.start();
-				LCG.cp("inputs/gate.sh.tar.gz", 
+				transfer_info = 
+						LCG.cp("inputs/gate.sh.tar.gz", 
 						"/scratch/gate.sh.tar.gz", 
 						VIPServer.getDefaultLFC());
-				LCG.cp("inputs/opengate_version_7.0.tar.gz", 
+				System.err.println(jobId + "," +getHost().getName()+","+
+						transfer_info+",1");
+				
+				transfer_info = 
+						LCG.cp("inputs/opengate_version_7.0.tar.gz", 
 						"/scratch/opengate_version_7.0.tar.gz", 
 						VIPServer.getDefaultLFC());
-				LCG.cp("inputs/" + VIPSimulator.gateInputFile + ".zip", 
+				System.err.println(jobId + "," +getHost().getName()+","+
+						transfer_info+",1");
+
+				transfer_info = 
+						LCG.cp("inputs/" + VIPSimulator.gateInputFile + ".zip", 
 						"/scratch/file-" + VIPSimulator.gateInputFile + ".zip", 
 						VIPServer.getDefaultLFC());
+				System.err.println(jobId + "," +getHost().getName()+","+
+						transfer_info+",1");
 				downloadTime.stop();
 
 			case "CARRY_ON":
