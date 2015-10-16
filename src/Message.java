@@ -4,7 +4,7 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.TaskCancelledException;
 
-public abstract class Message  extends Task {
+public abstract class Message extends Task {
 	protected String fileName = null;
 
 	public String getType() {
@@ -15,12 +15,12 @@ public abstract class Message  extends Task {
 		return fileName;
 	}
 
-	public static Message getFrom (String mailbox) {
+	public static Message getFrom(String mailbox) {
 		Message message = null;
 		try {
 			message = (Message) Task.receive(mailbox);
-			Msg.debug("Received a '" + message.getType() + 
-					"' message from " + mailbox);
+			Msg.debug("Received a '" + message.getType() + "' message from "
+					+ mailbox);
 			// Simulate the cost of the local processing of the request.
 			// Depends on the value set when the Message was created
 			message.execute();
@@ -31,11 +31,11 @@ public abstract class Message  extends Task {
 		return message;
 	}
 
-	protected Message(String name, double flopAmount, double byteAmount){
+	protected Message(String name, double flopAmount, double byteAmount) {
 		super(name, flopAmount, byteAmount);
 	}
 
-	public void execute() throws  HostFailureException, TaskCancelledException{
+	public void execute() throws HostFailureException, TaskCancelledException {
 		super.execute();
 	}
 

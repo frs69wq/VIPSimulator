@@ -10,19 +10,19 @@ public abstract class GridService extends Process {
 	protected String name;
 	protected Vector<Process> mailboxes;
 
-	protected String findAvailableMailbox(long retryAfter){
-		while (true){
-			for (Process listener: this.mailboxes){
+	protected String findAvailableMailbox(long retryAfter) {
+		while (true) {
+			for (Process listener : this.mailboxes) {
 				String mailbox = listener.getName();
-				if (Task.listen(mailbox)){
-					Msg.verb("Send a message to : " + mailbox + 
-							" which is listening");
+				if (Task.listen(mailbox)) {
+					Msg.verb("Send a message to : " + mailbox
+							+ " which is listening");
 					return mailbox;
 				}
 			}
 			try {
-				Msg.verb("All the listeners are busy. Wait for " + retryAfter +
-						"ms and try again");
+				Msg.verb("All the listeners are busy. Wait for " + retryAfter
+						+ "ms and try again");
 				Process.sleep(retryAfter);
 			} catch (HostFailureException e) {
 				e.printStackTrace();
@@ -34,13 +34,13 @@ public abstract class GridService extends Process {
 		return name;
 	}
 
-	public GridService(Host host, String name, String[]args) {
-		super(host,name,args);
+	public GridService(Host host, String name, String[] args) {
+		super(host, name, args);
 		this.name = getHost().getName();
 		this.mailboxes = new Vector<Process>();
 	}
 
-	public void kill(){
+	public void kill() {
 		for (Process p : mailboxes)
 			p.kill();
 	}

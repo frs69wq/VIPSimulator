@@ -14,29 +14,28 @@ public class SEMessage extends Message {
 	 */
 	private SEMessage(String type, String fileName, long size) {
 		super(type, 1e6, 100);
-		this.fileName=fileName;
-		this.size=size;
+		this.fileName = fileName;
+		this.size = size;
 	}
 
 	/**
 	 * Constructor, builds a new FILE_TRANSFER message
 	 */
-	private SEMessage(String type, long size){
+	private SEMessage(String type, long size) {
 		super(type, 0, size);
 		this.size = size;
 	}
 
-	public static void sendTo (String mailbox, String type, String fileName, 
+	public static void sendTo(String mailbox, String type, String fileName,
 			long size) {
-		SEMessage message = (fileName == null) ? 
-				new SEMessage (type, size) : 
-				new SEMessage (type, fileName, size);
-		try{
+		SEMessage message = (fileName == null) ? new SEMessage(type, size)
+				: new SEMessage(type, fileName, size);
+		try {
 			Msg.debug("Send a '" + type + "' message to " + mailbox);
 			message.send(mailbox);
 		} catch (MsgException e) {
-			Msg.error("Something went wrong when emitting a '" + 
-				type +"' message to '" + mailbox + "'");
+			Msg.error("Something went wrong when emitting a '" + type
+					+ "' message to '" + mailbox + "'");
 			e.printStackTrace();
 		}
 	}

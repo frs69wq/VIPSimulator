@@ -13,16 +13,16 @@ public class GateMessage extends Message {
 		this.particleNumber = particleNumber;
 	}
 
-	public static void sendTo(String destination, String type, 
+	public static void sendTo(String destination, String type,
 			long particleNumber) {
 		GateMessage m = new GateMessage(type, particleNumber);
-		try{
-			Msg.debug("Sending a '" + type + "' message to '" + destination + 
-					"'");
+		try {
+			Msg.debug("Sending a '" + type + "' message to '" + destination
+					+ "'");
 			m.send(destination);
 		} catch (MsgException e) {
-			Msg.error("Something went wrong when emitting a '" +
-				type.toString() +"' message to '" + destination + "'");
+			Msg.error("Something went wrong when emitting a '"
+					+ type.toString() + "' message to '" + destination + "'");
 			e.printStackTrace();
 		}
 	}

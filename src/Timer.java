@@ -1,6 +1,5 @@
 import org.simgrid.msg.Msg;
 
-
 public class Timer {
 	private double value;
 	private double delay;
@@ -13,11 +12,11 @@ public class Timer {
 		return value;
 	}
 
-	public void start(){
+	public void start() {
 		this.delay = Msg.getClock();
 	}
 
-	public void stop(){
+	public void stop() {
 		this.delay = Msg.getClock() - delay;
 		this.value += delay;
 	}
