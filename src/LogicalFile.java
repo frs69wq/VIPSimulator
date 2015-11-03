@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Centre de Calcul de l'IN2P3 du CNRS
+ * Contributor(s) : Frédéric SUTER (2015)
+
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package.
+ */
 //import java.util.Random;
 import java.util.Vector;
 

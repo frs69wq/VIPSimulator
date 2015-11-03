@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Centre de Calcul de l'IN2P3 du CNRS, CREATIS
+ * Contributor(s) : Frédéric SUTER, Sorina CAMARASU-POP (2015)
+
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package.
+ */
 import java.util.Vector;
 
 import org.simgrid.msg.Msg;
