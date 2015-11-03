@@ -1,6 +1,0 @@
-# $1 => platform_file
-# $2 => deployment_file
-# $3 => number of gate jobs
-# $4 => name of log file
-java -cp ../bin:/usr/local/java/simgrid.jar VIPSimulator $1 $2 $3 $3 \
-100 0 0 0 logs.txt "--log=jmsg.thres:critical" > $4
