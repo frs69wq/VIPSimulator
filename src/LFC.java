@@ -125,9 +125,14 @@ public class LFC extends GridService {
 		// catalog from the CSV file given as args[0]
 		String csvFile = (args.length > 0 ? args[0] : null);
 
-		if (csvFile != null) {
+		if ((VIPSimulator.version == 2) && (csvFile != null)) {
 			populate(csvFile);
 			Msg.debug(this.toString());
+		} else {
+			LogicalFile file = new LogicalFile("input.tgz",
+					VIPSimulator.downloadSize, VIPServer.getDefaultSE());
+			Msg.info("Importing file '" + file.toString());
+			catalog.add(file);
 		}
 
 		for (int i = 0; i < 250; i++) {
