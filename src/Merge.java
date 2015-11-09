@@ -101,6 +101,8 @@ public class Merge extends Job {
 
 				Msg.info("Disconnecting MERGE job. Inform VIP server.");
 				this.disconnect();
+				System.out.println(jobId + "," + downloadTime.getValue() + ","
+						+ uploadTime.getValue());
 				break;
 			default:
 				break;
