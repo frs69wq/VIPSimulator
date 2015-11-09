@@ -53,6 +53,33 @@ public class Merge extends Job {
 			case "BEGIN":
 				Msg.info("Processing Merge");
 
+				// upload-test
+				// TODO to be factored at some point
+				uploadTime.start();
+				LCG.cr("output-0.tar.gz-uploadTest", 12,
+						"output-0.tar.gz-uploadTest", getCloseSE(),
+						VIPServer.getDefaultLFC());
+				uploadTime.stop();
+				System.err.println(jobId + "," + getCloseSE() + ","
+						+ getHost().getName() + ",12," + uploadTime.getValue()
+						+ ",0");
+
+				// downloading inputs
+				// The first file are common to all GATE workflow. Only
+				// the second is specific and thus given on command line.
+				downloadTime.start();
+				transfer_info = LCG.cp("inputs/merge.sh.tar.gz",
+						"/scratch/merge.sh.tar.gz", VIPServer.getDefaultLFC());
+				System.err.println(jobId + "," + getHost().getName() + ","
+						+ transfer_info + ",1");
+
+				transfer_info = LCG.cp("inputs/" + VIPSimulator.gateInputFile
+						+ ".zip", "/scratch/file-" + VIPSimulator.gateInputFile
+						+ ".zip", VIPServer.getDefaultLFC());
+				System.err.println(jobId + "," + getHost().getName() + ","
+						+ transfer_info + ",2");
+				downloadTime.stop();
+
 				Vector<String> fileNameList = null;
 				while (fileNameList == null) {
 					fileNameList = LCG
