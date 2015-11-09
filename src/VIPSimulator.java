@@ -15,6 +15,9 @@ public class VIPSimulator {
 	public static int numberOfMergeJobs;
 	public static int cpuMergeTime;
 	public static double eventsPerSec;
+	public static int version;
+	public static long downloadSize;
+	public static long uploadSize;
 
 	public static void main(String[] args) {
 		Msg.init(args);
@@ -47,7 +50,15 @@ public class VIPSimulator {
 				: 10;
 		eventsPerSec = args.length > 8 ? Double.valueOf(args[8]).doubleValue()
 				: 200;
+		version = args.length > 9 ? Integer.valueOf(args[9]).intValue() : 2;
 
+		if (version == 1) {
+			downloadSize = args.length > 10 ? Long.valueOf(args[10])
+					.longValue() : 1000000;
+			uploadSize = args.length > 10 ? Long.valueOf(args[10]).longValue()
+					: 1000000;
+		}
+		
 		Msg.info("PARAMS:   sostime is " + sosTime
 				+ ", number of Gate tasks is " + numberOfGateJobs
 				+ ", number of merge tasks is " + numberOfMergeJobs
