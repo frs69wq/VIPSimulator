@@ -11,8 +11,10 @@ import org.simgrid.msg.Msg;
 
 public abstract class LCG {
 
-	public static void cr(String localFileName, long localFileSize,
+	public static double cr(String localFileName, long localFileSize,
 			String logicalFileName, SE se, LFC lfc) {
+		Timer duration = new Timer();
+		duration.start();
 		Msg.info("lcg-cr '" + logicalFileName + "' from '" + localFileName
 				+ "' using '" + lfc.getName() + "'");
 
@@ -28,6 +30,8 @@ public abstract class LCG {
 
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName()
 				+ "' completed");
+		duration.stop();
+		return duration.getValue();
 	}
 
 	public static String cp(String logicalFileName, String localFileName,
