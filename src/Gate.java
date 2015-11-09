@@ -53,14 +53,19 @@ public class Gate extends Job {
 		setName();
 		long nbParticles = 0;
 		long simulatedParticles = 0;
+		long uploadFileSize = 0;
 		String transfer_info;
 
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1])
 				.longValue() : VIPSimulator.sosTime);
-		long uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
-				.longValue() : 1000000);
-
+		if (VIPSimulator.version == 1) {
+			uploadFileSize = VIPSimulator.uploadSize;
+		} else {
+			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
+					.longValue() : 1000000);
+		}
+		
 		Msg.info("Register GATE on '" + getName() + "'");
 		// Use of some simulation magic here, every worker knows the mailbox of
 		// the VIP server
@@ -80,7 +85,7 @@ public class Gate extends Job {
 							"/scratch/input.tgz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",1");
+							+ transfer_info + ",2");
 					downloadTime.stop();
 				} else {
 					// upload-test
@@ -167,5 +172,4 @@ public class Gate extends Job {
 			}
 		}
 	}
-
 }
