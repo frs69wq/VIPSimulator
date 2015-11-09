@@ -34,12 +34,15 @@ public class Merge extends Job {
 		// TODO have to set the name here, might be a bug in simgrid
 		setName();
 		long nbParticles = 0;
-		long uploadFileSize = 0;
 
-		if (args.length < 1) {
-			Msg.info("Slave needs 1 argument (its number)");
-			System.exit(1);
-		}
+		String transfer_info;
+
+		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
+		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1])
+				.longValue() : VIPSimulator.sosTime);
+		long uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
+				.longValue() : 1000000);
+
 		Msg.info("Register Merge on '" + getName() + "'");
 		this.connect();
 
@@ -66,7 +69,7 @@ public class Merge extends Job {
 					// Get the file name, without the directory name
 					String fileName = fullName.split("/")[1];
 
-					LCG.cp(fullName, "/scratch/" + fileName,
+					transfer_info = LCG.cp(fullName, "/scratch/" + fileName,
 							VIPServer.getDefaultLFC());
 
 					Msg.info(fullName + " " + fileName + "="
@@ -75,11 +78,13 @@ public class Merge extends Job {
 							.longValue();
 
 					Msg.info("Received " + nbParticles + " particles to merge");
+					System.err.println(jobId + "," + getHost().getName() + ","
+							+ transfer_info + ",1");
 					downloadTime.stop();
 				}
 
 				computeTime.start();
-				Process.sleep(VIPSimulator.cpuMergeTime);
+				Process.sleep(executionTime);
 				computeTime.stop();
 
 				String logicalFileName = "results/"
@@ -90,6 +95,9 @@ public class Merge extends Job {
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName,
 						getCloseSE(), VIPServer.getDefaultLFC());
 				uploadTime.stop();
+				System.err.println(jobId + "," + getCloseSE() + ","
+						+ getHost().getName() + "," + uploadFileSize +","
+						+ uploadTime.getValue() + ",2");
 
 				Msg.info("Disconnecting MERGE job. Inform VIP server.");
 				this.disconnect();
