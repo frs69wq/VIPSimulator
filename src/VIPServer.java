@@ -82,9 +82,9 @@ public class VIPServer extends Process {
 		Msg.info("A new simulation starts!");
 		boolean stop = false, timer = false;
 		long totalParticleNumber = 0;
-		Msg.verb("Init log file with JobId,DownTime,UpTime,ExecutionTime,"
-				+ "TotalTime");
-		System.out.println("JobId,DownTime,UpTime,ExecutionTime,TotalTime");
+		Msg.verb("Write log file header"
+				+ "with JobId,DownloadDuration_Sim,UploadDuration_Sim");
+		System.out.println("JobId,DownloadDuration_Sim,UploadDuration_Sim");
 		System.err.println("JobId,Destination,Source,FileSize,Time,UpDown");
 		while (!stop) {
 			// Use of some simulation magic here, every worker knows the
