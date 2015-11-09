@@ -103,7 +103,7 @@ public class Gate extends Job {
 						+ ".zip", "/scratch/file-" + VIPSimulator.gateInputFile
 						+ ".zip", VIPServer.getDefaultLFC());
 				System.err.println(jobId + "," + getHost().getName() + ","
-						+ transfer_info + ",1");
+						+ transfer_info + ",2");
 				downloadTime.stop();
 
 			case "CARRY_ON":
@@ -138,7 +138,7 @@ public class Gate extends Job {
 				uploadTime.stop();
 				System.err.println(jobId + "," + getCloseSE() + ","
 						+ getHost().getName() + "," + uploadFileSize +","
-						+ uploadTime.getValue() + ",2");
+						+ uploadTime.getValue() + ",1");
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");
 				this.disconnect();

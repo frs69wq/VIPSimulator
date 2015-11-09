@@ -79,7 +79,7 @@ public class Merge extends Job {
 
 					Msg.info("Received " + nbParticles + " particles to merge");
 					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",1");
+							+ transfer_info + ",2");
 					downloadTime.stop();
 				}
 
@@ -97,7 +97,7 @@ public class Merge extends Job {
 				uploadTime.stop();
 				System.err.println(jobId + "," + getCloseSE() + ","
 						+ getHost().getName() + "," + uploadFileSize +","
-						+ uploadTime.getValue() + ",2");
+						+ uploadTime.getValue() + ",1");
 
 				Msg.info("Disconnecting MERGE job. Inform VIP server.");
 				this.disconnect();
