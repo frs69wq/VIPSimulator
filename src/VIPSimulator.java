@@ -55,7 +55,7 @@ public class VIPSimulator {
 		if (version == 1) {
 			downloadSize = args.length > 10 ? Long.valueOf(args[10])
 					.longValue() : 1000000;
-			uploadSize = args.length > 10 ? Long.valueOf(args[10]).longValue()
+			uploadSize = args.length > 11 ? Long.valueOf(args[11]).longValue()
 					: 1000000;
 		}
 		
