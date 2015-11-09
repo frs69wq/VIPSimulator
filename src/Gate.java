@@ -72,40 +72,53 @@ public class Gate extends Job {
 			switch (message.getType()) {
 			case "BEGIN":
 				Msg.info("Processing GATE");
+				if (VIPSimulator.version == 1){
+					// The first version of the GATE simulator was performing a
+					// single download whose size was given as input
+					downloadTime.start();
+					transfer_info = LCG.cp("input.tgz",
+							"/scratch/input.tgz",
+							VIPServer.getDefaultLFC());
+					System.err.println(jobId + "," + getHost().getName() + ","
+							+ transfer_info + ",1");
+					downloadTime.stop();
+				} else {
+					// upload-test
+					// TODO to be factored at some point
+					uploadTime.start();
+					LCG.cr("output-0.tar.gz-uploadTest", 12,
+							"output-0.tar.gz-uploadTest", getCloseSE(),
+							VIPServer.getDefaultLFC());
+					uploadTime.stop();
+					System.err.println(jobId + "," + getCloseSE() + ","
+							+ getHost().getName() + ",12,"
+							+ uploadTime.getValue() + ",0");
 
-				// upload-test
-				// TODO to be factored at some point
-				uploadTime.start();
-				LCG.cr("output-0.tar.gz-uploadTest", 12,
-						"output-0.tar.gz-uploadTest", getCloseSE(),
-						VIPServer.getDefaultLFC());
-				uploadTime.stop();
-				System.err.println(jobId + "," + getCloseSE() + ","
-						+ getHost().getName() + ",12," + uploadTime.getValue()
-						+ ",0");
+					// downloading inputs
+					// The first two files are common to all GATE workflow. Only
+					// the third is specific and thus given on command line.
+					downloadTime.start();
+					transfer_info = LCG.cp("inputs/gate.sh.tar.gz",
+							"/scratch/gate.sh.tar.gz",
+							VIPServer.getDefaultLFC());
+					System.err.println(jobId + "," + getHost().getName() + ","
+							+ transfer_info + ",1");
 
-				// downloading inputs
-				// The first two files are common to all GATE workflow. Only
-				// the third is specific and thus given on command line.
-				downloadTime.start();
-				transfer_info = LCG.cp("inputs/gate.sh.tar.gz",
-						"/scratch/gate.sh.tar.gz", VIPServer.getDefaultLFC());
-				System.err.println(jobId + "," + getHost().getName() + ","
-						+ transfer_info + ",1");
+					transfer_info = LCG.cp(
+							"inputs/opengate_version_7.0.tar.gz",
+							"/scratch/opengate_version_7.0.tar.gz",
+							VIPServer.getDefaultLFC());
+					System.err.println(jobId + "," + getHost().getName() + ","
+							+ transfer_info + ",1");
 
-				transfer_info = LCG.cp("inputs/opengate_version_7.0.tar.gz",
-						"/scratch/opengate_version_7.0.tar.gz",
-						VIPServer.getDefaultLFC());
-				System.err.println(jobId + "," + getHost().getName() + ","
-						+ transfer_info + ",1");
-
-				transfer_info = LCG.cp("inputs/" + VIPSimulator.gateInputFile
-						+ ".zip", "/scratch/file-" + VIPSimulator.gateInputFile
-						+ ".zip", VIPServer.getDefaultLFC());
-				System.err.println(jobId + "," + getHost().getName() + ","
-						+ transfer_info + ",2");
-				downloadTime.stop();
-
+					transfer_info = LCG.cp("inputs/"
+							+ VIPSimulator.gateInputFile + ".zip",
+							"/scratch/file-" + VIPSimulator.gateInputFile
+									+ ".zip", VIPServer.getDefaultLFC());
+					System.err.println(jobId + "," + getHost().getName() + ","
+							+ transfer_info + ",2");
+					downloadTime.stop();
+				}
 			case "CARRY_ON":
 				// Compute for sosTime seconds
 				computeTime.start();
