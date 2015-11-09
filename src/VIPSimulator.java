@@ -15,7 +15,6 @@ public class VIPSimulator {
 	public static int numberOfMergeJobs;
 	public static int cpuMergeTime;
 	public static double eventsPerSec;
-	public static String logFile;
 
 	public static void main(String[] args) {
 		Msg.init(args);
@@ -48,7 +47,6 @@ public class VIPSimulator {
 				: 10;
 		eventsPerSec = args.length > 8 ? Double.valueOf(args[8]).doubleValue()
 				: 200;
-		logFile = args.length > 9 ? args[9] : "logs.txt";
 
 		Msg.info("PARAMS:   sostime is " + sosTime
 				+ ", number of Gate tasks is " + numberOfGateJobs
