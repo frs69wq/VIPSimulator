@@ -80,6 +80,9 @@ public class Gate extends Job {
 						"output-0.tar.gz-uploadTest", getCloseSE(),
 						VIPServer.getDefaultLFC());
 				uploadTime.stop();
+				System.err.println(jobId + "," + getCloseSE() + ","
+						+ getHost().getName() + ",12," + uploadTime.getValue()
+						+ ",0");
 
 				// downloading inputs
 				// The first two files are common to all GATE workflow. Only
@@ -133,6 +136,9 @@ public class Gate extends Job {
 				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName,
 						getCloseSE(), VIPServer.getDefaultLFC());
 				uploadTime.stop();
+				System.err.println(jobId + "," + getCloseSE() + ","
+						+ getHost().getName() + "," + uploadFileSize +","
+						+ uploadTime.getValue() + ",2");
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");
 				this.disconnect();
