@@ -20,7 +20,7 @@ public class SEMessage extends Message {
 	 * Constructor, builds a new control (DOWNLOAD_REQUEST/UPLOAD_ACK) message
 	 */
 	private SEMessage(String type, String fileName, long size) {
-		super(type, 1e6, 100);
+		super(type, 1250000000, 100);
 		this.fileName = fileName;
 		this.size = size;
 	}
