@@ -34,14 +34,19 @@ public class Merge extends Job {
 		// TODO have to set the name here, might be a bug in simgrid
 		setName();
 		long nbParticles = 0;
+		long uploadFileSize = 0;
 
 		String transfer_info;
 
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1])
 				.longValue() : VIPSimulator.sosTime);
-		long uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
-				.longValue() : 1000000);
+		if (VIPSimulator.version == 1) {
+			uploadFileSize = VIPSimulator.fixedFileSize;
+		} else {
+			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
+					.longValue() : 1000000);
+		}
 
 		Msg.info("Register Merge on '" + getName() + "'");
 		this.connect();

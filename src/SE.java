@@ -32,7 +32,7 @@ public class SE extends GridService {
 
 	public void main(String[] args) throws MsgException {
 
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 500; i++) {
 			mailboxes.add(new Process(name, name + "_" + i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();

@@ -60,12 +60,12 @@ public class Gate extends Job {
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1])
 				.longValue() : VIPSimulator.sosTime);
 		if (VIPSimulator.version == 1) {
-			uploadFileSize = VIPSimulator.uploadSize;
+			uploadFileSize = VIPSimulator.fixedFileSize;
 		} else {
 			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
 					.longValue() : 1000000);
 		}
-		
+
 		Msg.info("Register GATE on '" + getName() + "'");
 		// Use of some simulation magic here, every worker knows the mailbox of
 		// the VIP server

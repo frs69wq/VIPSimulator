@@ -130,12 +130,12 @@ public class LFC extends GridService {
 			Msg.debug(this.toString());
 		} else {
 			LogicalFile file = new LogicalFile("input.tgz",
-					VIPSimulator.downloadSize, VIPServer.getDefaultSE());
+					VIPSimulator.fixedFileSize, VIPServer.getDefaultSE());
 			Msg.info("Importing file '" + file.toString());
 			catalog.add(file);
 		}
 
-		for (int i = 0; i < 250; i++) {
+		for (int i = 0; i < 500; i++) {
 			mailboxes.add(new Process(name, name + "_" + i) {
 				public void main(String[] args) throws MsgException {
 					String mailbox = getName();

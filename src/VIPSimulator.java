@@ -16,8 +16,7 @@ public class VIPSimulator {
 	public static int cpuMergeTime;
 	public static double eventsPerSec;
 	public static int version;
-	public static long downloadSize;
-	public static long uploadSize;
+	public static long fixedFileSize;
 
 	public static void main(String[] args) {
 		Msg.init(args);
@@ -53,10 +52,8 @@ public class VIPSimulator {
 		version = args.length > 9 ? Integer.valueOf(args[9]).intValue() : 2;
 
 		if (version == 1) {
-			downloadSize = args.length > 10 ? Long.valueOf(args[10])
-					.longValue() : 1000000;
-			uploadSize = args.length > 11 ? Long.valueOf(args[11]).longValue()
-					: 1000000;
+			fixedFileSize = args.length > 10 ? Long.valueOf(args[10])
+					.longValue() : 10000000;
 		}
 		
 		Msg.info("PARAMS:   sostime is " + sosTime
