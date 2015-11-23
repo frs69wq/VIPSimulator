@@ -77,7 +77,7 @@ public class Merge extends Job {
 							"/scratch/merge.sh.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",1");
+							+ transfer_info + ",2");
 
 					transfer_info = LCG.cp("inputs/"
 							+ VIPSimulator.gateInputFile + ".zip",

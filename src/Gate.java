@@ -107,14 +107,14 @@ public class Gate extends Job {
 							"/scratch/gate.sh.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",1");
+							+ transfer_info + ",2");
 
 					transfer_info = LCG.cp(
 							"inputs/opengate_version_7.0.tar.gz",
 							"/scratch/opengate_version_7.0.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",1");
+							+ transfer_info + ",2");
 
 					transfer_info = LCG.cp("inputs/"
 							+ VIPSimulator.gateInputFile + ".zip",
