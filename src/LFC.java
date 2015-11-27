@@ -47,6 +47,17 @@ public class LFC extends GridService {
 						fileInfo[1]).longValue(), locations);
 				Msg.info("Importing file '" + file.toString());
 				catalog.add(file);
+				// also populate the global vectors that list the names of GATE
+				// and Merge input files
+				if (fileInfo[0].startsWith("inputs/gate/")){
+					Msg.verb("'"+fileInfo[0] +"' added as Gate input");
+					VIPSimulator.gateInputFileNames.add(fileInfo[0]);
+				} else {
+					if (fileInfo[0].startsWith("inputs/merge/")){
+						Msg.verb("'"+fileInfo[0] +"' added as Merge input");
+						VIPSimulator.mergeInputFileNames.add(fileInfo[0]);
+					}
+				}
 			}
 			br.close();
 		} catch (IOException e) {

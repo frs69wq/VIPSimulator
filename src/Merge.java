@@ -69,20 +69,26 @@ public class Merge extends Job {
 							+ getHost().getName() + ",12,"
 							+ uploadTime.getValue() + ",0");
 
-					// downloading inputs
-					// The first file are common to all GATE workflow. Only
-					// the second is specific and thus given on command line.
+					// Downloading inputs:
+					//   1) wrapper script
+					//   2) workflow specific parameters
+					// If less than 2 files were found in the catalog, exit.
+					// TODO replace this by a loop
 					downloadTime.start();
-					transfer_info = LCG.cp("inputs/merge.sh.tar.gz",
+					if (VIPSimulator.mergeInputFileNames.size() < 2){
+						Msg.error("Some input files are missing. Exit!");
+						System.exit(1);
+					}
+					transfer_info = LCG.cp(
+							VIPSimulator.mergeInputFileNames.get(0),
 							"/scratch/merge.sh.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
 							+ transfer_info + ",2");
 
-					transfer_info = LCG.cp("inputs/"
-							+ VIPSimulator.gateInputFile + ".zip",
-							"/scratch/file-" + VIPSimulator.gateInputFile
-									+ ".zip", VIPServer.getDefaultLFC());
+					transfer_info = LCG.cp(
+							VIPSimulator.mergeInputFileNames.get(1),
+							"/scratch/file.zip", VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
 							+ transfer_info + ",2");
 					downloadTime.stop();

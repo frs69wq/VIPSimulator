@@ -5,12 +5,15 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
+import java.util.Vector;
+
 import org.simgrid.msg.Msg;
 
 public class VIPSimulator {
 	public static long totalParticleNumber;
 	public static int numberOfGateJobs;
-	public static String gateInputFile;
+	public static Vector<String> gateInputFileNames = new Vector<String>();
+	public static Vector<String> mergeInputFileNames = new Vector<String>();
 	public static long sosTime;
 	public static int numberOfMergeJobs;
 	public static int cpuMergeTime;
@@ -38,21 +41,20 @@ public class VIPSimulator {
 				.longValue() : 1000000;
 		numberOfGateJobs = args.length > 3 ? Integer.valueOf(args[3])
 				.intValue() : 5;
-		gateInputFile = args.length > 4 ? args[4] : "file.zip";
 		// SOS time is given in seconds on command line, but sleeps take values
 		// in milliseconds.
-		sosTime = 1000 * (args.length > 5 ? Long.valueOf(args[5]).longValue()
+		sosTime = 1000 * (args.length > 4 ? Long.valueOf(args[4]).longValue()
 				: 300);
-		numberOfMergeJobs = args.length > 6 ? Integer.valueOf(args[6])
+		numberOfMergeJobs = args.length > 5 ? Integer.valueOf(args[5])
 				.intValue() : 1;
-		cpuMergeTime = args.length > 7 ? Integer.valueOf(args[7]).intValue()
+		cpuMergeTime = args.length > 6 ? Integer.valueOf(args[6]).intValue()
 				: 10;
-		eventsPerSec = args.length > 8 ? Double.valueOf(args[8]).doubleValue()
+		eventsPerSec = args.length > 7 ? Double.valueOf(args[7]).doubleValue()
 				: 200;
-		version = args.length > 9 ? Integer.valueOf(args[9]).intValue() : 2;
+		version = args.length > 8 ? Integer.valueOf(args[8]).intValue() : 2;
 
 		if (version == 1) {
-			fixedFileSize = args.length > 10 ? Long.valueOf(args[10])
+			fixedFileSize = args.length > 9 ? Long.valueOf(args[9])
 					.longValue() : 10000000;
 		}
 		

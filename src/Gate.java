@@ -99,27 +99,34 @@ public class Gate extends Job {
 							+ getHost().getName() + ",12,"
 							+ uploadTime.getValue() + ",0");
 
-					// downloading inputs
-					// The first two files are common to all GATE workflow. Only
-					// the third is specific and thus given on command line.
+					// Downloading inputs:
+					//   1) wrapper script
+					//   2) Gate release
+					//   3) workflow specific parameters
+					// If less than 3 files were found in the catalog, exit.
+					// TODO replace this by a loop
 					downloadTime.start();
-					transfer_info = LCG.cp("inputs/gate.sh.tar.gz",
+					if (VIPSimulator.gateInputFileNames.size() < 3){
+						Msg.error("Some input files are missing. Exit!");
+						System.exit(1);
+					}
+					transfer_info = LCG.cp(
+							VIPSimulator.gateInputFileNames.get(0),
 							"/scratch/gate.sh.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
 							+ transfer_info + ",2");
 
 					transfer_info = LCG.cp(
-							"inputs/opengate_version_7.0.tar.gz",
-							"/scratch/opengate_version_7.0.tar.gz",
+							VIPSimulator.gateInputFileNames.get(1),
+							"/scratch/gate_release.tar.gz",
 							VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
 							+ transfer_info + ",2");
 
-					transfer_info = LCG.cp("inputs/"
-							+ VIPSimulator.gateInputFile + ".zip",
-							"/scratch/file-" + VIPSimulator.gateInputFile
-									+ ".zip", VIPServer.getDefaultLFC());
+					transfer_info = LCG.cp(
+							VIPSimulator.gateInputFileNames.get(2),
+							"/scratch/file.zip", VIPServer.getDefaultLFC());
 					System.err.println(jobId + "," + getHost().getName() + ","
 							+ transfer_info + ",2");
 					downloadTime.stop();
