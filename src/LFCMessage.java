@@ -26,7 +26,7 @@ public class LFCMessage extends Message {
 
 	private LFCMessage(String type, String logicalName,
 			Vector<LogicalFile> files) {
-		super(type, 1237500000, 100);
+		super(type, 1125000000, 100);
 		this.fileName = logicalName;
 		this.fileList = files;
 	}
