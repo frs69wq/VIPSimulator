@@ -60,14 +60,14 @@ public class Merge extends Job {
 				if (VIPSimulator.version == 2) {
 					// upload-test
 					// TODO to be factored at some point
-					uploadTime.start();
+					uploadTestTime.start();
 					LCG.cr("output-0.tar.gz-uploadTest", 12,
 							"output-0.tar.gz-uploadTest", getCloseSE(),
 							VIPServer.getDefaultLFC());
-					uploadTime.stop();
+					uploadTestTime.stop();
 					System.err.println(jobId + "," + getCloseSE() + ","
 							+ getHost().getName() + ",12,"
-							+ uploadTime.getValue() + ",0");
+							+ uploadTestTime.getValue() + ",0");
 
 					// Downloading inputs:
 					//   1) wrapper script

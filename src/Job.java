@@ -14,6 +14,7 @@ public abstract class Job extends Process {
 	protected Timer downloadTime;
 	protected Timer computeTime;
 	protected Timer uploadTime;
+	protected Timer uploadTestTime;
 
 	public String getName() {
 		return name;
@@ -48,5 +49,6 @@ public abstract class Job extends Process {
 		this.downloadTime = new Timer();
 		this.computeTime = new Timer();
 		this.uploadTime = new Timer();
+		this.uploadTestTime = new Timer();
 	}
 }
