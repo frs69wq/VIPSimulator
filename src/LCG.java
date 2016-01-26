@@ -54,30 +54,23 @@ public abstract class LCG {
 		return file.getLocation() + "," + file.getSize() + ","
 				+ duration.getValue();
 	}
-
-	
 	// new CP with closeSE and file size
 	public static String cp(String logicalFileName, String localFileName,
-			 SE closeSE, long FileSize) {
+			long fileSize,SE closeSE ) {
 		Timer duration = new Timer();
 		duration.start();
-
 		// Download physical File from SE
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '"
 				+ closeSE +"'");
-
-		closeSE.download(logicalFileName,FileSize);
-
+		
+		closeSE.download(logicalFileName,fileSize);
+		
 		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
 				+ "' completed");
 		duration.stop();
-		
-		return closeSE + "," + FileSize + ","
+		return closeSE + "," + fileSize + ","
 				+ duration.getValue();
 	}
-	
-	
-	
 	
 	public static Vector<String> ls(LFC lfc, String directoryName) {
 		Vector<String> results = new Vector<String>();
