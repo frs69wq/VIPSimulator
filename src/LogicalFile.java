@@ -6,13 +6,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
 //import java.util.Random;
+import java.util.Random;
 import java.util.Vector;
 
 public class LogicalFile {
 	private String name;
 	private long size;
 	private Vector<SE> locations;
-	// private Random randomGenerator;
+	private Random randomGenerator;
 	private int index;
 
 	public String getName() {
@@ -39,10 +40,19 @@ public class LogicalFile {
 		// TODO return SE randomly for now. Might be interesting to implement
 		// TODO some load balancing strategy
 		int selectedIndex = (index++) % locations.size();
-		// randomGenerator.nextInt(locations.size());
+		
+//		rand = new Random();
+//		int selectedIndex = rand.nextInt(locations.size());
+
 		return locations.get(selectedIndex);
 	}
 
+	
+	public Vector<SE> getReplicaLocations() {
+		return this.locations;
+
+	}
+	
 	public String toString() {
 		return "file '" + name + "' of size " + size + " stored on "
 				+ locations.toString();
@@ -60,7 +70,7 @@ public class LogicalFile {
 		this.name = name;
 		this.size = size;
 		this.locations = locations;
-		// this.randomGenerator = new Random();
+	    this.randomGenerator = new Random();
 	}
 
 	// In most cases, this constructor with a single location will be used.
@@ -68,5 +78,6 @@ public class LogicalFile {
 		this(name, size, (Vector<SE>) null);
 		this.locations = new Vector<SE>();
 		this.locations.add(location);
+	    this.randomGenerator = new Random();
 	}
 }
