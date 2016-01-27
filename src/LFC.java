@@ -106,6 +106,18 @@ public class LFC extends GridService {
 		return replica;
 	}
 
+	private LogicalFile getLogicalFileByName(String logicalFileName) {
+		for(LogicalFile file :catalog){
+			if(file.getName().equalsIgnoreCase(logicalFileName)) return file;
+		}
+
+		Msg.error("File '" + logicalFileName
+				+ "' is stored on no SE. Exiting with status 1");
+		System.exit(1);
+		return null;
+		
+	}
+	
 	private void sendAckTo(String mailbox) {
 		LFCMessage.sendTo(mailbox, "REGISTER_ACK", null, null);
 		Msg.debug("'LFC@" + getName() + "' sent an ACK on '" + mailbox + "'");
@@ -122,6 +134,8 @@ public class LFC extends GridService {
 	private void sendLogicalFileList(String mailbox, Vector<LogicalFile> list) {
 		LFCMessage.sendTo(mailbox, "SEND_LOGICAL_FILE", null, list);
 	}
+	
+	
 
 	public LFC(Host host, String name, String[] args) {
 		super(host, name, args);
@@ -181,6 +195,9 @@ public class LFC extends GridService {
 							sendLogicalFileList("return-" + mailbox,
 									directoryContents);
 							break;
+						case "ASK_LR":	
+							LogicalFile fileLr = getLogicalFileByName(message.getFileName());
+							sendLogicalFile("return-" + mailbox, fileLr);
 						default:
 							break;
 						}
@@ -216,6 +233,16 @@ public class LFC extends GridService {
 				+ "'. Waiting for reply ...");
 		LFCMessage m = (LFCMessage) Message.getFrom("return-" + mailbox);
 		return m.getFileList();
+	}
+	
+
+	public Vector<SE> getReplicaLocations(String logicalFileName){
+		String mailbox = this.findAvailableMailbox(100);
+		LFCMessage.sendTo(mailbox, "ASK_LR", logicalFileName, null);
+		Msg.info("Asked for list of replicas of logicalFileName '" + logicalFileName
+				+ "'. Waiting for reply ...");
+		LFCMessage m = (LFCMessage) Message.getFrom("return-" + mailbox);
+		return m.getFile().getLocations();
 	}
 
 	public String toString() {
