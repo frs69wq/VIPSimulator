@@ -42,7 +42,10 @@ public class LogicalFile {
 		// randomGenerator.nextInt(locations.size());
 		return locations.get(selectedIndex);
 	}
-
+	
+	public Vector<SE> getLocations() {
+		return locations;
+	}
 	public String toString() {
 		return "file '" + name + "' of size " + size + " stored on "
 				+ locations.toString();
