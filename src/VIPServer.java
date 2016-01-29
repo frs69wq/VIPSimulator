@@ -1,6 +1,6 @@
 /*
  * Copyright (c) Centre de Calcul de l'IN2P3 du CNRS, CREATIS
- * Contributor(s) : Frédéric SUTER, Sorina CAMARASU-POP (2015-2016)
+ * Contributor(s) : Frédéric SUTER, Sorina CAMARASU-POP (2015)
 
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package.
@@ -64,7 +64,7 @@ public class VIPServer extends Process {
 
 	public static SE getSEbyName(String seName) {
 		for (SE se : seList)
-			if (se.getName().compareToIgnoreCase(seName)==0)
+			if (se.getName().matches(seName))
 				return se;
 		// Some worker may define a close SE that was never used, hence that
 		// exists neither in the platform nor the deployment files. In that case
