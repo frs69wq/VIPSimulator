@@ -86,9 +86,8 @@ public abstract class LCG {
 	}
 	
 	public static Vector<SE> lr(LFC lfc, String logicalFileName) {
-		Vector<SE> locations = new Vector<SE>();
 		// get Logical File from the LFC
-		locations = lfc.getReplicaLocations(logicalFileName);
+		Vector<SE> locations = lfc.getReplicaLocations(logicalFileName);
 		return locations;
 	}
 }

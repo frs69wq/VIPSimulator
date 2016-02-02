@@ -16,12 +16,6 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class LFC extends GridService {
-
-	// A Logical File Catalog service is defined by:
-	// hostName: the name of the host that runs the service
-	// catalog: a vector of logical files
-	private Vector<LogicalFile> catalog;
-
 	// A simulation can begin with some logical files referenced in the LFC.
 	// In that case, the LFC process is launched with an argument which is the
 	// name of a CSV file stored in working directory that contains logical
@@ -45,7 +39,7 @@ public class LFC extends GridService {
 
 				LogicalFile file = new LogicalFile(fileInfo[0], Long.valueOf(
 						fileInfo[1]).longValue(), locations);
-				Msg.info("Importing file '" + file.toString());
+				Msg.info("Importing file '" + file.toString());	
 				catalog.add(file);
 				// also populate the global vectors that list the names of GATE
 				// and Merge input files
@@ -105,18 +99,6 @@ public class LFC extends GridService {
 
 		return replica;
 	}
-
-	private LogicalFile getLogicalFileByName(String logicalFileName) {
-		for(LogicalFile file :catalog){
-			if(file.getName().equalsIgnoreCase(logicalFileName)) return file;
-		}
-
-		Msg.error("File '" + logicalFileName
-				+ "' is stored on no SE. Exiting with status 1");
-		System.exit(1);
-		return null;
-		
-	}
 	
 	private void sendAckTo(String mailbox) {
 		LFCMessage.sendTo(mailbox, "REGISTER_ACK", null, null);
@@ -135,8 +117,6 @@ public class LFC extends GridService {
 		LFCMessage.sendTo(mailbox, "SEND_LOGICAL_FILE", null, list);
 	}
 	
-	
-
 	public LFC(Host host, String name, String[] args) {
 		super(host, name, args);
 		this.catalog = new Vector<LogicalFile>();
@@ -235,7 +215,6 @@ public class LFC extends GridService {
 		return m.getFileList();
 	}
 	
-
 	public Vector<SE> getReplicaLocations(String logicalFileName){
 		String mailbox = this.findAvailableMailbox(100);
 		LFCMessage.sendTo(mailbox, "ASK_LR", logicalFileName, null);

@@ -17,6 +17,11 @@ public abstract class GridService extends Process {
 	protected String name;
 	protected Vector<Process> mailboxes;
 
+	// A Logical File Catalog service is defined by:
+	// hostName: the name of the host that runs the service
+	// catalog: a vector of logical files
+	protected Vector<LogicalFile> catalog;
+	
 	protected String findAvailableMailbox(long retryAfter) {
 		while (true) {
 			for (Process listener : this.mailboxes) {
@@ -37,6 +42,19 @@ public abstract class GridService extends Process {
 		}
 	}
 
+	protected LogicalFile getLogicalFileByName(String logicalFileName) {
+		LogicalFile file = catalog.get(catalog.indexOf((Object)new LogicalFile(logicalFileName, 0,
+				new Vector<SE>())));
+		
+		if (file == null) {
+			Msg.error("File '" + logicalFileName
+					+ "' is stored on no SE. Exiting with status 1");
+			System.exit(1);
+		}
+		return file;
+		
+	}
+	
 	public String getName() {
 		return name;
 	}

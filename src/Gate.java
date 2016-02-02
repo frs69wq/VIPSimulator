@@ -15,8 +15,6 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Gate extends Job {
-
-	private String[] localOutput = {"/scratch/gate.sh.tar.gz", "/scratch/gate_release.tar.gz", "/scratch/file.zip"};
 	private long simulateForNsec(long nSec) throws HostFailureException {
 		double nbPart;
 
@@ -113,21 +111,18 @@ public class Gate extends Job {
 						Msg.error("Some input files are missing. Exit!");
 						System.exit(1);
 					}
-					Vector<SE> replicaLocations = new Vector<SE>();
-					String logicalFileName;
+					Vector<SE> replicaLocations;
 					
-					for(int i=0;i< VIPSimulator.gateInputFileNames.size();i++){
-						logicalFileName = VIPSimulator.gateInputFileNames.get(i);
-						
+					for (String logicalFileName: VIPSimulator.gateInputFileNames){
 						//Gate job first do lcg-lr to check whether input file exists in closeSE
-						replicaLocations = LCG.lr(logicalFileName,VIPServer.getDefaultLFC());
+						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 						
 						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 						if(replicaLocations.contains(getCloseSE())) 
-							transfer_info= LCG.cp(logicalFileName, localOutput[i],
-									VIPServer.getDefaultLFC().getLogicalFile(logicalFileName).getSize(),getCloseSE());
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									getCloseSE().getLogicalFileByName(logicalFileName).getSize(),getCloseSE());
 						else
-							transfer_info= LCG.cp(logicalFileName, localOutput[i],
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									VIPServer.getDefaultLFC());
 						System.err.println(jobId + "," + getHost().getName() + ","
 								+ transfer_info + ",2");
