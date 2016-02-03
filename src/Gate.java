@@ -7,12 +7,14 @@
  */
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
+
+import java.util.Vector;
+
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Gate extends Job {
-
 	private long simulateForNsec(long nSec) throws HostFailureException {
 		double nbPart;
 
@@ -104,31 +106,27 @@ public class Gate extends Job {
 					//   2) Gate release
 					//   3) workflow specific parameters
 					// If less than 3 files were found in the catalog, exit.
-					// TODO replace this by a loop
 					downloadTime.start();
 					if (VIPSimulator.gateInputFileNames.size() < 3){
 						Msg.error("Some input files are missing. Exit!");
 						System.exit(1);
 					}
-					transfer_info = LCG.cp(
-							VIPSimulator.gateInputFileNames.get(0),
-							"/scratch/gate.sh.tar.gz",
-							VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
-
-					transfer_info = LCG.cp(
-							VIPSimulator.gateInputFileNames.get(1),
-							"/scratch/gate_release.tar.gz",
-							VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
-
-					transfer_info = LCG.cp(
-							VIPSimulator.gateInputFileNames.get(2),
-							"/scratch/file.zip", VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
+					Vector<SE> replicaLocations;
+					
+					for (String logicalFileName: VIPSimulator.gateInputFileNames){
+						//Gate job first do lcg-lr to check whether input file exists in closeSE
+						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						
+						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
+						if(replicaLocations.contains(getCloseSE())) 
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									getCloseSE().getLogicalFileByName(logicalFileName).getSize(),getCloseSE());
+						else
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									VIPServer.getDefaultLFC());
+						System.err.println(jobId + "," + getHost().getName() + ","
+								+ transfer_info + ",2");
+					}
 					downloadTime.stop();
 				}
 			case "CARRY_ON":

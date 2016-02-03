@@ -29,7 +29,7 @@ public abstract class LCG {
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName()
 				+ "' completed");
 	}
-
+	
 	public static String cp(String logicalFileName, String localFileName,
 			LFC lfc) {
 		Timer duration = new Timer();
@@ -53,8 +53,25 @@ public abstract class LCG {
 		duration.stop();
 		return file.getLocation() + "," + file.getSize() + ","
 				+ duration.getValue();
-	};
-
+	}
+	// new CP with closeSE and file size
+	public static String cp(String logicalFileName, String localFileName,
+			long fileSize,SE closeSE ) {
+		Timer duration = new Timer();
+		duration.start();
+		// Download physical File from SE
+		Msg.info("Downloading file '" + logicalFileName + "' from SE '"
+				+ closeSE +"'");
+		
+		closeSE.download(logicalFileName,fileSize);
+		
+		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
+				+ "' completed");
+		duration.stop();
+		return closeSE + "," + fileSize + ","
+				+ duration.getValue();
+	}
+	
 	public static Vector<String> ls(LFC lfc, String directoryName) {
 		Vector<String> results = new Vector<String>();
 
@@ -66,5 +83,11 @@ public abstract class LCG {
 			results.add(f.getName());
 
 		return results;
+	}
+	
+	public static Vector<SE> lr(LFC lfc, String logicalFileName) {
+		// get Logical File from the LFC
+		Vector<SE> locations = lfc.getReplicaLocations(logicalFileName);
+		return locations;
 	}
 }
