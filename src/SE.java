@@ -1,7 +1,7 @@
 /*
  * Copyright (c) Centre de Calcul de l'IN2P3 du CNRS
- * Contributor(s) : Frédéric SUTER (2015)
-
+ * Contributor(s) : Frédéric SUTER (2015-2016)
+ *                  Anchen CHAI (2016)
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
@@ -134,7 +134,7 @@ public class SE extends GridService {
 	}
 
 	public String toString() {
-		return name;
+		return name+"\n" + catalog.toString();
 	}
 
 }
