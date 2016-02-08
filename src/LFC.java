@@ -33,8 +33,15 @@ public class LFC extends GridService {
 				String[] fileInfo = line.split(",");
 				String[] seNames = fileInfo[2].split(":");
 				Vector<SE> locations = new Vector<SE>();
-				for (String se : seNames)
-					locations.add(VIPServer.getSEbyName(se));
+				for (String seName : seNames){
+					SE se = VIPServer.getSEbyName(seName);
+					if (!se.getName().equals(seName)){
+						Msg.warn("'"+ seName + "' is not a valid SE name. A fallback to '" +VIPServer.getDefaultSE()
+								+ "' occured");
+					} else {
+						locations.add(se);
+					}
+				}
 
 				LogicalFile file = new LogicalFile(fileInfo[0], Long.valueOf(fileInfo[1]).longValue(), locations);
 				Msg.info("Importing file '" + file.toString());
