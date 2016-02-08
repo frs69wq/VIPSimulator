@@ -79,18 +79,21 @@ public class Merge extends Job {
 						Msg.error("Some input files are missing. Exit!");
 						System.exit(1);
 					}
-					transfer_info = LCG.cp(
-							VIPSimulator.mergeInputFileNames.get(0),
-							"/scratch/merge.sh.tar.gz",
-							VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
-
-					transfer_info = LCG.cp(
-							VIPSimulator.mergeInputFileNames.get(1),
-							"/scratch/file.zip", VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
+					Vector<SE> replicaLocations;
+					for (String logicalFileName: VIPSimulator.mergeInputFileNames){
+						//Merge job first do lcg-lr to check whether input file exists in closeSE
+						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						
+						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
+						if(replicaLocations.contains(getCloseSE())) 
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									getCloseSE());
+						else
+							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									VIPServer.getDefaultLFC());
+						System.err.println(jobId + "," + getHost().getName() + ","
+								+ transfer_info + ",2");
+					}
 					downloadTime.stop();
 				}
 

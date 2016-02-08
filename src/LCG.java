@@ -17,7 +17,7 @@ public abstract class LCG {
 				+ "' using '" + lfc.getName() + "'");
 
 		// upload file to SE
-		se.upload(localFileSize);
+		se.upload(logicalFileName,localFileSize);
 		Msg.info("SE '" + se.getName() + "' replied with an ACK");
 
 		// Register file into LFC
@@ -46,24 +46,24 @@ public abstract class LCG {
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '"
 				+ file.getLocation() + "' using '" + lfc.getName() + "'");
 
-		file.getLocation().download(logicalFileName, file.getSize());
+		long fileSize = file.getLocation().download(logicalFileName);
 
 		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
 				+ "' completed");
 		duration.stop();
-		return file.getLocation() + "," + file.getSize() + ","
+		return file.getLocation() + "," +fileSize + ","
 				+ duration.getValue();
 	}
-	// new CP with closeSE and file size
-	public static String cp(String logicalFileName, String localFileName,
-			long fileSize,SE closeSE ) {
+	// new CP with closeSE
+	public static String cp(String logicalFileName, String localFileName, 
+			SE closeSE ) {
 		Timer duration = new Timer();
 		duration.start();
 		// Download physical File from SE
-		Msg.info("Downloading file '" + logicalFileName + "' from SE '"
+		Msg.info("Downloading file '" + logicalFileName + "' from closeSE '"
 				+ closeSE +"'");
 		
-		closeSE.download(logicalFileName,fileSize);
+		long fileSize = closeSE.download(logicalFileName);
 		
 		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
 				+ "' completed");

@@ -50,7 +50,7 @@ public class SE extends GridService {
 		}
 	
 	private void sendAckTo(String mailbox) {
-		SEMessage.sendTo(mailbox, "UPLOAD_ACK", "", 0);
+		SEMessage.sendTo(mailbox, "UPLOAD_ACK", "");
 		Msg.debug("'SE@" + getName() + "' sent an ACK on '" + mailbox + "'");
 	}
 
@@ -91,12 +91,18 @@ public class SE extends GridService {
 							// TODO This will have to be replaced/completed by
 							// TODO some I/O operations at some point to
 							// TODO increase realism.
+							for(LogicalFile f:catalog){
+								Msg.info("SE:"+getName()+" contains:"+f.toString());
+								
+							}	
+							String fileName = message.getFileName();
+							long size = getLogicalFileByName(fileName).getSize();			
 							Msg.debug("SE '" + name + "' send file '"
-									+ message.getFileName() + "' of size "
-									+ message.getSize() + " to '"
+									+ fileName + "' of size "
+									+ size + " to '"
 									+ ((Job) message.getSender()).getName()
 									+ "'");
-							sendFileTo("return-" + mailbox, message.getSize());
+							sendFileTo("return-" + mailbox, size);
 
 							break;
 						case "FILE_TRANSFER":
@@ -106,6 +112,10 @@ public class SE extends GridService {
 							// TODO This will have to be replaced/completed by
 							// TODO some I/O operations at some point to
 							// TODO increase realism.
+							String fileNameUpload = message.getFileName();
+							LogicalFile file = new LogicalFile(fileNameUpload,message.getSize(),VIPServer.getSEbyName(getName()));
+							// add uploaded file to SE's catalog
+							catalog.add(file);
 							sendAckTo("return-" + mailbox);
 							break;
 						default:
@@ -118,19 +128,21 @@ public class SE extends GridService {
 		}
 	}
 
-	public void upload(long size) {
+	public void upload(String logicalFileName,long size) {
 		String mailbox = this.findAvailableMailbox(2000);
-		SEMessage.sendTo(mailbox, "FILE_TRANSFER", null, size);
+		SEMessage.sendTo(mailbox, "FILE_TRANSFER", logicalFileName, size);
 		Msg.info("Sent upload request of size " + size + ". Waiting for an ack");
 		Message.getFrom("return-" + mailbox);
 	}
 
-	public void download(String fileName, long fileSize) {
+	public long download(String logicalFileName) {
 		String mailbox = this.findAvailableMailbox(2000);
-		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", fileName, fileSize);
-		Msg.info("Sent download request for '" + fileName
+		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", logicalFileName);
+		Msg.info("Sent download request for '" + logicalFileName
 				+ "'. Waiting for reception ...");
-		Message.getFrom("return-" + mailbox);
+		SEMessage m = (SEMessage)Message.getFrom("return-" + mailbox);
+		return m.getSize();
+		
 	}
 
 	public String toString() {
