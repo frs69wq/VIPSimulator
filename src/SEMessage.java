@@ -36,6 +36,7 @@ public class SEMessage extends Message {
 	}
 	public static void sendTo(String mailbox, String type, String fileName,
 			long size) {
+<<<<<<< HEAD
 		SEMessage message = new SEMessage(type, fileName, size);
 		try {
 			Msg.debug("Send a '" + type + "' message to " + mailbox);
@@ -48,12 +49,14 @@ public class SEMessage extends Message {
 	}
 	public static void sendTo(String mailbox, String type, String fileName) {
 		SEMessage message =new SEMessage(type, fileName);
+=======
+		SEMessage message = (fileName == null) ? new SEMessage(type, size) : new SEMessage(type, fileName, size);
+>>>>>>> reident to 120 character width and cosmetics
 		try {
 			Msg.debug("Send a '" + type + "' message to " + mailbox);
 			message.send(mailbox);
 		} catch (MsgException e) {
-			Msg.error("Something went wrong when emitting a '" + type
-					+ "' message to '" + mailbox + "'");
+			Msg.error("Something went wrong when emitting a '" + type + "' message to '" + mailbox + "'");
 			e.printStackTrace();
 		}
 	}

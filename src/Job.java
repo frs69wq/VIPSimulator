@@ -21,8 +21,7 @@ public abstract class Job extends Process {
 	}
 
 	public void setName() {
-		// Build the mailbox name from the PID and the host name. This might be
-		// useful to distinguish different Gate processes running on a same host
+		// Build the mailbox name from the PID and the host name to distinguish Gate processes running on a same host.
 		this.name = getPID() + "@" + getHost().getName();
 	}
 

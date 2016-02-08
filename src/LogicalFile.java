@@ -37,8 +37,7 @@ public class LogicalFile {
 	}
 
 	public SE getLocation() {
-		// TODO return SE randomly for now. Might be interesting to implement
-		// TODO some load balancing strategy
+		// TODO return SE randomly for now. Might be interesting to implement some load balancing strategy
 		int selectedIndex = (index++) % locations.size();
 		// randomGenerator.nextInt(locations.size());
 		return locations.get(selectedIndex);
@@ -48,8 +47,7 @@ public class LogicalFile {
 		return locations;
 	}
 	public String toString() {
-		return "file '" + name + "' of size " + size + " stored on "
-				+ locations.toString();
+		return "file '" + name + "' of size " + size + " stored on " + locations.toString();
 	}
 
 	@Override

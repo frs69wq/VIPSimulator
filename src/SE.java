@@ -18,36 +18,33 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class SE extends GridService {
-		// we add a virtual logical file catalog in each SE,
-		// which contains the logical files stored in this SE
-		// name of a CSV file stored in working directory that contains logical
-		// file description in the following format:
-		// name,size,se_1<:se_2:...:se_n>
-		// The populate function reads and parses that file, create LogicalFile
-		// objects and add them to the local catalog.
-		private void populate(String csvFile) {
-			Msg.info("Population of LFC of SE'" +getName()+ "' from '" + csvFile + "'");
-			try {
-				BufferedReader br = new BufferedReader(new FileReader(csvFile));
-				String line = "";
-				while ((line = br.readLine()) != null) {
-					String[] fileInfo = line.split(",");
-					String[] seNames = fileInfo[2].split(":");
-					for (String se : seNames){
-						if(se.equalsIgnoreCase(getName())){
-							LogicalFile file = new LogicalFile(fileInfo[0], Long.valueOf(
-									fileInfo[1]).longValue(), VIPServer.getSEbyName(se));
-							catalog.add(file);
-							Msg.info("add file '" + file.toString()+"' to SE:" +getName()+"'s catalog");
-						}	
-						
+	// We add a virtual logical file catalog in each SE, which contains the logical files stored in this SE
+	// from a CSV file stored in working directory that contains logical file description in the following format:
+	// name,size,se_1<:se_2:...:se_n>
+	// The populate function reads and parses that file, create LogicalFile objects and add them to the local catalog.
+	private void populate(String csvFile) {
+		Msg.info("Population of LFC of SE'" +getName()+ "' from '" + csvFile + "'");
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(csvFile));
+			String line = "";
+			while ((line = br.readLine()) != null) {
+				String[] fileInfo = line.split(",");
+				String[] seNames = fileInfo[2].split(":");
+				for (String se : seNames){
+					if(se.equalsIgnoreCase(getName())){
+						LogicalFile file = new LogicalFile(fileInfo[0], Long.valueOf(fileInfo[1]).longValue(), 
+								VIPServer.getSEbyName(se));
+						catalog.add(file);
+						Msg.info("add file '" + file.toString()+"' to SE:" +getName()+"'s catalog");
 					}
+
 				}
-				br.close();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+			br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+	}
 	
 	private void sendAckTo(String mailbox) {
 		SEMessage.sendTo(mailbox, "UPLOAD_ACK", "");
@@ -81,16 +78,14 @@ public class SE extends GridService {
 					Msg.debug("Create a new mailbox on: " + mailbox);
 
 					while (true) {
-						SEMessage message = (SEMessage) Message
-								.getFrom(mailbox);
+						SEMessage message = (SEMessage) Message.getFrom(mailbox);
 
 						switch (message.getType()) {
 						case "DOWNLOAD_REQUEST":
-							// A worker asked for a physical file. A data
-							// transfer of getSize() bytes occurs upon reply.
-							// TODO This will have to be replaced/completed by
-							// TODO some I/O operations at some point to
+							// A worker asked for a physical file. A data transfer of getSize() bytes occurs upon reply.
+							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
+<<<<<<< HEAD
 							for(LogicalFile f:catalog){
 								Msg.info("SE:"+getName()+" contains:"+f.toString());
 								
@@ -103,14 +98,17 @@ public class SE extends GridService {
 									+ ((Job) message.getSender()).getName()
 									+ "'");
 							sendFileTo("return-" + mailbox, size);
+=======
+							Msg.debug("SE '" + name + "' send file '" + message.getFileName() + "' of size "
+									+ message.getSize() + " to '" + ((Job) message.getSender()).getName() + "'");
+							sendFileTo("return-" + mailbox, message.getSize());
+>>>>>>> reident to 120 character width and cosmetics
 
 							break;
 						case "FILE_TRANSFER":
-							// A physical file has been received (inducing a
-							// data transfer). An ACK is sent back to notify
-							// the reception of the file.
-							// TODO This will have to be replaced/completed by
-							// TODO some I/O operations at some point to
+							// A physical file has been received (inducing a data transfer). An ACK is sent back to 
+							// notify the reception of the file.
+							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
 							String fileNameUpload = message.getFileName();
 							LogicalFile file = new LogicalFile(fileNameUpload,message.getSize(),VIPServer.getSEbyName(getName()));
@@ -137,12 +135,18 @@ public class SE extends GridService {
 
 	public long download(String logicalFileName) {
 		String mailbox = this.findAvailableMailbox(2000);
+<<<<<<< HEAD
 		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", logicalFileName);
 		Msg.info("Sent download request for '" + logicalFileName
 				+ "'. Waiting for reception ...");
 		SEMessage m = (SEMessage)Message.getFrom("return-" + mailbox);
 		return m.getSize();
 		
+=======
+		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", fileName, fileSize);
+		Msg.info("Sent download request for '" + fileName + "'. Waiting for reception ...");
+		Message.getFrom("return-" + mailbox);
+>>>>>>> reident to 120 character width and cosmetics
 	}
 
 	public String toString() {

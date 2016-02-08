@@ -32,11 +32,11 @@ public class VIPServer extends Process {
 
 	public static void setDefaultLFC(DefaultLFC lfc) {
 		if (defaultLFC != null) {
-			Msg.warn("The default LFC has already been identified. Please "
-					+ "check there is only one 'DefaultLFC' process in the "
-					+ "deployement file.");
+			Msg.warn("The default LFC has already been identified. Please check there is only one 'DefaultLFC' process "
+					+ "in the deployement file.");
 		} else {
 			defaultLFC = lfc;
+			Msg.info("Default LFC is '" + defaultLFC.getName() + "'");
 		}
 	}
 
@@ -50,9 +50,8 @@ public class VIPServer extends Process {
 
 	public static void setDefaultSE(DefaultSE se) {
 		if (defaultSE != null) {
-			Msg.warn("The default SE has already been identified. Please "
-					+ "check there is only one 'DefaultSE' process in the "
-					+ "deployement file.");
+			Msg.warn("The default SE has already been identified. Please check there is only one 'DefaultSE' process "
+					+ "in the deployement file.");
 		} else {
 			defaultSE = se;
 			Msg.info("Default SE is '" + defaultSE.getName() + "'");
@@ -67,9 +66,8 @@ public class VIPServer extends Process {
 		for (SE se : seList)
 			if (se.getName().compareToIgnoreCase(seName)==0)
 				return se;
-		// Some worker may define a close SE that was never used, hence that
-		// exists neither in the platform nor the deployment files. In that case
-		// we fall back on the default SE.
+		// Some worker may define a close SE that was never used, hence that exists neither in the platform nor the 
+		// deployment files. In that case we fall back on the default SE.
 		Msg.warn("Cannot find an SE named '" + seName + "'. Return Default SE");
 		return VIPServer.getDefaultSE();
 	}
@@ -78,18 +76,15 @@ public class VIPServer extends Process {
 		super(host, name, args);
 	}
 
-	public void main(String[] args) throws HostFailureException,
-			HostNotFoundException {
+	public void main(String[] args) throws HostFailureException, HostNotFoundException {
 		Msg.info("A new simulation starts!");
 		boolean stop = false, timer = false;
 		long totalParticleNumber = 0;
-		Msg.verb("Write log file header"
-				+ "with JobId,DownloadDuration_Sim,UploadDuration_Sim");
+		Msg.verb("Write log file header with JobId,DownloadDuration_Sim,UploadDuration_Sim");
 		System.out.println("JobId,DownloadDuration_Sim,UploadDuration_Sim");
 		System.err.println("JobId,Destination,Source,FileSize,Time,UpDown");
 		while (!stop) {
-			// Use of some simulation magic here, every worker knows the
-			// mailbox of the VIP server
+			// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 			GateMessage message = (GateMessage) Message.getFrom("VIPServer");
 			Job job = (Job) message.getSender();
 
@@ -97,17 +92,15 @@ public class VIPServer extends Process {
 			case "GATE_CONNECT":
 				gateWorkers.add((Gate) job);
 
-				Msg.debug(gateWorkers.size() + " GATE worker(s) registered "
-						+ "out of " + VIPSimulator.numberOfGateJobs);
+				Msg.debug(gateWorkers.size() + " GATE worker(s) registered out of " + VIPSimulator.numberOfGateJobs);
 
 				job.begin();
 				break;
 
 			case "GATE_PROGRESS":
 				totalParticleNumber += message.getParticleNumber();
-				Msg.info(totalParticleNumber
-						+ " particles have been computed. "
-						+ VIPSimulator.totalParticleNumber + " are expected.");
+				Msg.info(totalParticleNumber + " particles have been computed. " + VIPSimulator.totalParticleNumber
+						+ " are expected.");
 				if (totalParticleNumber < VIPSimulator.totalParticleNumber) {
 					// WARNING TEMPORARY HACK FOR FIRST TEST
 					job.end();
@@ -115,22 +108,18 @@ public class VIPServer extends Process {
 					// job.carryOn();
 				} else {
 					if (!timer) {
-						Msg.info("The expected number of particles has been "
-								+ "reached. Start a timer!");
+						Msg.info("The expected number of particles has been reached. Start a timer!");
 						new Process(this.getHost(), "Timer") {
-							public void main(String[] args)
-									throws HostFailureException {
+							public void main(String[] args) throws HostFailureException {
 								Process.sleep(VIPSimulator.sosTime);
 								if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
-									Msg.info("Timeout has expired. Wake up "
-											+ mergeWorkers.size()
+									Msg.info("Timeout has expired. Wake up " + mergeWorkers.size() 
 											+ " Merge worker(s)");
 
 									mergeWorkers.firstElement().begin();
 									runningMergeWorkers++;
 								} else {
-									Msg.info("No need for Merge workers on "
-											+ " timeout expiration");
+									Msg.info("No need for Merge workers on timeout expiration");
 								}
 							}
 						}.start();
@@ -150,8 +139,7 @@ public class VIPServer extends Process {
 					if (VIPSimulator.numberOfMergeJobs == 0)
 						stop = true;
 					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
-						Msg.info("All GATE workers sent a 'GATE_END' message"
-								+ "Wake up " + mergeWorkers.size()
+						Msg.info("All GATE workers sent a 'GATE_END' message. Wake up " + mergeWorkers.size()
 								+ " Merge worker(s)");
 						runningMergeWorkers++;
 						mergeWorkers.firstElement().begin();
@@ -161,8 +149,7 @@ public class VIPServer extends Process {
 
 			case "MERGE_CONNECT":
 				mergeWorkers.add((Merge) job);
-				Msg.debug(mergeWorkers.size() + " MERGE worker(s) registered "
-						+ "out of " + VIPSimulator.numberOfMergeJobs);
+				Msg.debug(mergeWorkers.size() + " MERGE worker(s) registered out of " + VIPSimulator.numberOfMergeJobs);
 				break;
 
 			case "MERGE_DISCONNECT":
@@ -177,12 +164,10 @@ public class VIPServer extends Process {
 			}
 		}
 
-		// sleep sosTime so that tasks have the time to finish before shutting
-		// down the LFCs and SEs
+		// sleep sosTime so that tasks have the time to finish before shutting down the LFCs and SEs
 		Process.sleep(VIPSimulator.sosTime);
 
-		Msg.info("Server waited for " + VIPSimulator.sosTime / 1000
-				+ " seconds." + " It's time to shutdown the system.");
+		Msg.info("Server waited for " + VIPSimulator.sosTime / 1000 + " seconds. It's time to shutdown the system.");
 
 		// Shutting down all the LFCs
 		for (LFC lfc : getLFCList())

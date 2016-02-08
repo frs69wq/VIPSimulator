@@ -12,10 +12,8 @@ import org.simgrid.msg.Msg;
 
 public abstract class LCG {
 
-	public static void cr(String localFileName, long localFileSize,
-			String logicalFileName, SE se, LFC lfc) {
-		Msg.info("lcg-cr '" + logicalFileName + "' from '" + localFileName
-				+ "' using '" + lfc.getName() + "'");
+	public static void cr(String localFileName, long localFileSize, String logicalFileName, SE se, LFC lfc) {
+		Msg.info("lcg-cr '" + logicalFileName + "' from '" + localFileName + "' using '" + lfc.getName() + "'");
 
 		// upload file to SE
 		se.upload(logicalFileName,localFileSize);
@@ -27,16 +25,13 @@ public abstract class LCG {
 
 		lfc.register(file);
 
-		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName()
-				+ "' completed");
+		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName() + "' completed");
 	}
 	
-	public static String cp(String logicalFileName, String localFileName,
-			LFC lfc) {
+	public static String cp(String logicalFileName, String localFileName, LFC lfc) {
 		Timer duration = new Timer();
 		duration.start();
-		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName
-				+ "' using '" + lfc.getName() + "'");
+		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
 
 		// get Logical File from the LFC
 		LogicalFile file = lfc.getLogicalFile(logicalFileName);
@@ -44,14 +39,14 @@ public abstract class LCG {
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
 
 		// Download physical File from SE
-		Msg.info("Downloading file '" + logicalFileName + "' from SE '"
-				+ file.getLocation() + "' using '" + lfc.getName() + "'");
+		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + file.getLocation() + "' using '" 
+				+ lfc.getName() + "'");
 
 		long fileSize = file.getLocation().download(logicalFileName);
 
-		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
-				+ "' completed");
+		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
 		duration.stop();
+<<<<<<< HEAD
 		return file.getLocation() + "," +fileSize + ","
 				+ duration.getValue();
 	}
@@ -63,22 +58,29 @@ public abstract class LCG {
 		// Download physical File from SE
 		Msg.info("Downloading file '" + logicalFileName + "' from closeSE '"
 				+ closeSE +"'");
+=======
+		return file.getLocation() + "," + file.getSize() + "," + duration.getValue();
+	}
+
+	public static String cp(String logicalFileName, String localFileName, long fileSize, SE closeSE ) {
+		Timer duration = new Timer();
+		duration.start();
+		// Download physical File from SE
+		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + closeSE +"'");
+>>>>>>> reident to 120 character width and cosmetics
 		
 		long fileSize = closeSE.download(logicalFileName);
 		
-		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName
-				+ "' completed");
+		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
 		duration.stop();
-		return closeSE + "," + fileSize + ","
-				+ duration.getValue();
+		return closeSE + "," + fileSize + "," + duration.getValue();
 	}
 	
 	public static Vector<String> ls(LFC lfc, String directoryName) {
 		Vector<String> results = new Vector<String>();
 
 		// Ask the LFC for the list of files to merge
-		Vector<LogicalFile> fileList = lfc
-				.getLogicalDirectoryContents(directoryName);
+		Vector<LogicalFile> fileList = lfc.getLogicalDirectoryContents(directoryName);
 
 		for (LogicalFile f : fileList)
 			results.add(f.getName());
@@ -87,8 +89,6 @@ public abstract class LCG {
 	}
 	
 	public static Vector<SE> lr(LFC lfc, String logicalFileName) {
-		// get Logical File from the LFC
-		Vector<SE> locations = lfc.getReplicaLocations(logicalFileName);
-		return locations;
+		return lfc.getReplicaLocations(logicalFileName);
 	}
 }

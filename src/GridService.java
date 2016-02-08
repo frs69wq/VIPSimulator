@@ -28,14 +28,12 @@ public abstract class GridService extends Process {
 			for (Process listener : this.mailboxes) {
 				String mailbox = listener.getName();
 				if (Task.listen(mailbox)) {
-					Msg.verb("Send a message to : " + mailbox
-							+ " which is listening");
+					Msg.verb("Send a message to : " + mailbox + " which is listening");
 					return mailbox;
 				}
 			}
 			try {
-				Msg.verb("All the listeners are busy. Wait for " + retryAfter
-						+ "ms and try again");
+				Msg.verb("All the listeners are busy. Wait for " + retryAfter + "ms and try again");
 				Process.sleep(retryAfter);
 			} catch (HostFailureException e) {
 				e.printStackTrace();
@@ -44,12 +42,10 @@ public abstract class GridService extends Process {
 	}
 
 	protected LogicalFile getLogicalFileByName(String logicalFileName) {
-		LogicalFile file = catalog.get(catalog.indexOf((Object)new LogicalFile(logicalFileName, 0,
-				new Vector<SE>())));
+		LogicalFile file = catalog.get(catalog.indexOf((Object)new LogicalFile(logicalFileName, 0, new Vector<SE>())));
 		
 		if (file == null) {
-			Msg.error("File '" + logicalFileName
-					+ "' is stored on no SE. Exiting with status 1");
+			Msg.error("File '" + logicalFileName + "' is stored on no SE. Exiting with status 1");
 			System.exit(1);
 		}
 		return file;

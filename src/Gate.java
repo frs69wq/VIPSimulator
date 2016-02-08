@@ -21,8 +21,7 @@ public class Gate extends Job {
 
 		Process.sleep(nSec);
 		nbPart = VIPSimulator.eventsPerSec * nSec;
-		Msg.info("simulateForNsec: '" + getName() + "' simulated "
-				+ (long) nbPart + " particles");
+		Msg.info("simulateForNsec: '" + getName() + "' simulated " + (long) nbPart + " particles");
 		// WARNING TEMPORARY HACK FOR FIRST TEST
 		return 1;
 		// SHOULD BE REPLACED BY
@@ -30,20 +29,17 @@ public class Gate extends Job {
 	}
 
 	private void connect() {
-		// Use of some simulation magic here, every worker knows the mailbox of
-		// the VIP server
+		// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 		GateMessage.sendTo("VIPServer", "GATE_CONNECT", 0);
 	}
 
 	private void sendProgress(long simulatedParticles) {
-		// Use of some simulation magic here, every worker knows the mailbox of
-		// the VIP server
+		// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 		GateMessage.sendTo("VIPServer", "GATE_PROGRESS", simulatedParticles);
 	}
 
 	private void disconnect() {
-		// Use of some simulation magic here, every worker knows the mailbox of
-		// the VIP server
+		// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 		GateMessage.sendTo("VIPServer", "GATE_DISCONNECT", 0);
 	}
 
@@ -60,18 +56,14 @@ public class Gate extends Job {
 		String transfer_info;
 
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
-		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1])
-				.longValue() : VIPSimulator.sosTime);
+		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1]).longValue() : VIPSimulator.sosTime);
 		if (VIPSimulator.version == 1) {
 			uploadFileSize = VIPSimulator.fixedFileSize;
 		} else {
-			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2])
-					.longValue() : 1000000);
+			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2]).longValue() : 1000000);
 		}
 
 		Msg.info("Register GATE on '" + getName() + "'");
-		// Use of some simulation magic here, every worker knows the mailbox of
-		// the VIP server
 		this.connect();
 
 		while (true) {
@@ -81,25 +73,19 @@ public class Gate extends Job {
 			case "BEGIN":
 				Msg.info("Processing GATE");
 				if (VIPSimulator.version == 1){
-					// The first version of the GATE simulator was performing a
-					// single download whose size was given as input
+					// The first version of the GATE simulator does a single download whose size was given as input
 					downloadTime.start();
-					transfer_info = LCG.cp("input.tgz",
-							"/scratch/input.tgz",
-							VIPServer.getDefaultLFC());
-					System.err.println(jobId + "," + getHost().getName() + ","
-							+ transfer_info + ",2");
+					transfer_info = LCG.cp("input.tgz", "/scratch/input.tgz", VIPServer.getDefaultLFC());
+					System.err.println(jobId + "," + getHost().getName() + "," + transfer_info + ",2");
 					downloadTime.stop();
 				} else {
 					// upload-test
 					// TODO to be factored at some point
 					uploadTestTime.start();
-					LCG.cr("output-0.tar.gz-uploadTest", 12,
-							"output-0.tar.gz-uploadTest", getCloseSE(),
+					LCG.cr("output-0.tar.gz-uploadTest", 12, "output-0.tar.gz-uploadTest", getCloseSE(),
 							VIPServer.getDefaultLFC());
 					uploadTestTime.stop();
-					System.err.println(jobId + "," + getCloseSE() + ","
-							+ getHost().getName() + ",12,"
+					System.err.println(jobId + "," + getCloseSE() + "," + getHost().getName() + ",12,"
 							+ uploadTestTime.getValue() + ",0");
 
 					// Downloading inputs:
@@ -119,13 +105,19 @@ public class Gate extends Job {
 						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 						if(replicaLocations.contains(getCloseSE())) 
+<<<<<<< HEAD
 							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									getCloseSE());
+=======
+							transfer_info= LCG.cp(logicalFileName,
+									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									getCloseSE().getLogicalFileByName(logicalFileName).getSize(),getCloseSE());
+>>>>>>> reident to 120 character width and cosmetics
 						else
-							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+							transfer_info= LCG.cp(logicalFileName,
+									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									VIPServer.getDefaultLFC());
-						System.err.println(jobId + "," + getHost().getName() + ","
-								+ transfer_info + ",2");
+						System.err.println(jobId + "," + getHost().getName() + "," + transfer_info + ",2");
 					}
 					downloadTime.stop();
 				}
@@ -133,8 +125,7 @@ public class Gate extends Job {
 				// Compute for sosTime seconds
 				computeTime.start();
 
-				// TODO Discuss what we can do here. Make the process just sleep
-				// for now
+				// TODO Discuss what we can do here. Make the process just sleep for now
 				simulatedParticles = simulateForNsec(executionTime);
 
 				computeTime.stop();
@@ -146,31 +137,25 @@ public class Gate extends Job {
 
 				break;
 			case "END":
-				Msg.info("Stopping Gate job and uploading results. "
-						+ nbParticles + " particles have been simulated by '"
-						+ getName() + "'");
+				Msg.info("Stopping Gate job and uploading results. " + nbParticles + 
+						" particles have been simulated by '" + getName() + "'");
 
 				// The size of the file to upload is retrieve from the logs
-				String logicalFileName = "results/"
-						+ Long.toString(nbParticles) + "-partial-" + getName()
-						+ "-" + Double.toString(Msg.getClock()) + ".tgz";
+				String logicalFileName = "results/" + Long.toString(nbParticles) + "-partial-" + getName() + "-" 
+						+ Double.toString(Msg.getClock()) + ".tgz";
 
 				uploadTime.start();
-				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName,
-						getCloseSE(), VIPServer.getDefaultLFC());
+				LCG.cr("local_file.tgz", uploadFileSize, logicalFileName, getCloseSE(), VIPServer.getDefaultLFC());
 				uploadTime.stop();
-				System.err.println(jobId + "," + getCloseSE() + ","
-						+ getHost().getName() + "," + uploadFileSize +","
+				System.err.println(jobId + "," + getCloseSE() + "," + getHost().getName() + "," + uploadFileSize +","
 						+ uploadTime.getValue() + ",1");
 
 				Msg.info("Disconnecting GATE job. Inform VIP server.");
 				this.disconnect();
 
-				Msg.info("Spent " + downloadTime.getValue() + "s downloading, "
-						+ computeTime.getValue() + "s computing, and "
-						+ uploadTime.getValue() + "s uploading.");
-				System.out.println(jobId + "," + downloadTime.getValue() + ","
-						+ uploadTime.getValue());
+				Msg.info("Spent " + downloadTime.getValue() + "s downloading, " + computeTime.getValue() 
+						+ "s computing, and " + uploadTime.getValue() + "s uploading.");
+				System.out.println(jobId + "," + downloadTime.getValue() + "," + uploadTime.getValue());
 				break;
 			default:
 				break;
