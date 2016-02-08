@@ -46,29 +46,16 @@ public abstract class LCG {
 
 		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
 		duration.stop();
-<<<<<<< HEAD
-		return file.getLocation() + "," +fileSize + ","
-				+ duration.getValue();
-	}
-	// new CP with closeSE
-	public static String cp(String logicalFileName, String localFileName, 
-			SE closeSE ) {
-		Timer duration = new Timer();
-		duration.start();
-		// Download physical File from SE
-		Msg.info("Downloading file '" + logicalFileName + "' from closeSE '"
-				+ closeSE +"'");
-=======
-		return file.getLocation() + "," + file.getSize() + "," + duration.getValue();
+		return file.getLocation() + "," +fileSize + "," + duration.getValue();
 	}
 
-	public static String cp(String logicalFileName, String localFileName, long fileSize, SE closeSE ) {
+	// new CP with closeSE
+	public static String cp(String logicalFileName, String localFileName, SE closeSE ) {
 		Timer duration = new Timer();
 		duration.start();
 		// Download physical File from SE
-		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + closeSE +"'");
->>>>>>> reident to 120 character width and cosmetics
-		
+		Msg.info("Downloading file '" + logicalFileName + "' from closeSE '" + closeSE +"'");
+
 		long fileSize = closeSE.download(logicalFileName);
 		
 		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");

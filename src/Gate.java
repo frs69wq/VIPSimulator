@@ -105,14 +105,9 @@ public class Gate extends Job {
 						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 						if(replicaLocations.contains(getCloseSE())) 
-<<<<<<< HEAD
-							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									getCloseSE());
-=======
-							transfer_info= LCG.cp(logicalFileName,
+							transfer_info= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									getCloseSE().getLogicalFileByName(logicalFileName).getSize(),getCloseSE());
->>>>>>> reident to 120 character width and cosmetics
+									getCloseSE());
 						else
 							transfer_info= LCG.cp(logicalFileName,
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),

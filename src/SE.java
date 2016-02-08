@@ -85,25 +85,14 @@ public class SE extends GridService {
 							// A worker asked for a physical file. A data transfer of getSize() bytes occurs upon reply.
 							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
-<<<<<<< HEAD
 							for(LogicalFile f:catalog){
 								Msg.info("SE:"+getName()+" contains:"+f.toString());
-								
-							}	
+							}
 							String fileName = message.getFileName();
 							long size = getLogicalFileByName(fileName).getSize();			
-							Msg.debug("SE '" + name + "' send file '"
-									+ fileName + "' of size "
-									+ size + " to '"
-									+ ((Job) message.getSender()).getName()
-									+ "'");
+							Msg.debug("SE '" + name + "' send file '" + fileName + "' of size " + size + " to '"
+									+ ((Job) message.getSender()).getName() + "'");
 							sendFileTo("return-" + mailbox, size);
-=======
-							Msg.debug("SE '" + name + "' send file '" + message.getFileName() + "' of size "
-									+ message.getSize() + " to '" + ((Job) message.getSender()).getName() + "'");
-							sendFileTo("return-" + mailbox, message.getSize());
->>>>>>> reident to 120 character width and cosmetics
-
 							break;
 						case "FILE_TRANSFER":
 							// A physical file has been received (inducing a data transfer). An ACK is sent back to 
@@ -111,7 +100,8 @@ public class SE extends GridService {
 							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
 							String fileNameUpload = message.getFileName();
-							LogicalFile file = new LogicalFile(fileNameUpload,message.getSize(),VIPServer.getSEbyName(getName()));
+							LogicalFile file = new LogicalFile(fileNameUpload,message.getSize(),
+									VIPServer.getSEbyName(getName()));
 							// add uploaded file to SE's catalog
 							catalog.add(file);
 							sendAckTo("return-" + mailbox);
@@ -135,18 +125,10 @@ public class SE extends GridService {
 
 	public long download(String logicalFileName) {
 		String mailbox = this.findAvailableMailbox(2000);
-<<<<<<< HEAD
 		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", logicalFileName);
-		Msg.info("Sent download request for '" + logicalFileName
-				+ "'. Waiting for reception ...");
+		Msg.info("Sent download request for '" + logicalFileName + "'. Waiting for reception ...");
 		SEMessage m = (SEMessage)Message.getFrom("return-" + mailbox);
 		return m.getSize();
-		
-=======
-		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST", fileName, fileSize);
-		Msg.info("Sent download request for '" + fileName + "'. Waiting for reception ...");
-		Message.getFrom("return-" + mailbox);
->>>>>>> reident to 120 character width and cosmetics
 	}
 
 	public String toString() {
