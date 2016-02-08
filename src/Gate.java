@@ -117,11 +117,10 @@ public class Gate extends Job {
 					for (String logicalFileName: VIPSimulator.gateInputFileNames){
 						//Gate job first do lcg-lr to check whether input file exists in closeSE
 						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
-						
 						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 						if(replicaLocations.contains(getCloseSE())) 
 							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									getCloseSE().getLogicalFileByName(logicalFileName).getSize(),getCloseSE());
+									getCloseSE());
 						else
 							transfer_info= LCG.cp(logicalFileName, "/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									VIPServer.getDefaultLFC());
