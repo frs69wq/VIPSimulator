@@ -97,8 +97,11 @@ public class SE extends GridService {
 							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
 							String fileNameUpload = message.getFileName();
+							// getName returns the name of the listener process, i.e., SE name+ "_*", keep name only
+							String seName = getName().split("_")[0];
+							
 							LogicalFile file = new LogicalFile(fileNameUpload,message.getSize(),
-									VIPServer.getSEbyName(getName()));
+									VIPServer.getSEbyName(seName));
 							// add uploaded file to SE's catalog
 							catalog.add(file);
 							sendAckTo("return-" + mailbox);
