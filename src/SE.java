@@ -85,9 +85,6 @@ public class SE extends GridService {
 							// A worker asked for a physical file. A data transfer of getSize() bytes occurs upon reply.
 							// TODO This will have to be replaced/completed by some I/O operations at some point to
 							// TODO increase realism.
-							for(LogicalFile f:catalog){
-								Msg.info("SE:"+getName()+" contains:"+f.toString());
-							}
 							String fileName = message.getFileName();
 							long size = getLogicalFileByName(fileName).getSize();			
 							Msg.debug("SE '" + name + "' send file '" + fileName + "' of size " + size + " to '"
@@ -132,7 +129,7 @@ public class SE extends GridService {
 	}
 
 	public String toString() {
-		return name+"\n" + catalog.toString();
+		return name;
 	}
 
 }

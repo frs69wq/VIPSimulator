@@ -32,10 +32,9 @@ public class SEMessage extends Message {
 	private SEMessage(String type, String fileName) {
 		super(type, 1125000000, 100);
 		this.fileName = fileName;
-
 	}
-	public static void sendTo(String mailbox, String type, String fileName,
-			long size) {
+
+	public static void sendTo(String mailbox, String type, String fileName, long size) {
 		SEMessage message = new SEMessage(type, fileName, size);
 		try {
 			Msg.debug("Send a '" + type + "' message to " + mailbox);
