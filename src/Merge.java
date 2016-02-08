@@ -34,7 +34,7 @@ public class Merge extends Job {
 		long nbParticles = 0;
 		long uploadFileSize = 0;
 
-		String transfer_info;
+		String transferInfo;
 
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1]).longValue() : VIPSimulator.sosTime);
@@ -60,8 +60,8 @@ public class Merge extends Job {
 					LCG.cr("output-0.tar.gz-uploadTest", 12, "output-0.tar.gz-uploadTest", getCloseSE(),
 							VIPServer.getDefaultLFC());
 					uploadTestTime.stop();
-					System.err.println(jobId + "," + getCloseSE() + "," + getHost().getName() + ",12,"
-							+ uploadTestTime.getValue() + ",0");
+					System.err.println(jobId + "," + getHost().getName() + getCloseSE() + "," + ",12,"
+							+ uploadTestTime.getValue() + ",merge,0");
 
 					// Downloading inputs:
 					//   1) wrapper script
@@ -81,14 +81,14 @@ public class Merge extends Job {
 						
 						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 						if(replicaLocations.contains(getCloseSE())) 
-							transfer_info= LCG.cp(logicalFileName, 
+							transferInfo= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									getCloseSE());
 						else
-							transfer_info= LCG.cp(logicalFileName, 
+							transferInfo= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									VIPServer.getDefaultLFC());
-						System.err.println(jobId + "," + getHost().getName() + "," + transfer_info + ",2");
+						logDownload(jobId, transferInfo, "merge");
 					}
 					downloadTime.stop();
 				}
@@ -108,13 +108,13 @@ public class Merge extends Job {
 					// Get the file name, without the directory name
 					String fileName = fullName.split("/")[1];
 
-					transfer_info = LCG.cp(fullName, "/scratch/" + fileName, VIPServer.getDefaultLFC());
+					transferInfo = LCG.cp(fullName, "/scratch/" + fileName, VIPServer.getDefaultLFC());
 
 					Msg.info(fullName + " " + fileName + "=" + fileName.split("-")[0]);
 					nbParticles += Long.valueOf(fileName.split("-")[0]).longValue();
 
 					Msg.info("Received " + nbParticles + " particles to merge");
-					System.err.println(jobId + "," + getHost().getName() + "," + transfer_info + ",2");
+					logDownload(jobId, transferInfo, "merge");
 					downloadTime.stop();
 				}
 

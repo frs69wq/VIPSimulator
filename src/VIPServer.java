@@ -82,7 +82,7 @@ public class VIPServer extends Process {
 		long totalParticleNumber = 0;
 		Msg.verb("Write log file header with JobId,DownloadDuration_Sim,UploadDuration_Sim");
 		System.out.println("JobId,DownloadDuration_Sim,UploadDuration_Sim");
-		System.err.println("JobId,Destination,Source,FileSize,Time,UpDown");
+		System.err.println("JobId,Source,Destination,FileSize,Time,JobType,UpDown");
 		while (!stop) {
 			// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 			GateMessage message = (GateMessage) Message.getFrom("VIPServer");
