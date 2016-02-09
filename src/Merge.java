@@ -33,6 +33,7 @@ public class Merge extends Job {
 		setName();
 		long nbParticles = 0;
 		long uploadFileSize = 0;
+		Vector<SE> actualSources = new Vector<SE>();
 
 		String transferInfo;
 
@@ -42,6 +43,10 @@ public class Merge extends Job {
 			uploadFileSize = VIPSimulator.fixedFileSize;
 		} else {
 			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2]).longValue() : 1000000);
+			if (VIPSimulator.version == 3){
+				actualSources.add(VIPServer.getSEbyName(args[3]));
+				actualSources.add(VIPServer.getSEbyName(args[4]));
+			}
 		}
 
 		Msg.info("Register Merge on '" + getName() + "'");
@@ -53,7 +58,7 @@ public class Merge extends Job {
 			switch (message.getType()) {
 			case "BEGIN":
 				Msg.info("Processing Merge");
-				if (VIPSimulator.version == 2) {
+				if (VIPSimulator.version != 1) {
 					// upload-test
 					// TODO to be factored at some point
 					uploadTestTime.start();
@@ -75,20 +80,31 @@ public class Merge extends Job {
 					}
 
 					Vector<SE> replicaLocations;
-					for (String logicalFileName: VIPSimulator.mergeInputFileNames){
-						//Merge job first do lcg-lr to check whether input file exists in closeSE
-						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
-						
-						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
-						if(replicaLocations.contains(getCloseSE())) 
+					if (VIPSimulator.version ==2){
+						for (String logicalFileName: VIPSimulator.mergeInputFileNames){
+							// Merge job first do lcg-lr to check whether input file exists in closeSE
+							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+
+							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
+							if(replicaLocations.contains(getCloseSE())) 
+								transferInfo= LCG.cp(logicalFileName, 
+										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+										getCloseSE());
+							else
+								transferInfo= LCG.cp(logicalFileName, 
+										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+										VIPServer.getDefaultLFC());
+							logDownload(jobId, transferInfo, "merge");
+						}
+					} else {
+						for (String logicalFileName: VIPSimulator.mergeInputFileNames){
+							// do a lcg-lr even though this version does not really require to contact the LFC. 
+							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 							transferInfo= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									getCloseSE());
-						else
-							transferInfo= LCG.cp(logicalFileName, 
-									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									VIPServer.getDefaultLFC());
-						logDownload(jobId, transferInfo, "merge");
+									actualSources.remove(0));
+							logDownload(jobId, transferInfo, "merge");
+						}
 					}
 					downloadTime.stop();
 				}

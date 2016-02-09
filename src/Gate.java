@@ -54,6 +54,7 @@ public class Gate extends Job {
 		long simulatedParticles = 0;
 		long uploadFileSize = 0;
 		String transferInfo;
+		Vector<SE> actualSources = new Vector<SE>();
 
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1]).longValue() : VIPSimulator.sosTime);
@@ -61,6 +62,11 @@ public class Gate extends Job {
 			uploadFileSize = VIPSimulator.fixedFileSize;
 		} else {
 			uploadFileSize = (args.length > 2 ? Long.valueOf(args[2]).longValue() : 1000000);
+			if (VIPSimulator.version == 3){
+				actualSources.add(VIPServer.getSEbyName(args[3]));
+				actualSources.add(VIPServer.getSEbyName(args[4]));
+				actualSources.add(VIPServer.getSEbyName(args[5]));
+			}
 		}
 
 		Msg.info("Register GATE on '" + getName() + "'");
@@ -99,20 +105,31 @@ public class Gate extends Job {
 						System.exit(1);
 					}
 					Vector<SE> replicaLocations;
-					
-					for (String logicalFileName: VIPSimulator.gateInputFileNames){
-						//Gate job first do lcg-lr to check whether input file exists in closeSE
-						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
-						// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
-						if(replicaLocations.contains(getCloseSE())) 
+
+					if (VIPSimulator.version ==2){
+						for (String logicalFileName: VIPSimulator.gateInputFileNames){
+							//Gate job first do lcg-lr to check whether input file exists in closeSE
+							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
+							if(replicaLocations.contains(getCloseSE())) 
+								transferInfo= LCG.cp(logicalFileName, 
+										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+										getCloseSE());
+							else
+								transferInfo= LCG.cp(logicalFileName,
+										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+										VIPServer.getDefaultLFC());
+							logDownload(jobId, transferInfo, "gate");
+						}
+					} else {
+						for (String logicalFileName: VIPSimulator.gateInputFileNames){
+							// do a lcg-lr even though this version does not really require to contact the LFC. 
+							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 							transferInfo= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									getCloseSE());
-						else
-							transferInfo= LCG.cp(logicalFileName,
-									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									VIPServer.getDefaultLFC());
-						logDownload(jobId, transferInfo, "gate");
+									(SE) actualSources.remove(0));
+							logDownload(jobId, transferInfo, "gate");
+						}
 					}
 					downloadTime.stop();
 				}

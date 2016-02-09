@@ -126,7 +126,7 @@ public class LFC extends GridService {
 		// If this LFC process is started with an argument, we populate the catalog from the CSV file given as args[0]
 		String csvFile = (args.length > 0 ? args[0] : null);
 
-		if ((VIPSimulator.version == 2) && (csvFile != null)) {
+		if ((VIPSimulator.version != 1) && (csvFile != null)) {
 			populate(csvFile);
 			Msg.debug(this.toString());
 		} else {
