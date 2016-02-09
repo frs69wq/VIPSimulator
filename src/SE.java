@@ -23,7 +23,7 @@ public class SE extends GridService {
 	// name,size,se_1<:se_2:...:se_n>
 	// The populate function reads and parses that file, create LogicalFile objects and add them to the local catalog.
 	private void populate(String csvFile) {
-		Msg.info("Population of LFC of SE'" +getName()+ "' from '" + csvFile + "'");
+		Msg.info("Population of SE'" +getName()+ "' from '" + csvFile + "'");
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(csvFile));
 			String line = "";
