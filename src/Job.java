@@ -16,10 +16,10 @@ public abstract class Job extends Process {
 	protected Timer uploadTime;
 	protected Timer uploadTestTime;
 
-	protected void logDownload(int jobId, String transferInfo, String jobType){
+	protected void logDownload(int jobId, String transferInfo, double lrDuration, String jobType){
 		String[] fields= transferInfo.split(","); // 0: source, 1: size, 2: duration
-		System.err.println(jobId + "," + fields[0] + "," + getHost().getName() + "," + fields[1] + "," + fields[2] 
-				+ "," + jobType + ",2");
+		System.err.println(jobId + "," + fields[0] + "," + getHost().getName() + "," + fields[1] + "," 
+				+ (Double.valueOf(fields[2]).doubleValue() + lrDuration) + "," + jobType + ",2");
 	}
 
 	public String getName() {

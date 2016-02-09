@@ -80,11 +80,14 @@ public class Merge extends Job {
 					}
 
 					Vector<SE> replicaLocations;
-					if (VIPSimulator.version ==2){
-						for (String logicalFileName: VIPSimulator.mergeInputFileNames){
-							// Merge job first do lcg-lr to check whether input file exists in closeSE
-							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+					for (String logicalFileName: VIPSimulator.mergeInputFileNames){
+						Timer lrDuration = new Timer();
+						// Merge job first do lcg-lr to check whether input file exists in closeSE
+						lrDuration.start();
+						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						lrDuration.stop();
 
+						if (VIPSimulator.version == 2){
 							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 							if(replicaLocations.contains(getCloseSE())) 
 								transferInfo= LCG.cp(logicalFileName, 
@@ -94,17 +97,13 @@ public class Merge extends Job {
 								transferInfo= LCG.cp(logicalFileName, 
 										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 										VIPServer.getDefaultLFC());
-							logDownload(jobId, transferInfo, "merge");
-						}
-					} else {
-						for (String logicalFileName: VIPSimulator.mergeInputFileNames){
-							// do a lcg-lr even though this version does not really require to contact the LFC. 
-							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						} else {
 							transferInfo= LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									actualSources.remove(0));
-							logDownload(jobId, transferInfo, "merge");
 						}
+
+						logDownload(jobId, transferInfo, lrDuration.getValue(), "merge");
 					}
 					downloadTime.stop();
 				}
@@ -130,7 +129,7 @@ public class Merge extends Job {
 					nbParticles += Long.valueOf(fileName.split("-")[0]).longValue();
 
 					Msg.info("Received " + nbParticles + " particles to merge");
-					logDownload(jobId, transferInfo, "merge");
+					logDownload(jobId, transferInfo, 0, "merge");
 					downloadTime.stop();
 				}
 

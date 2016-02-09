@@ -82,7 +82,7 @@ public class Gate extends Job {
 					// The first version of the GATE simulator does a single download whose size was given as input
 					downloadTime.start();
 					transferInfo = LCG.cp("input.tgz", "/scratch/input.tgz", VIPServer.getDefaultLFC());
-					logDownload(jobId, transferInfo, "gate");
+					logDownload(jobId, transferInfo, 0, "gate");
 					downloadTime.stop();
 				} else {
 					// upload-test
@@ -106,30 +106,30 @@ public class Gate extends Job {
 					}
 					Vector<SE> replicaLocations;
 
-					if (VIPSimulator.version ==2){
-						for (String logicalFileName: VIPSimulator.gateInputFileNames){
-							//Gate job first do lcg-lr to check whether input file exists in closeSE
-							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+					for (String logicalFileName: VIPSimulator.gateInputFileNames){
+						Timer lrDuration = new Timer();
+						//Gate job first do lcg-lr to check whether input file exists in closeSE
+						lrDuration.start();
+						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						lrDuration.stop();
+
+						if (VIPSimulator.version == 2){
 							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
 							if(replicaLocations.contains(getCloseSE())) 
-								transferInfo= LCG.cp(logicalFileName, 
+								transferInfo = LCG.cp(logicalFileName, 
 										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 										getCloseSE());
 							else
-								transferInfo= LCG.cp(logicalFileName,
+								transferInfo = LCG.cp(logicalFileName,
 										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 										VIPServer.getDefaultLFC());
-							logDownload(jobId, transferInfo, "gate");
-						}
-					} else {
-						for (String logicalFileName: VIPSimulator.gateInputFileNames){
-							// do a lcg-lr even though this version does not really require to contact the LFC. 
-							replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
-							transferInfo= LCG.cp(logicalFileName, 
+						} else {
+							transferInfo = LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									(SE) actualSources.remove(0));
-							logDownload(jobId, transferInfo, "gate");
 						}
+
+						logDownload(jobId, transferInfo, lrDuration.getValue(), "gate");
 					}
 					downloadTime.stop();
 				}
