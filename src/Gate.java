@@ -144,10 +144,13 @@ public class Gate extends Job {
 
 				nbParticles += simulatedParticles;
 
-				Msg.info("Sending computed number of particles to 'VIPServer'");
-				sendProgress(simulatedParticles);
+				// if dynamic, Gate send Progress to VIPServer; otherwise, enter "END" directly 
+				if(VIPSimulator.workflowVersion.equals("dynamic")){
+					Msg.info("Sending computed number of particles to 'VIPServer'");
+					sendProgress(simulatedParticles);
+					break;
+				}
 
-				break;
 			case "END":
 				Msg.info("Stopping Gate job and uploading results. " + nbParticles + 
 						" particles have been simulated by '" + getName() + "'");
