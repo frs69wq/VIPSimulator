@@ -107,6 +107,24 @@ public class VIPServer extends Process {
 					// SHOULD BE REPLACED BY
 					// job.carryOn();
 				} else {
+					if (!timer) {
+						Msg.info("The expected number of particles has been reached. Start a timer!");
+						new Process(this.getHost(), "Timer") {
+							public void main(String[] args) throws HostFailureException {
+								Process.sleep(VIPSimulator.sosTime);
+								if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
+									Msg.info("Timeout has expired. Wake up " + mergeWorkers.size() 
+											+ " Merge worker(s)");
+
+									mergeWorkers.firstElement().begin();
+									runningMergeWorkers++;
+								} else {
+									Msg.info("No need for Merge workers on timeout expiration");
+								}
+							}
+						}.start();
+						timer = true;
+					}
 					job.end();
 				}
 				break;
@@ -121,27 +139,10 @@ public class VIPServer extends Process {
 					if (VIPSimulator.numberOfMergeJobs == 0)
 						stop = true;
 					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
-
-						new Process(this.getHost(), "Timer") {
-							public void main(String[] args) throws HostFailureException {
-								Process.sleep(VIPSimulator.sosTime);
-								boolean mergeFlag = false;
-								while (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {							
-									while(!mergeFlag){
-										if(mergeWorkers.size() > 0){
-											mergeWorkers.get(runningMergeWorkers).begin();
-											runningMergeWorkers++;
-											mergeFlag = true;
-										}
-										else Process.sleep(10);
-									}
-									Msg.info("All GATE workers sent a 'GATE_END' message. Wake up " + mergeWorkers.size()
-									+ " Merge worker(s)");
-
-								} 
-							}
-						}.start();
-						
+						Msg.info("All GATE workers sent a 'GATE_END' message. Wake up " + mergeWorkers.size()
+								+ " Merge worker(s)");
+						runningMergeWorkers++;
+						mergeWorkers.firstElement().begin();
 					}
 				}
 				break;
@@ -156,8 +157,6 @@ public class VIPServer extends Process {
 				job.kill();
 				// then stop
 				stop = true;
-				runningMergeWorkers--;
-				
 				break;
 			default:
 				break;
