@@ -112,10 +112,11 @@ public class VIPServer extends Process {
 						new Process(this.getHost(), "Timer") {
 							public void main(String[] args) throws HostFailureException {
 								Process.sleep(VIPSimulator.sosTime);
-								if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
+								if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs 
+								    && mergeWorkers.size() > 0) {
 									Msg.info("Timeout has expired. Wake up " + mergeWorkers.size() 
 											+ " Merge worker(s)");
-
+									
 									mergeWorkers.firstElement().begin();
 									runningMergeWorkers++;
 								} else {
@@ -132,13 +133,13 @@ public class VIPServer extends Process {
 			case "GATE_DISCONNECT":
 				// a GATE job is now complete, send it a kill signal.
 				job.kill();
-
 				endedGateWorkers++;
 				if (endedGateWorkers == VIPSimulator.numberOfGateJobs) {
 					// Add a safety guard in case the deployment has no Merge
 					if (VIPSimulator.numberOfMergeJobs == 0)
 						stop = true;
-					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
+					if (runningMergeWorkers < VIPSimulator.numberOfMergeJobs
+						&& mergeWorkers.size() > 0) {
 						Msg.info("All GATE workers sent a 'GATE_END' message. Wake up " + mergeWorkers.size()
 								+ " Merge worker(s)");
 						runningMergeWorkers++;
@@ -150,6 +151,11 @@ public class VIPServer extends Process {
 			case "MERGE_CONNECT":
 				mergeWorkers.add((Merge) job);
 				Msg.debug(mergeWorkers.size() + " MERGE worker(s) registered out of " + VIPSimulator.numberOfMergeJobs);
+				if (endedGateWorkers == VIPSimulator.numberOfGateJobs &&
+					runningMergeWorkers < VIPSimulator.numberOfMergeJobs) {
+					runningMergeWorkers++;
+					job.begin();
+				}
 				break;
 
 			case "MERGE_DISCONNECT":

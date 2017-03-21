@@ -20,7 +20,8 @@ public class VIPSimulator {
 	public static double eventsPerSec;
 	public static int version;
 	public static long fixedFileSize;
-
+	public static String workflowVersion; 
+	
 	public static void main(String[] args) {
 		Msg.init(args);
 		String platform_file = null;
@@ -51,6 +52,8 @@ public class VIPSimulator {
 		Msg.info("PARAMS:   sostime is " + sosTime + ", number of Gate tasks is " + numberOfGateJobs
 				+ ", number of merge tasks is " + numberOfMergeJobs + ", cpu merge time is " + cpuMergeTime);
 
+		workflowVersion = args.length > 12 ? args[10] : "static";
+		
 		// Load the platform description
 		Msg.createEnvironment(platform_file);
 		// and deploy the application
