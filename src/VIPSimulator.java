@@ -52,7 +52,7 @@ public class VIPSimulator {
 		Msg.info("PARAMS:   sostime is " + sosTime + ", number of Gate tasks is " + numberOfGateJobs
 				+ ", number of merge tasks is " + numberOfMergeJobs + ", cpu merge time is " + cpuMergeTime);
 
-		workflowVersion = args.length > 10 ? args[10] : "dynamic";
+		workflowVersion = args.length > 12 ? args[10] : "static";
 		
 		// Load the platform description
 		Msg.createEnvironment(platform_file);
