@@ -7,7 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
 import java.util.Vector;
-
 import org.simgrid.msg.Msg;
 
 public abstract class LCG {
@@ -28,6 +27,34 @@ public abstract class LCG {
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName() + "' completed");
 	}
 	
+	
+	public static String cp1(String logicalFileName, String localFileName, LFC lfc) {
+		Timer duration = new Timer();
+		duration.start();
+		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
+
+		// get Logical File from the LFC
+		LogicalFile file = lfc.getLogicalFileByName(logicalFileName);		
+		GfalFile gf = new GfalFile(file);	
+		lfc.fillsurls(gf);
+		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
+
+		// Download physical File from SE
+		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + gf.getCurrentReplica() + "' using '" 
+				+ lfc.getName() + "'");
+		
+		long fileSize = gf.getCurrentReplica().download(logicalFileName);
+
+		//TODO Need to simulate some errors of getCurrentReplica
+		//     Then gf.NextReplica();
+		//     Otherwise, current replica is always chosen
+		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
+		duration.stop();
+		
+		return gf.getCurrentReplica() + "," +fileSize + "," + duration.getValue();
+
+	}
+	
 	public static String cp(String logicalFileName, String localFileName, LFC lfc) {
 		Timer duration = new Timer();
 		duration.start();
@@ -37,7 +64,7 @@ public abstract class LCG {
 		LogicalFile file = lfc.getLogicalFile(logicalFileName);
 
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
-
+		
 		// Download physical File from SE
 		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + file.getLocation() + "' using '" 
 				+ lfc.getName() + "'");

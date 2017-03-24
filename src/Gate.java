@@ -68,7 +68,6 @@ public class Gate extends Job {
 				actualSources.add(VIPServer.getSEbyName(args[5]));
 			}
 		}
-
 		Msg.info("Register GATE on '" + getName() + "'");
 		this.connect();
 
@@ -115,14 +114,19 @@ public class Gate extends Job {
 
 						if (VIPSimulator.version == 2){
 							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
-							if(replicaLocations.contains(getCloseSE())) 
-								transferInfo = LCG.cp(logicalFileName, 
-										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-										getCloseSE());
-							else
-								transferInfo = LCG.cp(logicalFileName,
-										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-										VIPServer.getDefaultLFC());
+//							if(replicaLocations.contains(getCloseSE())) 
+//								transferInfo = LCG.cp(logicalFileName, 
+//										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+//										getCloseSE());
+//							else
+//								transferInfo = LCG.cp(logicalFileName,
+//										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+//										VIPServer.getDefaultLFC());
+
+							transferInfo = LCG.cp1(logicalFileName,
+									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									VIPServer.getDefaultLFC());
+							
 						} else {
 							transferInfo = LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
