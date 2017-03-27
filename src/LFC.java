@@ -9,6 +9,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Random;
 import java.util.Vector;
 
 import org.simgrid.msg.Msg;
@@ -42,9 +43,8 @@ public class LFC extends GridService {
 						locations.add(se);
 					}
 				}
-
 				LogicalFile file = new LogicalFile(fileInfo[0], Long.valueOf(fileInfo[1]).longValue(), locations);
-				Msg.info("Importing file '" + file.toString());
+				Msg.info("Importing file '" + file.toString());				
 				catalog.add(file);
 				// also populate the global vectors that list the names of GATE and Merge input files
 				if (fileInfo[0].startsWith("inputs/gate/")){
@@ -114,7 +114,6 @@ public class LFC extends GridService {
 	private void sendLogicalFileList(String mailbox, Vector<LogicalFile> list) {
 		LFCMessage.sendTo(mailbox, "SEND_LOGICAL_FILE", null, list);
 	}
-	
 	public LFC(Host host, String name, String[] args) {
 		super(host, name, args);
 		this.catalog = new Vector<LogicalFile>();
@@ -153,7 +152,6 @@ public class LFC extends GridService {
 							break;
 						case "ASK_LOGICAL_FILE":
 							LogicalFile file = getReplicaByName(message.getFileName());
-
 							// Send this file back to the sender
 							sendLogicalFile("return-" + mailbox, file);
 							break;
@@ -214,4 +212,48 @@ public class LFC extends GridService {
 	public String toString() {
 		return catalog.toString();
 	}
+	
+	// Put SURLs in order of preference:
+	//   1. SURLs from default SE
+	//   2. SURLs from local domain
+	//   3. Others
+	public void fillsurls(GfalFile gf){
+		
+		@SuppressWarnings("unchecked")
+		Vector<SE> fileReplicas = (Vector<SE>) gf.GetLogicalFile().getLocations().clone();
+		
+		Job job = (Job) getCurrentProcess();
+		String JobName = job.getHost().getName();
+		SE CloseSE = job.getCloseSE();
+		String HostName = JobName.split("\\.")[0];
+		String DomainName = JobName.substring(HostName.length()+1, JobName.length());
+		// firstly add CloseSE if there exists
+		if(fileReplicas.contains(CloseSE)){
+			gf.replicas.addElement(CloseSE);
+			fileReplicas.remove(CloseSE);
+		}
+		// add replicas with same domain name
+		for(SE se:fileReplicas){
+			if(se.getName().contains(DomainName)){
+				gf.replicas.addElement(se);
+				fileReplicas.remove(se);
+			}
+		}
+		// For the rest, add randomly in the list
+		int NbReplicasLeft = fileReplicas.size();
+		int randomInt;
+		for(int i=0; i < NbReplicasLeft; i++){
+			Random randomGenerator = new Random();
+			randomInt = randomGenerator.nextInt(NbReplicasLeft -i);
+			gf.replicas.addElement(fileReplicas.get(randomInt));
+			
+			fileReplicas.remove(randomInt);
+		}	
+		
+		if(fileReplicas.size()>0 || gf.replicas.size() != gf.getNbreplicas()) 
+			Msg.info("Something went wrong, when constructing the sorted replicas vector of " 
+					 + gf.GetLogicalFile().getName()+" for Job"+JobName);
+
+	}
+	
 }
