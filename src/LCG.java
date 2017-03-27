@@ -7,6 +7,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package.
  */
 import java.util.Vector;
+
+import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 
 public abstract class LCG {
@@ -38,19 +40,32 @@ public abstract class LCG {
 		GfalFile gf = new GfalFile(file);	
 		lfc.fillsurls(gf);
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
-
-		// Download physical File from SE
-		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + gf.getCurrentReplica() + "' using '" 
-				+ lfc.getName() + "'");
 		
-		long fileSize = gf.getCurrentReplica().download(logicalFileName);
-
 		//TODO Need to simulate some errors of getCurrentReplica
 		//     Then gf.NextReplica();
 		//     Otherwise, current replica is always chosen
-		Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
-		duration.stop();
+		long fileSize=0;
+		int i = 0;
+		boolean flag = true;
 		
+		while(i < gf.getNbreplicas() && flag){
+	        if (gf.getCurrentReplica().getHost().isRoutedTo(Host.currentHost())){
+	            fileSize = gf.getCurrentReplica().download(logicalFileName);
+	    		// Download physical File from SE
+	    		Msg.info("Downloading file '" + logicalFileName + "' from SE '" + gf.getCurrentReplica() + "' using '" 
+	    				+ lfc.getName() + "'");
+	            flag = false;
+	        } else {
+	            Msg.error("Undefined Route!!!");
+	            gf.NextReplica();
+				i++;
+				flag = true;
+	        }
+		}
+		if(flag) Msg.info("Fail to download "+ localFileName +", all replicas are not available");
+		else Msg.info("lcg-cp of '" + logicalFileName + "' to '" + localFileName + "' completed");
+		
+		duration.stop();
 		return gf.getCurrentReplica() + "," +fileSize + "," + duration.getValue();
 
 	}

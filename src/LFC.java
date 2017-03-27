@@ -221,19 +221,20 @@ public class LFC extends GridService {
 		
 		@SuppressWarnings("unchecked")
 		Vector<SE> fileReplicas = (Vector<SE>) gf.GetLogicalFile().getLocations().clone();
-		
 		Job job = (Job) getCurrentProcess();
 		String JobName = job.getHost().getName();
 		SE CloseSE = job.getCloseSE();
 		String HostName = JobName.split("\\.")[0];
 		String DomainName = JobName.substring(HostName.length()+1, JobName.length());
+		Msg.info("Construct sorted list of replicas for "+ job.getName());
+		
 		// firstly add CloseSE if there exists
 		if(fileReplicas.contains(CloseSE)){
 			gf.replicas.addElement(CloseSE);
 			fileReplicas.remove(CloseSE);
 		}
 		// add replicas with same domain name
-		for(SE se:fileReplicas){
+		for(SE se:gf.GetLogicalFile().getLocations()){
 			if(se.getName().contains(DomainName)){
 				gf.replicas.addElement(se);
 				fileReplicas.remove(se);
