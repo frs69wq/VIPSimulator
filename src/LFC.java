@@ -218,7 +218,11 @@ public class LFC extends GridService {
 	//   2. SURLs from local domain
 	//   3. Others
 	public void fillsurls(GfalFile gf){
-		
+		int size;
+		int next_defaultse = 0, next_local = 0, next_others = 0;
+		Random randomGenerator = new Random();
+		int randomInt;
+		SE tmp1, tmp2;
 		@SuppressWarnings("unchecked")
 		Vector<SE> fileReplicas = (Vector<SE>) gf.GetLogicalFile().getLocations().clone();
 		Job job = (Job) getCurrentProcess();
@@ -228,32 +232,51 @@ public class LFC extends GridService {
 		String DomainName = JobName.substring(HostName.length()+1, JobName.length());
 		Msg.info("Construct sorted list of replicas for "+ job.getName());
 		
-		// firstly add CloseSE if there exists
-		if(fileReplicas.contains(CloseSE)){
-			gf.replicas.addElement(CloseSE);
-			fileReplicas.remove(CloseSE);
-		}
-		// add replicas with same domain name
-		for(SE se:gf.GetLogicalFile().getLocations()){
-			if(se.getName().contains(DomainName)){
-				gf.replicas.addElement(se);
-				fileReplicas.remove(se);
+		size = gf.GetLogicalFile().getLocations().size();
+		for(SE se: fileReplicas){
+			if(se.equals(CloseSE)){		
+				gf.replicas.set(next_defaultse,CloseSE);
+				++next_defaultse;
+				++next_local;
+				++next_others;
+				continue;
 			}
-		}
-		// For the rest, add randomly in the list
-		int NbReplicasLeft = fileReplicas.size();
-		int randomInt;
-		for(int i=0; i < NbReplicasLeft; i++){
-			Random randomGenerator = new Random();
-			randomInt = randomGenerator.nextInt(NbReplicasLeft -i);
-			gf.replicas.addElement(fileReplicas.get(randomInt));
+			if(se.getName().contains(DomainName)){
+				randomInt = randomGenerator.nextInt(next_local - next_defaultse + 1) + next_defaultse;
+				tmp1 = gf.replicas.get(randomInt);
+				tmp2 = gf.replicas.get(next_local);
+				gf.replicas.set(randomInt, se);
+				if(next_local > randomInt && tmp1 != null && next_local < size)
+					gf.replicas.set(next_local, tmp1);
+				if(next_others > next_local && tmp2 != null && next_others < size)
+					gf.replicas.set(next_others, tmp2);
+				
+				++next_local;
+				++next_others;
+				continue;
+			}
 			
-			fileReplicas.remove(randomInt);
-		}	
+			randomInt = randomGenerator.nextInt(next_others - next_local + 1) + next_local;
+			Msg.info("next_others:"+next_others + "  next_local: "+next_local+"  randomInt:"+ randomInt);
+			tmp1 = gf.replicas.get(randomInt);
+			gf.replicas.set(randomInt, se);
+			Msg.info("set: "+ randomInt+" in gf.replicas\n");
+			
+			if(tmp1 != null && next_others < size ){
+				gf.replicas.set(next_others, tmp1);
+				Msg.info("set1: "+ next_others+"\n");
+			}
+			++next_others;
+		}
 		
-		if(fileReplicas.size()>0 || gf.replicas.size() != gf.getNbreplicas()) 
+		if(gf.replicas.contains(null)){ 
 			Msg.info("Something went wrong, when constructing the sorted replicas vector of " 
-					 + gf.GetLogicalFile().getName()+" for Job"+JobName);
+					 + gf.GetLogicalFile().getName()+" for Job "+JobName);
+			for(int i=0; i < gf.replicas.size(); i++){
+				if(gf.replicas.get(i) == null) Msg.info("Index "+ i + " in gf.replicas is null \n");
+			}
+
+		}
 
 	}
 	
