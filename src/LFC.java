@@ -257,14 +257,14 @@ public class LFC extends GridService {
 			}
 			
 			randomInt = randomGenerator.nextInt(next_others - next_local + 1) + next_local;
-			Msg.info("next_others:"+next_others + "  next_local: "+next_local+"  randomInt:"+ randomInt);
+			Msg.debug("next_others:"+next_others + "  next_local: "+next_local+"  randomInt:"+ randomInt);
 			tmp1 = gf.replicas.get(randomInt);
 			gf.replicas.set(randomInt, se);
-			Msg.info("set: "+ randomInt+" in gf.replicas\n");
+			Msg.debug("set: "+ randomInt+" in gf.replicas\n");
 			
 			if(tmp1 != null && next_others < size ){
 				gf.replicas.set(next_others, tmp1);
-				Msg.info("set1: "+ next_others+"\n");
+				Msg.debug("set1: "+ next_others+"\n");
 			}
 			++next_others;
 		}
