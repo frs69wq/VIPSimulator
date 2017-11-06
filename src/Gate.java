@@ -89,7 +89,7 @@ public class Gate extends Job {
 
 					}		
 					else{
-						Msg.debug("Fill still not available in CloseSE, do a normal lcg-cp");
+						Msg.debug("File still not available in CloseSE, do a normal lcg-cp");
 						info = LCG.cp1(logicalFileName, localFileName,lfc);					
 					}
 					break;
