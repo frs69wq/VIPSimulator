@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
@@ -25,7 +26,6 @@ public class LFC extends GridService {
 	// The populate function reads and parses that file, create LogicalFile objects and add them to the local catalog.
 	private void populate(String csvFile) {
 		Msg.info("Population of LFC '" + name + "' from '" + csvFile + "'");
-
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(csvFile));
 			String line = "";
@@ -62,7 +62,6 @@ public class LFC extends GridService {
 			e.printStackTrace();
 		}
 	}
-
 	// A worker might want to register a new logical file, or a replica on an existing file in the catalog. This 
 	// function first checks if a file with the same name already exists. If it does, it determines whether it is a
 	// new replica or not. Otherwise, it creates a new entry in the catalog for that file.
@@ -123,17 +122,20 @@ public class LFC extends GridService {
 
 	public void main(String[] args) throws MsgException {
 		// If this LFC process is started with an argument, we populate the catalog from the CSV file given as args[0]
-		String csvFile = (args.length > 0 ? args[0] : null);
-
-		if ((VIPSimulator.version != 1) && (csvFile != null)) {
-			populate(csvFile);
-			Msg.debug(this.toString());
-		} else {
+		String csvFile = null;
+		if(VIPSimulator.version ==1){
 			LogicalFile file = new LogicalFile("input.tgz", VIPSimulator.fixedFileSize, VIPServer.getDefaultSE());
 			Msg.info("Importing file '" + file.toString());
 			catalog.add(file);
 		}
-
+		if(VIPSimulator.version == 3)
+			csvFile= (args.length > 0 ? args[0] : null);
+		if(VIPSimulator.version == 2) 
+			csvFile= VIPSimulator.Lfc;
+		if(csvFile != null) {
+			Msg.info(csvFile);
+			populate(csvFile);
+		}
 		for (int i = 0; i < 500; i++) {
 			mailboxes.add(new Process(name, name + "_" + i) {
 				public void main(String[] args) throws MsgException {
@@ -234,15 +236,31 @@ public class LFC extends GridService {
 		
 		size = gf.GetLogicalFile().getLocations().size();
 		for(SE se: fileReplicas){
-			if(se.equals(CloseSE)){		
-				gf.replicas.set(next_defaultse,CloseSE);
+			
+			String SeName = se.getName();
+			String SeHostName = SeName.split("\\.")[0];
+			String SeDomainName = SeName.substring(SeHostName.length()+1, SeName.length());
+			
+			if(se.equals(CloseSE)){	
+				
+				tmp1 = gf.replicas.get(next_defaultse);
+				tmp2 = gf.replicas.get(next_local);
+				gf.replicas.set(next_defaultse, se);
+				
+				if(next_local > next_defaultse && tmp1 != null && next_local < size)
+					gf.replicas.set(next_local, tmp1);
+				if(next_others > next_local && tmp2 != null && next_others < size)
+					gf.replicas.set(next_others, tmp2);
+				
+				
 				++next_defaultse;
 				++next_local;
 				++next_others;
 				continue;
 			}
-			if(se.getName().contains(DomainName)){
-				randomInt = randomGenerator.nextInt(next_local - next_defaultse + 1) + next_defaultse;
+			if(SeDomainName.equals(DomainName)){
+				randomGenerator.setSeed(job.getPID());
+				randomInt = ThreadLocalRandom.current().nextInt(next_local - next_defaultse + 1) + next_defaultse;
 				tmp1 = gf.replicas.get(randomInt);
 				tmp2 = gf.replicas.get(next_local);
 				gf.replicas.set(randomInt, se);
@@ -255,8 +273,8 @@ public class LFC extends GridService {
 				++next_others;
 				continue;
 			}
-			
-			randomInt = randomGenerator.nextInt(next_others - next_local + 1) + next_local;
+			randomGenerator.setSeed(job.getPID());
+			randomInt = ThreadLocalRandom.current().nextInt(next_others - next_local + 1) + next_local;
 			Msg.debug("next_others:"+next_others + "  next_local: "+next_local+"  randomInt:"+ randomInt);
 			tmp1 = gf.replicas.get(randomInt);
 			gf.replicas.set(randomInt, se);

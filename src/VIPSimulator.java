@@ -21,6 +21,7 @@ public class VIPSimulator {
 	public static int version;
 	public static long fixedFileSize;
 	public static String workflowVersion; 
+	public static String Lfc;
 	
 	public static void main(String[] args) {
 		Msg.init(args);
@@ -51,8 +52,11 @@ public class VIPSimulator {
 
 		Msg.info("PARAMS:   sostime is " + sosTime + ", number of Gate tasks is " + numberOfGateJobs
 				+ ", number of merge tasks is " + numberOfMergeJobs + ", cpu merge time is " + cpuMergeTime);
-
-		workflowVersion = args.length > 12 ? args[10] : "static";
+		
+		// In version 2, Lfc_catalog is given in command line as a global parameter
+		// In version 3, Lfc_catalog is defined in deployment file and only for concerned SE
+		Lfc = args.length > 10 ? args[10] : null;
+		workflowVersion = args.length > 11 ? args[11] : "static";
 		
 		// Load the platform description
 		Msg.createEnvironment(platform_file);
