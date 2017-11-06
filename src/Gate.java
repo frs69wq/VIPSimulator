@@ -44,7 +44,7 @@ public class Gate extends Job {
 		GateMessage.sendTo("VIPServer", "GATE_DISCONNECT", 0);
 	}
 	
-	private  static String cp_dynamic(String logicalFileName, String localFileName, LFC lfc, SE closeSE) throws HostFailureException {
+	private String cp_dynamic(String logicalFileName, String localFileName, LFC lfc, SE closeSE) throws HostFailureException {
 		
 		int i=0;
 		String info = "";
