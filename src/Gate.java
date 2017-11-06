@@ -14,6 +14,7 @@ import java.util.Vector;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.Mutex;
 
 public class Gate extends Job {
 	private long simulateForNsec(long nSec) throws HostFailureException {
@@ -42,7 +43,106 @@ public class Gate extends Job {
 		// Use of some simulation magic here, every worker knows the mailbox of the VIP server
 		GateMessage.sendTo("VIPServer", "GATE_DISCONNECT", 0);
 	}
+	
+	private  static String cp_dynamic(String logicalFileName, String localFileName, LFC lfc, SE closeSE) throws HostFailureException {
+		
+		int i=0;
+		String info = "";
+		String SE_file = "";
+		Timer duration = new Timer();
+		Vector<SE> replicaLocations;
+		duration.start();
+		Msg.info("Dynamic lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
+		
+		// get Logical File from the LFC
+		LogicalFile file = lfc.getLogicalFile(logicalFileName);
+		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
+	
+		// get all replicas locations by lcg-lr
+		replicaLocations = LCG.lr(lfc,logicalFileName);
+		
+		if(replicaLocations.contains(closeSE)) {
+			info = LCG.cp(logicalFileName, localFileName,closeSE);
+		}
+		else{
+			SE_file = closeSE.getName() +"_" + logicalFileName; 
+			// if some job has already created lock for replicating file in SE
+			// check the status of file in SE
+			if(lfc.transfer_locks.containsKey(SE_file)){	
+				int status = lfc.replicas_info.get(SE_file);
+				switch (status) {
+				case 0: // file is replicating to closeSE in progress	
+					
+					Msg.info("case0 : replicate file into closeSE in progress");
+					// Retry at most 5 times before normal lcg-cp 
+					while(status != 1 && i< 5){		
+						Process.sleep(1000);
+						status = lfc.replicas_info.get(SE_file);
+						i++;
+						Msg.debug("Retry the file whether exists in closeSE");
+					}	
+					Msg.debug("Timeout, no more retry");
+					if(status == 1){	
+						Msg.debug("Succeed to replicate file in CloseSE");
+						Process.sleep(1000);
+						info = LCG.cp(logicalFileName, localFileName,closeSE);
 
+					}		
+					else{
+						Msg.debug("Fill still not available in CloseSE, do a normal lcg-cp");
+						info = LCG.cp1(logicalFileName, localFileName,lfc);					
+					}
+					break;
+				case 1: // file exists in closeSE	
+					Msg.debug("case1: copy from closeSE");
+					info = LCG.cp1(logicalFileName, localFileName,lfc);
+					break;
+				case 2: // fail to replicate file in closeSE
+					
+					// need to simulate some transfer errors,
+					// otherwise this case will never be reached
+					info = LCG.cp1(logicalFileName, localFileName,lfc);
+					break;
+				default:
+					break;	
+				}			
+			}	
+			else{	
+				boolean flag;
+				// This mutex ensures that only one gate job does lcg-rep
+				// because several gate jobs may start at same time
+				lfc.grid_mutex.acquire();  
+				flag = lfc.transfer_locks.containsKey(SE_file);
+				if(!flag){
+					Msg.debug("first job, try to replicate file into closeSE");
+					lfc.transfer_locks.put(SE_file, new Mutex());	
+				}
+				lfc.grid_mutex.release();
+				
+				// first job will try to replicate file into closeSE
+				if(!flag){
+					lfc.transfer_locks.get(SE_file).acquire();
+					lfc.replicas_info.put(SE_file, 0);
+					LCG.rep(logicalFileName, localFileName, closeSE, lfc);
+					
+					//if lcg-rep succeed, lfc.replicas_info.put(SE_file, 1)
+					//if lcg-rep failed,  lfc.replicas_info.put(SE_file, 2)
+					//Now it always succeeds without simulating transfer failure
+					lfc.replicas_info.put(SE_file, 1);	
+					lfc.transfer_locks.get(SE_file).release();
+					info = LCG.cp(logicalFileName, localFileName,closeSE);	
+				}		
+				// other jobs do a normal lcg-cp
+				else info = LCG.cp1(logicalFileName, localFileName,lfc);				
+			}	
+		}
+		duration.stop();
+		String[] log = info.split(",");
+		Msg.info("cp_dynamic complete!");
+		return  log[0] + "," + log[1] + "," + duration.getValue();
+	
+	}
+	
 	public Gate(Host host, String name, String[] args) {
 		super(host, name, args);
 	}
@@ -55,8 +155,8 @@ public class Gate extends Job {
 		long uploadFileSize = 0;
 		String transferInfo;
 		Vector<SE> actualSources = new Vector<SE>();
-
 		int jobId = (args.length > 0 ? Integer.valueOf(args[0]).intValue() : 1);
+		
 		long executionTime = (args.length > 1 ? 1000 * Long.valueOf(args[1]).longValue() : VIPSimulator.sosTime);
 		if (VIPSimulator.version == 1) {
 			uploadFileSize = VIPSimulator.fixedFileSize;
@@ -103,37 +203,42 @@ public class Gate extends Job {
 						Msg.error("Some input files are missing. Exit!");
 						System.exit(1);
 					}
-					Vector<SE> replicaLocations;
-
 					for (String logicalFileName: VIPSimulator.gateInputFileNames){
 						Timer lrDuration = new Timer();
 						//Gate job first do lcg-lr to check whether input file exists in closeSE
 						lrDuration.start();
-						replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
+						Vector<SE> replicaLocations = LCG.lr(VIPServer.getDefaultLFC(),logicalFileName);
 						lrDuration.stop();
-
+						double lr_time = lrDuration.getValue();
+						
 						if (VIPSimulator.version == 2){
-							// if closeSE found, lcg-cp with closeSE, otherwise normal lcg-cp
-//							if(replicaLocations.contains(getCloseSE())) 
-//								transferInfo = LCG.cp(logicalFileName, 
-//										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-//										getCloseSE());
-//							else
-//								transferInfo = LCG.cp(logicalFileName,
-//										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-//										VIPServer.getDefaultLFC());
-
-							transferInfo = LCG.cp1(logicalFileName,
+							// lcg-cp in production 
+//							transferInfo = LCG.cp1(logicalFileName,
+//									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+//									VIPServer.getDefaultLFC());
+																			
+							if(logicalFileName.contains("release")){
+								// dynamic replication
+								transferInfo = cp_dynamic(logicalFileName,
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									VIPServer.getDefaultLFC());
-							
+									VIPServer.getDefaultLFC(), getCloseSE());							
+								// lr is already included in cp_dynamic
+								lr_time = 0.0;			
+							}
+							else{
+								transferInfo = LCG.cp1(logicalFileName,
+								"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+								VIPServer.getDefaultLFC());
+																
+							} 	
+													
 						} else {
 							transferInfo = LCG.cp(logicalFileName, 
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									(SE) actualSources.remove(0));
 						}
-
-						logDownload(jobId, transferInfo, lrDuration.getValue(), "gate");
+						// Write download info to logs	
+						logDownload(jobId, transferInfo, lr_time , "gate");
 					}
 					downloadTime.stop();
 				}
