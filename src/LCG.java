@@ -29,6 +29,21 @@ public abstract class LCG {
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName() + "' completed");
 	}
 	
+	// Copy file to SE and register in LFC
+	public static void rep(String logicalFileName, String localFileName, SE se, LFC lfc){
+		Msg.info("lcg-rep '" + logicalFileName + "' to '" + se.getName() + "' using '" + lfc.getName() + "'");
+		
+		String info = LCG.cp1(logicalFileName, localFileName, lfc);
+		long localFileSize = Long.valueOf(info.split(",")[1]);
+		// Register file into LFC
+		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, se);
+		lfc.register(file);
+		// Also register file into SE's virtual catalog 
+		se.catalog.add(file);
+	
+		Msg.info("lcg-rep of '" + logicalFileName + "' on '" + se.getName() + "' completed");
+	}
+	
 	
 	public static String cp1(String logicalFileName, String localFileName, LFC lfc) {
 		Timer duration = new Timer();
@@ -104,7 +119,7 @@ public abstract class LCG {
 		duration.stop();
 		return closeSE + "," + fileSize + "," + duration.getValue();
 	}
-	
+
 	public static Vector<String> ls(LFC lfc, String directoryName) {
 		Vector<String> results = new Vector<String>();
 
