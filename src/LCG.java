@@ -29,21 +29,28 @@ public abstract class LCG {
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName() + "' completed");
 	}
 	
-	// Copy file to SE and register in LFC
-	public static void rep(String logicalFileName, String localFileName, SE se, LFC lfc){
-		Msg.info("lcg-rep '" + logicalFileName + "' to '" + se.getName() + "' using '" + lfc.getName() + "'");
+	// lcg-rep with timeout
+	public static boolean rep(String logicalFileName, String localFileName, SE src, SE dest, LFC lfc, double timeout){
 		
-		String info = LCG.cp1(logicalFileName, localFileName, lfc);
-		long localFileSize = Long.valueOf(info.split(",")[1]);
-		// Register file into LFC
-		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, se);
-		lfc.register(file);
-		// Also register file into SE's virtual catalog 
-		se.catalog.add(file);
-	
-		Msg.info("lcg-rep of '" + logicalFileName + "' on '" + se.getName() + "' completed");
+		long fileSize=0;
+		Msg.info("lcg-rep '" + logicalFileName + "' to '" + dest.getName() + "' using '" + src.getName() + "'");
+		
+		fileSize = src.download_timeout(logicalFileName,timeout);
+		if(fileSize != 0){
+			// Register file into LFC
+			LogicalFile file = new LogicalFile(logicalFileName, fileSize, dest);
+			lfc.register(file);
+			// Also register file into SE's virtual catalog 
+			dest.catalog.add(file);
+			Msg.info("lcg-rep of '" + logicalFileName + "' on '" + dest.getName() + "' completed");
+			return true;
+		}
+		else{	
+			Msg.info("lcg-rep of '" + logicalFileName + "' on '" + dest.getName() +" using '"+ src.getName() 
+						+ "' passed timeout!!");
+			return false;	
+		}
 	}
-	
 	
 	public static String cp1(String logicalFileName, String localFileName, LFC lfc) {
 		Timer duration = new Timer();
@@ -51,7 +58,7 @@ public abstract class LCG {
 		Msg.info("lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
 
 		// get Logical File from the LFC
-		LogicalFile file = lfc.getLogicalFileByName(logicalFileName);		
+		LogicalFile file = lfc.getLogicalFile(logicalFileName);	
 		GfalFile gf = new GfalFile(file);	
 		lfc.fillsurls(gf);
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());

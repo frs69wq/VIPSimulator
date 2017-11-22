@@ -10,6 +10,7 @@ import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.Msg;
 
 import java.util.Vector;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
@@ -51,40 +52,38 @@ public class Gate extends Job {
 		String SE_file = "";
 		Timer duration = new Timer();
 		Vector<SE> replicaLocations;
-		duration.start();
 		Msg.info("Dynamic lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
-		
 		// get Logical File from the LFC
 		LogicalFile file = lfc.getLogicalFile(logicalFileName);
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
-	
+		
+		duration.start();
 		// get all replicas locations by lcg-lr
 		replicaLocations = LCG.lr(lfc,logicalFileName);
 		
 		if(replicaLocations.contains(closeSE)) {
-			info = LCG.cp(logicalFileName, localFileName,closeSE);
+			info = LCG.cp(logicalFileName, localFileName, closeSE);
 		}
 		else{
 			SE_file = closeSE.getName() +"_" + logicalFileName; 
 			// if some job has already created lock for replicating file in SE
 			// check the status of file in SE
-			if(lfc.transfer_locks.containsKey(SE_file)){	
-				int status = lfc.replicas_info.get(SE_file);
+			if(lfc.getTransferLock(SE_file) == 1){	
+				int status = lfc.getReplicaInfo(SE_file);
 				switch (status) {
 				case 0: // file is replicating to closeSE in progress	
 					
 					Msg.info("case0 : replicate file into closeSE in progress");
-					// Retry at most 5 times before normal lcg-cp 
-					while(status != 1 && i< 5){		
-						Process.sleep(1000);
-						status = lfc.replicas_info.get(SE_file);
+					// Wait at most 30s before normal lcg-cp 
+					while(status != 1 && i< 15){		
+						Process.sleep(2000);
+						status = lfc.getReplicaInfo(SE_file);
 						i++;
 						Msg.debug("Retry the file whether exists in closeSE");
 					}	
 					Msg.debug("Timeout, no more retry");
 					if(status == 1){	
 						Msg.debug("Succeed to replicate file in CloseSE");
-						Process.sleep(1000);
 						info = LCG.cp(logicalFileName, localFileName,closeSE);
 
 					}		
@@ -95,7 +94,7 @@ public class Gate extends Job {
 					break;
 				case 1: // file exists in closeSE	
 					Msg.debug("case1: copy from closeSE");
-					info = LCG.cp1(logicalFileName, localFileName,lfc);
+					info = LCG.cp(logicalFileName, localFileName,closeSE);
 					break;
 				case 2: // fail to replicate file in closeSE
 					
@@ -108,32 +107,69 @@ public class Gate extends Job {
 				}			
 			}	
 			else{	
-				boolean flag;
-				// This mutex ensures that only one gate job does lcg-rep
-				// because several gate jobs may start at same time
-				lfc.grid_mutex.acquire();  
-				flag = lfc.transfer_locks.containsKey(SE_file);
-				if(!flag){
-					Msg.debug("first job, try to replicate file into closeSE");
-					lfc.transfer_locks.put(SE_file, new Mutex());	
-				}
-				lfc.grid_mutex.release();
-				
+				int flag;
+				flag = lfc.createTransferLock(SE_file);
 				// first job will try to replicate file into closeSE
-				if(!flag){
-					lfc.transfer_locks.get(SE_file).acquire();
-					lfc.replicas_info.put(SE_file, 0);
-					LCG.rep(logicalFileName, localFileName, closeSE, lfc);
-					
-					//if lcg-rep succeed, lfc.replicas_info.put(SE_file, 1)
-					//if lcg-rep failed,  lfc.replicas_info.put(SE_file, 2)
-					//Now it always succeeds without simulating transfer failure
-					lfc.replicas_info.put(SE_file, 1);	
-					lfc.transfer_locks.get(SE_file).release();
-					info = LCG.cp(logicalFileName, localFileName,closeSE);	
+				if(flag == 0){
+					lfc.modifyReplicaInfo(SE_file, 0);			
+					SE src = null;
+					double min_bandwidth = 1e8; // minimum bandwidth acceptable is 100Mbps
+					double timeout = (file.getSize()*8)/ min_bandwidth + 10;
+					int num = (int) ((int)100/timeout);  // Wait at most 100s				
+					boolean flag_lcg_rep;
+					GfalFile gf = new GfalFile(file);	
+					lfc.fillsurls(gf);	
+
+					// maximum 5 tests to choose which SE to use to do lcg-rep
+					for(int j = 0 ; j < Math.min(gf.getNbreplicas(), num); j++){
+						SE se = gf.getCurrentReplica();
+						Msg.info("Lcg-rep for :"+ se.getName());
+						flag_lcg_rep = 	LCG.rep(logicalFileName, localFileName, se, closeSE, lfc, timeout);
+		
+						if(flag_lcg_rep){
+							src = se;
+							break;				
+						}
+						gf.NextReplica();
+					}
+					if(src == null){
+						// If no SE response before timeout
+						// We consider that we failed to lcg-rep file into closeSE
+						// update status to 2
+						lfc.modifyReplicaInfo(SE_file, 2);
+						// then all jobs will do a normal lcg-cp
+						// No more retry of lcg-rep
+						info = LCG.cp1(logicalFileName, localFileName,lfc);		
+					}
+					else{
+						Msg.info("lcg-rep complete, "+ "SE used is :"+ src.getName());		
+						//if lcg-rep succeeds, update status of SE_FILE to 1
+						lfc.modifyReplicaInfo(SE_file, 1);	
+						info = LCG.cp(logicalFileName, localFileName,closeSE);	
+					}
 				}		
-				// other jobs do a normal lcg-cp
-				else info = LCG.cp1(logicalFileName, localFileName,lfc);				
+				// other jobs wait at most 30s before doing a normal lcg-cp
+				else{
+					Process.sleep(2000);
+					i = 0;
+					int status = lfc.getReplicaInfo(SE_file);
+					while(status != 1 && i< 14){		
+						Process.sleep(2000);
+						status = lfc.getReplicaInfo(SE_file);
+						i++;
+						Msg.debug("Retry the file whether exists in closeSE");
+					}	
+					Msg.debug("Timeout, no more retry");
+					if(status == 1){	
+						Msg.debug("file exists in CloseSE");
+						info = LCG.cp(logicalFileName, localFileName,closeSE);
+
+					}		
+					else{
+						Msg.debug("File still not available in CloseSE, do a normal lcg-cp");
+						info = LCG.cp1(logicalFileName, localFileName,lfc);					
+					}
+				}				
 			}	
 		}
 		duration.stop();
@@ -216,8 +252,8 @@ public class Gate extends Job {
 //							transferInfo = LCG.cp1(logicalFileName,
 //									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 //									VIPServer.getDefaultLFC());
-																			
-							if(logicalFileName.contains("release")){
+//																		
+							if(logicalFileName.contains("release") || logicalFileName.contains("opengate")){
 								// dynamic replication
 								transferInfo = cp_dynamic(logicalFileName,
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),

@@ -125,6 +125,16 @@ public class SE extends GridService {
 							catalog.add(file);
 							sendAckTo("return-" + mailbox);
 							break;
+						
+						case "DOWNLOAD_REQUEST_TIMEOUT": 
+							
+							String f = message.getFileName();
+							long s = getLogicalFileByName(f).getSize();			
+							Msg.debug("SE '" + name + "' send file '" + f + "' of size " + s + " to '"
+									+ ((Job) message.getSender()).getName() + "' . With timeout");
+
+							sendFileTo("return-" + mailbox, s);
+							break;
 						default:
 							break;
 						}
@@ -149,8 +159,15 @@ public class SE extends GridService {
 		SEMessage m = (SEMessage)Message.getFrom("return-" + mailbox);
 		return m.getSize();
 	}
-
-
+	
+	public long download_timeout(String logicalFileName, double timeout) {
+		String mailbox = this.findAvailableMailbox(2000);
+		SEMessage.sendTo(mailbox, "DOWNLOAD_REQUEST_TIMEOUT", logicalFileName);
+		Msg.info("Sent download request for '" + logicalFileName + "' with timeout " +timeout +". Waiting for reception ...");
+		SEMessage m = (SEMessage)Message.getFrom("return-" + mailbox, timeout);
+		if(m != null) return  m.getSize();
+		else return 0;
+	}
 
 	public String toString() {
 		return name;
