@@ -50,13 +50,21 @@ public class Gate extends Job {
 		int i=0;
 		String info = "";
 		String SE_file = "";
+		double min_bandwidth = 4e6; // minimum bandwidth acceptable is 4Mbps
+		double timeout;
+		int num_retry = 3; 	// maximum retry of lcg-rep		
+		
 		Timer duration = new Timer();
+		Timer cr_timer = new Timer();
+		double cr_duration = 0.0;
+		
 		Vector<SE> replicaLocations;
 		Msg.info("Dynamic lcg-cp '" + logicalFileName + "' to '" + localFileName + "' using '" + lfc.getName() + "'");
 		// get Logical File from the LFC
 		LogicalFile file = lfc.getLogicalFile(logicalFileName);
 		Msg.info("LFC '" + lfc.getName() + "' replied: " + file.toString());
 		
+		timeout = (file.getSize()*8)/ min_bandwidth + 1;
 		duration.start();
 		// get all replicas locations by lcg-lr
 		replicaLocations = LCG.lr(lfc,logicalFileName);
@@ -74,11 +82,11 @@ public class Gate extends Job {
 				case 0: // file is replicating to closeSE in progress	
 					
 					Msg.info("case0 : replicate file into closeSE in progress");
-					// Wait at most 30s before normal lcg-cp 
-					while(status != 1 && i< 15){		
+					// Wait timeout before normal lcg-cp 
+					while(status != 1 && i< timeout){		
 						Process.sleep(2000);
 						status = lfc.getReplicaInfo(SE_file);
-						i++;
+						i = i+2;
 						Msg.debug("Retry the file whether exists in closeSE");
 					}	
 					Msg.debug("Timeout, no more retry");
@@ -110,23 +118,23 @@ public class Gate extends Job {
 				int flag;
 				flag = lfc.createTransferLock(SE_file);
 				// first job will try to replicate file into closeSE
-				if(flag == 0){
-					lfc.modifyReplicaInfo(SE_file, 0);			
+				if(flag == 0){		
 					SE src = null;
-					double min_bandwidth = 1e8; // minimum bandwidth acceptable is 100Mbps
-					double timeout = (file.getSize()*8)/ min_bandwidth + 10;
-					int num = (int) ((int)100/timeout);  // Wait at most 100s				
-					boolean flag_lcg_rep;
+					boolean flag_lcg_cp_cr;
 					GfalFile gf = new GfalFile(file);	
 					lfc.fillsurls(gf);	
-
-					// maximum 5 tests to choose which SE to use to do lcg-rep
-					for(int j = 0 ; j < Math.min(gf.getNbreplicas(), num); j++){
+	
+					for(int j = 0 ; j < Math.min(gf.getNbreplicas(), num_retry); j++){
 						SE se = gf.getCurrentReplica();
-						Msg.info("Lcg-rep for :"+ se.getName());
-						flag_lcg_rep = 	LCG.rep(logicalFileName, localFileName, se, closeSE, lfc, timeout);
-		
-						if(flag_lcg_rep){
+						Msg.info("Lcg-cp for :"+ se.getName());
+						flag_lcg_cp_cr = LCG.cp(logicalFileName, localFileName, se, lfc, timeout);
+						
+						cr_timer.start();
+						LCG.cr(localFileName, file.getSize() ,logicalFileName, closeSE, lfc);
+						cr_timer.stop();
+						cr_duration = cr_timer.getValue();
+						
+						if(flag_lcg_cp_cr){
 							src = se;
 							break;				
 						}
@@ -134,48 +142,43 @@ public class Gate extends Job {
 					}
 					if(src == null){
 						// If no SE response before timeout
-						// We consider that we failed to lcg-rep file into closeSE
+						// We consider that we failed to lcg_cp_cr file into closeSE
 						// update status to 2
 						lfc.modifyReplicaInfo(SE_file, 2);
 						// then all jobs will do a normal lcg-cp
-						// No more retry of lcg-rep
+						// No more retry of lcg_cp_cr
 						info = LCG.cp1(logicalFileName, localFileName,lfc);		
 					}
 					else{
 						Msg.info("lcg-rep complete, "+ "SE used is :"+ src.getName());		
-						//if lcg-rep succeeds, update status of SE_FILE to 1
+						//if lcg_cp_cr succeeds, update status of SE_FILE to 1
 						lfc.modifyReplicaInfo(SE_file, 1);	
-						info = LCG.cp(logicalFileName, localFileName,closeSE);	
+						info = closeSE + "," +file.getSize() + "," + 0;
 					}
 				}		
-				// other jobs wait at most 30s before doing a normal lcg-cp
 				else{
-					Process.sleep(2000);
-					i = 0;
 					int status = lfc.getReplicaInfo(SE_file);
-					while(status != 1 && i< 14){		
+					while(status != 1 && i< timeout){		
 						Process.sleep(2000);
 						status = lfc.getReplicaInfo(SE_file);
-						i++;
+						i = i+2;
 						Msg.debug("Retry the file whether exists in closeSE");
 					}	
-					Msg.debug("Timeout, no more retry");
-					if(status == 1){	
-						Msg.debug("file exists in CloseSE");
-						info = LCG.cp(logicalFileName, localFileName,closeSE);
-
-					}		
-					else{
-						Msg.debug("File still not available in CloseSE, do a normal lcg-cp");
-						info = LCG.cp1(logicalFileName, localFileName,lfc);					
+					if(status !=1){
+						Msg.debug("do a normal lcg-cp");	
+						info = LCG.cp1(logicalFileName, localFileName,lfc);	
 					}
+					else info = LCG.cp(logicalFileName, localFileName,closeSE);
+					
 				}				
 			}	
 		}
 		duration.stop();
 		String[] log = info.split(",");
 		Msg.info("cp_dynamic complete!");
-		return  log[0] + "," + log[1] + "," + duration.getValue();
+		double dyn_duration = duration.getValue() - cr_duration;
+		
+		return  log[0] + "," + log[1] + "," + dyn_duration;
 	
 	}
 	
@@ -252,9 +255,9 @@ public class Gate extends Job {
 //							transferInfo = LCG.cp1(logicalFileName,
 //									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 //									VIPServer.getDefaultLFC());
-//																		
-							if(logicalFileName.contains("release") || logicalFileName.contains("opengate")){
-								// dynamic replication
+								
+							// dynamic replication
+							if(logicalFileName.contains("release") || logicalFileName.contains("opengate")){							
 								transferInfo = cp_dynamic(logicalFileName,
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
 									VIPServer.getDefaultLFC(), getCloseSE());							

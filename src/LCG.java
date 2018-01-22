@@ -20,8 +20,9 @@ public abstract class LCG {
 		se.upload(logicalFileName,localFileSize);
 		Msg.info("SE '" + se.getName() + "' replied with an ACK");
 
-		// Register file into LFC
 		LogicalFile file = new LogicalFile(logicalFileName, localFileSize, se);
+		
+		// Register file into LFC
 		Msg.info("Ask '" + lfc.getName() + "' to register " + file.toString());
 
 		lfc.register(file);
@@ -29,24 +30,19 @@ public abstract class LCG {
 		Msg.info("lcg-cr of '" + logicalFileName + "' on '" + lfc.getName() + "' completed");
 	}
 	
-	// lcg-rep with timeout
-	public static boolean rep(String logicalFileName, String localFileName, SE src, SE dest, LFC lfc, double timeout){
+	// cp with timeout
+	public static boolean cp(String logicalFileName, String localFileName, SE src, LFC lfc, double timeout){
 		
 		long fileSize=0;
-		Msg.info("lcg-rep '" + logicalFileName + "' to '" + dest.getName() + "' using '" + src.getName() + "'");
+		Msg.info("lcg-cp with timeout'" + logicalFileName  + "' using '" + src.getName() + "'");
 		
 		fileSize = src.download_timeout(logicalFileName,timeout);
 		if(fileSize != 0){
-			// Register file into LFC
-			LogicalFile file = new LogicalFile(logicalFileName, fileSize, dest);
-			lfc.register(file);
-			// Also register file into SE's virtual catalog 
-			dest.catalog.add(file);
-			Msg.info("lcg-rep of '" + logicalFileName + "' on '" + dest.getName() + "' completed");
+			Msg.info("lcg-cp of '" + logicalFileName + "' on '" +src.getName()+ "' completed");
 			return true;
 		}
 		else{	
-			Msg.info("lcg-rep of '" + logicalFileName + "' on '" + dest.getName() +" using '"+ src.getName() 
+			Msg.info("lcg-cp of '" + logicalFileName + "' on '" + src.getName() 
 						+ "' passed timeout!!");
 			return false;	
 		}

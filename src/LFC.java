@@ -179,7 +179,9 @@ public class LFC extends GridService {
 							
 						case "ASK_RI":	
 							String SE_File = message.getFileName();
+							transfer_locks.get(SE_File).acquire();
 							int info = replicas_info.get(SE_File);
+							transfer_locks.get(SE_File).release();
 							sendReplicaInfo("return-" + mailbox, SE_File, info);
 							break;
 						
@@ -210,6 +212,7 @@ public class LFC extends GridService {
 							if(!flag_lock){
 								Msg.debug("first job, create lock for replicating file into closeSE");
 								transfer_locks.put(new_transfer_lock, new Mutex());	
+								replicas_info.put(new_transfer_lock, 0);
 							}
 							grid_mutex.release();
 							// If the job creates lock, return 0; otherwise return 1;				
@@ -325,6 +328,8 @@ public class LFC extends GridService {
 			String SeName = se.getName();
 			String SeHostName = SeName.split("\\.")[0];
 			String SeDomainName = SeName.substring(SeHostName.length()+1, SeName.length());
+			String[] t = SeName.split("\\.");
+			String SeCountry = t[t.length-1];
 			
 			if(se.equals(CloseSE)){	
 				
@@ -343,8 +348,9 @@ public class LFC extends GridService {
 				++next_others;
 				continue;
 			}
-			if(DomainName.equals(SeDomainName)){
-				randomInt = ThreadLocalRandom.current().nextInt(next_local - next_defaultse + 1) + next_defaultse;
+			if(Country.equals(SeCountry)){
+				randomGenerator.setSeed(System.currentTimeMillis()+getPID());
+				randomInt = randomGenerator.nextInt(next_local - next_defaultse + 1) + next_defaultse;
 				tmp1 = gf.replicas.get(randomInt);
 				tmp2 = gf.replicas.get(next_local);
 				gf.replicas.set(randomInt, se);
@@ -357,7 +363,8 @@ public class LFC extends GridService {
 				++next_others;
 				continue;
 			}
-			randomInt = ThreadLocalRandom.current().nextInt(next_others - next_local + 1) + next_local;
+			randomGenerator.setSeed(System.currentTimeMillis()+getPID());
+			randomInt = randomGenerator.nextInt(next_others - next_local + 1) + next_local;
 			Msg.debug("next_others:"+next_others + "  next_local: "+next_local+"  randomInt:"+ randomInt);
 			tmp1 = gf.replicas.get(randomInt);
 			gf.replicas.set(randomInt, se);
