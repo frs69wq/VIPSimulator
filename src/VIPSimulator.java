@@ -22,6 +22,7 @@ public class VIPSimulator {
 	public static long fixedFileSize;
 	public static String workflowVersion; 
 	public static String Lfc;
+	public static String algorithm;
 	
 	public static void main(String[] args) {
 		Msg.init(args);
@@ -56,7 +57,11 @@ public class VIPSimulator {
 		// In version 2, Lfc_catalog is given in command line as a global parameter
 		// In version 3, Lfc_catalog is defined in deployment file and only for concerned SE
 		Lfc = args.length > 10 ? args[10] : null;
-		workflowVersion = args.length > 11 ? args[11] : "static";
+		// The algorithm used for replica selection, it's normal lcg_cp by default
+		algorithm = args.length > 11 ? args[11] : "lcg_cp";
+		workflowVersion = args.length > 12 ? args[12] : "static";
+		
+
 		
 		// Load the platform description
 		Msg.createEnvironment(platform_file);

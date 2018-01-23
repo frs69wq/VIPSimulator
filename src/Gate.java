@@ -251,25 +251,30 @@ public class Gate extends Job {
 						double lr_time = lrDuration.getValue();
 						
 						if (VIPSimulator.version == 2){
+							
+							if(VIPSimulator.algorithm.equals("lcg_cp")){
 							// lcg-cp in production 
-//							transferInfo = LCG.cp1(logicalFileName,
-//									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-//									VIPServer.getDefaultLFC());
-								
-							// dynamic replication
-							if(logicalFileName.contains("release") || logicalFileName.contains("opengate")){							
-								transferInfo = cp_dynamic(logicalFileName,
+							transferInfo = LCG.cp1(logicalFileName,
 									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-									VIPServer.getDefaultLFC(), getCloseSE());							
-								// lr is already included in cp_dynamic
-								lr_time = 0.0;			
-							}
+									VIPServer.getDefaultLFC());
+							
+							}	
 							else{
-								transferInfo = LCG.cp1(logicalFileName,
-								"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
-								VIPServer.getDefaultLFC());
-																
-							} 	
+								// dynamic replication
+								if(logicalFileName.contains("release") || logicalFileName.contains("opengate")){							
+									transferInfo = cp_dynamic(logicalFileName,
+										"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+										VIPServer.getDefaultLFC(), getCloseSE());							
+									// lr is already included in cp_dynamic
+									lr_time = 0.0;			
+								}
+								else{
+									transferInfo = LCG.cp1(logicalFileName,
+									"/scratch/"+logicalFileName.substring(logicalFileName.lastIndexOf("/")+1),
+									VIPServer.getDefaultLFC());
+																	
+								} 
+							}	
 													
 						} else {
 							transferInfo = LCG.cp(logicalFileName, 
